@@ -6,6 +6,12 @@ const UserRegistration = ()=>{
     const[email, setEmail] = useState("");
     const[password, setPassword] = useState("");
     const[confirmpassword, setConfirmPassword] = useState("");
+    const[isStudent, setIsStudent] = useState(null); // State to track student status
+    const[promocode, setPromoCode] = useState("");
+    const[studentid, setStudentId] = useState("");
+    const[university, setUniversity] = useState("");
+    const[graduationyear,setGraduationYear] = useState("");
+   
     // const [selectedValue, setSelectedValue] = useState('Are you a Student?');
 
 
@@ -24,12 +30,33 @@ const UserRegistration = ()=>{
       const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
       };
+
+      const handleStudentChange = (event) => {
+        setIsStudent(event.target.value === "yes");
+     };
+
+      const handlePromoCode = (event) =>{
+        setPromoCode(event.target.value);
+     };
+
+     const handleStudentId = (event) =>{
+        setStudentId(event.target.value);
+     };
+
+     const handleUniversity= (event) =>{
+        setUniversity(event.target.value);
+     };
+
+     const handleGraduationYear = (event) =>{
+        setGraduationYear(event.target.value);
+     };
     
       const handleSubmit = (event) => {
         event.preventDefault();
         // Here you can perform authentication logic with the username and password
         console.log('Username:', email);
         console.log('Password:', password);
+        console.log('Is student:', isStudent);
       };
     
     return(
@@ -77,14 +104,29 @@ const UserRegistration = ()=>{
                             </div>
                             <div className="mb-3">
                             {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
-                            <select id="select-container" >
-                                <option selected hidden>Are you Student?</option>
-                                <option value="yes">Yes</option>
+                            <label htmlFor="select-container" class="form-label">Are you Student?</label>
+                            <select id="select-container" onChange={handleStudentChange} value={isStudent === null ? '' : isStudent ? 'yes' : 'no'}>
                                 <option value="no">No</option>
+                                <option value="yes">Yes</option>
                                 
                             </select>
-                   
-                            </div>
+                         </div>
+                         {isStudent === true && ( // Render additional fields if user is a student
+                            <>
+                                <div className="mb-3">
+                                    <input type="text"  onChange={handlePromoCode}  value={promocode}  placeholder="Have a promo code?" autoComplete="promo code" />
+                                </div>
+                                <div className="mb-3">
+                                    <input type="text" onChange={handleStudentId} value={studentid} placeholder="Student ID" autoComplete="student id" />
+                                </div>
+                                <div className="mb-3">
+                                    <input type="text" onChange={handleUniversity} value={university} placeholder="School/College/University" autoComplete="School" />
+                                </div>
+                                <div className="mb-3">
+                                    <input type="text" onChange={handleGraduationYear} value={graduationyear} placeholder="Graduation Year" autoComplete="Graduation Year" />
+                                </div>
+                            </>
+                        )}
                             
 
                             <div className=" form-check ">

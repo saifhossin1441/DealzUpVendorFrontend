@@ -86,7 +86,9 @@ a{
 .form-control{
   outline: none !important;
 }
-
+label{
+  padding: 0px 10px 10px 3px;
+}
 input[type=text]{
   width: 100%;
   border:none;

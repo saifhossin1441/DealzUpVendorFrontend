@@ -14,7 +14,7 @@ const Footer = ()=>{
                     <div className='row'>
                         <div className='col-md-4'>
                         <h4>About DealzUp</h4>
-                        <p className='text'>Dealzup is an innovative technology platform that empowers vendors to effortlessly upload their flyers, deals, and offers. Moreover, it offers users the convenience of selecting the most competitive prices tailored to their specific location.</p>
+                        <p >Dealzup is an innovative technology platform that empowers vendors to effortlessly upload their flyers, deals, and offers. Moreover, it offers users the convenience of selecting the most competitive prices tailored to their specific location.</p>
                         </div>
                         <div className='col-md-2'>
                         <h4>Help</h4>
@@ -31,7 +31,7 @@ const Footer = ()=>{
                         <p className='text'> Dubai</p>
                         </div>
                         <div className='col-md-4'>
-                        <h3>Signup for DealzUp Newsletter</h3>
+                        <h4>Signup for DealzUp Newsletter</h4>
                         <form >
                             <div className="mb-3">
                                 <input type="email"placeholder='Email' className='footer-email' autoComplete="email"  id="exampleInputEmail1" aria-describedby="emailHelp" />

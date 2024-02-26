@@ -53,7 +53,9 @@ margin-bottom:7% ;
   width: 90%; /* Set a percentage value */
   max-width: 500px; /* Optionally limit the maximum width */ 
 }
-
+p{
+  font-family: sans-serif;
+}
 .element-forgot-password{
   margin-top:10% ;
 margin-bottom:10% ;

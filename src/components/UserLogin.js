@@ -3,6 +3,7 @@ import React, { useState} from 'react'
 import { Link } from 'react-router-dom';
 import loginImage from './images/login-side-image.jpg'
 import './css/login.css'; 
+import './css/styles.css'; 
 
 const UserLogin = ()=>{
     const[email, setEmail] = useState("");
@@ -25,6 +26,7 @@ const UserLogin = ()=>{
     
     return(
         <>
+        
             <div id="background-wrap">
                 <div className="bubble1 x1"></div>
                 <div className="bubble2 x2"></div>

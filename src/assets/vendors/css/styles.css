@@ -1,0 +1,248 @@
+body {
+  font-family: 'Poppins', sans-serif !important;
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: #fff;
+}
+.content-section{
+  margin-top:75px;
+}
+.header {
+  /* background-color: #EE5635; */
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header .brand-name {
+  font-size: 24px;
+  font-weight: 600;
+}
+.header .search-bar {
+  padding: 6px 10px;
+  margin-top: 8px;
+  margin-right: 16px;
+  background: #ddd;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+}
+.header .circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #EE5635;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+
+.sidenav {
+height: 100%;
+position: fixed;
+background-color: #2F2F2F;
+border-radius: 0px 12px 0px 12px;
+width: 220px;
+top: 30;
+left: 0;
+overflow-x: hidden;
+padding-top: 20px;
+padding: 20px;
+
+}
+
+.sidenav a {
+padding: 6px 8px 6px 16px;
+text-decoration: none;
+font-size: 18px;
+color: #fff;
+display: block;
+}
+
+.sidenav a:hover {
+color: #f1f1f1;
+}
+
+.sidenav .upgrade-box {
+          background: #EE5635;
+          border-radius: 15px;
+          padding: 20px 15px 20px 1px;
+          margin-top: 20px;
+          font-size: 14px;
+          text-align: center;}
+
+
+.content-section {
+   /* Adjust for sidebar width */
+  padding: 20px;
+}
+.right-sidebar {
+  padding: 15px;
+  box-sizing: border-box;
+  position: relative;
+  
+  float: right;
+}
+.right-sidebar .balance-box {
+  background: #4E31AA;
+  color:#fff;
+  border-radius: 15px;
+  padding: 20px 70px 20px 30px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 10px;
+}
+
+.balance-box-pink {
+background: #EE5C74 !important;  
+}
+.content-box {
+  color: #fff;
+  background: #2F2F2F;
+  border-radius: 10px;
+  padding: 15px ;
+  margin: 10px; 
+  text-align: left;
+}
+.content-box .circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: #EE5635;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+  font-weight: 600;
+}
+.align{
+  align-items: center;
+}
+
+
+.profile-circle{
+  
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+.main_content{
+  margin-top: 10px;
+  padding: 30px;
+}
+
+.profile-info{
+  display: flex;
+  flex-direction: column;
+}
+
+
+.profile-container {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  /* border: 1px solid #ccc; */
+  border-radius: 8px;
+ 
+  margin: 0 auto;
+}
+
+.profile-details {
+  flex: 1 1 auto;
+}
+
+.profile-details h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #fff;
+}
+
+.profile-details p {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #F1f1f1;
+}
+
+.profile-picture {
+  flex: 0 0 auto;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  margin-right: 20px;
+  background-color: #f0f0f0; /* Placeholder color, replace with your image */
+  background-size: cover;
+  background-position: center;
+}
+
+.editColor{
+  color: #40e8a7;
+}
+.profileFont{
+  font-weight: 700;
+}
+
+
+
+@media (max-width: 600px) {
+  .profile-container {
+    flex-direction: column; /* Stack items vertically on small screens */
+    align-items: flex-start; /* Align items to the start of the container */
+  }
+
+  .profile-picture {
+    margin-right: 0;
+    margin-bottom: 20px; /* Add spacing between the picture and details */
+  }
+
+  .profile-details {
+    width: 100%; /* Take full width on small screens */
+  }
+
+  .profile-details h2 {
+    font-size: 20px; /* Adjust font size for smaller screens */
+  }
+
+  .profile-details p {
+    font-size: 14px; /* Adjust font size for smaller screens */
+  }
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+  }
+  @media (max-width: 768px) {
+    .sidenav {
+    height: auto;
+    position: relative;
+    width: 100%;
+    margin-top:60;
+    }
+    .content-box{
+      width: 100%;
+    }
+    
+    .balance-box{
+      width: 100%;
+    }
+    .content-section {
+        margin-left: 0;
+    }
+
+    .right-sidebar .balance-box {
+      
+      padding: 20px 70px 20px 30px;
+      margin: 0;
+    }
+    
+  }

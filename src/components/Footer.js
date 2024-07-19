@@ -1,10 +1,7 @@
 import React from 'react'
-import facebook from './images/facebook.png'
-import linkedin from './images/linkedin.png'
-import instagram from './images/instagram.png'
-
-
-
+import facebook from './../assets/images/facebook.png'
+import linkedin from './../assets/images/linkedin.png'
+import instagram from './../assets/images/instagram.png'
 
 const Footer = ()=>{
     return(

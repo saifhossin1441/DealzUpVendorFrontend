@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import './css/styles.css'; 
+import './../assets/css/styles.css'; 
 
 const Typewriter = () => {
   // Use useMemo to memoize the textArray

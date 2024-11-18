@@ -1,13 +1,15 @@
 import React, { useState} from 'react'
 /* eslint-disable-next-line no-unused-vars */
-import { Link } from 'react-router-dom';
-import loginImage from './../assets/images/login-side-image.jpg'
-import './../assets/css/login.css'; 
-import './../assets/css/styles.css'; 
+import { Link, useNavigate } from 'react-router-dom'; 
+import loginImage from './../../assets/images/login-image-vendor.jpg'
+import './../../assets/css/login.css'; 
+import './../../assets/css/styles.css'; 
 
-const UserLogin = ()=>{
+const VendorLogin = ()=>{
     const[email, setEmail] = useState("");
     const[password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -17,11 +19,41 @@ const UserLogin = ()=>{
         setPassword(event.target.value);
       };
     
-      const handleSubmit = (event) => {
+      const handleSubmit = async (event) => {
         event.preventDefault();
-        // Here you can perform authentication logic with the username and password
-        console.log('Username:', email); //Testing purpose
-        console.log('Password:', password);
+        
+        // API endpoint for login
+        const apiEndpoint = 'https://reqres.in/api/login'; 
+        // eve.holt@reqres.in
+        // cityslicka
+
+        // Data to be sent
+        const data = {
+            email: email,
+            password: password,
+        };
+        
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+            const result = await response.json();
+            console.log('Login successful:', result);  
+             // Redirect to another page on successful login
+             navigate('/VendorDashboard'); // 
+        }
+        catch (error) {
+            console.error('Error:', error);
+            setError('Invalid credentials. Please try again.');
+        }
       };
     
     return(
@@ -54,6 +86,8 @@ const UserLogin = ()=>{
                 <div className="custom_form_box column col-md-6 form_border_radius">
                     <form className="" onSubmit={handleSubmit}>
                             <h1 className='heading'>Sign in</h1>
+                            
+                            {error && <div className="alert alert-danger">{error}</div>}
                             <div className="mb-3">
                                 <input type="email"placeholder='Email' autoComplete="email" onChange={handleEmailChange}  value={email}  id="exampleInputEmail1" aria-describedby="emailHelp" />
                                 <div id="emailHelp" className="form-text"></div>
@@ -70,7 +104,7 @@ const UserLogin = ()=>{
                                 <label className="form-check-label form-text" htmlFor="exampleCheck2"> I agree to the   <b> Privacy Policy</b></label>
                             
                             </div>
-                            <div  className="form-text2 mb-3"><Link  to="/ForgotPassword">Forgot Password?</Link></div>
+                            <div  className="form-text2 mb-3"><Link  to="/VendorForgotPassword">Forgot Password?</Link></div>
                             <button type="submit" className="btn btn-dark mb-3">Submit</button>
   
                             <div id="g_id_onload"
@@ -100,4 +134,4 @@ const UserLogin = ()=>{
     );
 }
 
-export default UserLogin;
+export default VendorLogin;

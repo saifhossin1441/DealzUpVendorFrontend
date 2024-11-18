@@ -1,0 +1,50 @@
+.transparent {
+    background: transparent;
+    transition: background-color 0.3s ease;
+}
+
+.bg-white {
+    background: white;
+    border-bottom-left-radius: 25px; /* Rounded corner at the bottom left */
+    border-bottom-right-radius: 25px;
+    width: 90%;
+    margin: 0 auto;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+     color: #000 !important;
+     padding: 0% !important;
+}
+
+.bg-white .nav-link{
+    color: #000 !important;
+}
+.logo {
+    font-size: 24px; /* Customize logo font size */
+    padding-left: 20px;
+    padding-bottom: 0%;
+    padding-top: 0%;
+}
+
+.navbar .nav-link {
+    color: #fff; /* Customize link color */
+    font-size: 22px; /* Customize link font size */
+    font-family: 'Apercu Pro', sans-serif;
+    font-weight: 500;
+}
+
+.navbar .nav-link:hover {
+    color: #f9f9f9; /* Customize link hover color */
+}
+.dropdown{
+    margin: 10px;
+    
+}
+.dropdown-toggle{
+    background-color: white !important;
+    color: black !important;
+    border-color: #533FDA !important;
+}
+.navbar{
+    width: 90%;
+    margin: 0 auto; 
+}

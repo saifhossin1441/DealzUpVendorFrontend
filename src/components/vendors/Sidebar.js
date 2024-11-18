@@ -5,11 +5,10 @@ import { Link } from 'react-router-dom';
 const Sidebar = () => {
   return (
     <div className="col-md-2">
-      <div className="sidenav">
+      <div className="sidenav ">
       <Link to="/VendorDashboard">Dashboard</Link>
-        <a href="#services">Flyer</a>
-        <a href="#clients">Deals</a>
-        <a href="#contact">Offer</a>
+        <a href="/VendorFlyers">Flyer</a>
+        <a href="/VendorDeals">Deals</a>
         <Link to="/VendorWallets">Wallets</Link>
         <a href="/VendorCreateBusiness">Business</a>
         <div className="upgrade-box">

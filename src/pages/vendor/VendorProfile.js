@@ -9,7 +9,7 @@ import profilePic from './../../assets/vendors/images/profile.png';
 
 
 
-const VendorProfile = ()=>{
+const VendorCreateBusinessPagination = ()=>{
     return(
         <>
         <Header />
@@ -92,4 +92,4 @@ const VendorProfile = ()=>{
     );
 }
 
-export default VendorProfile;
+export default VendorCreateBusinessPagination;

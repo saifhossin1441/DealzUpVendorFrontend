@@ -7,7 +7,8 @@ import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
 
 
-const VendorDeals = ()=>{
+
+const VendorOffers = ()=>{
     return (
         <>
         <Header />
@@ -16,7 +17,7 @@ const VendorDeals = ()=>{
                 <Sidebar />
                     <div className="col-md-8" >
                         <div className="content-box ">
-                          <div>Current Deals</div>
+                          <div>Current Offers</div>
                         </div>
                         <br/>
                         <div class="flex_wrapper">
@@ -37,7 +38,7 @@ const VendorDeals = ()=>{
                         </div>
                         <br />
                         <div className="content-box ">
-                          <div><u><Link to="/VendorCreateDeals" style={{color:"White"}}>Add a new Deal</Link></u></div>
+                          <div><u><Link to="/VendorCreateOffers" style={{color:"White"}}>Add a new Offer</Link></u></div>
                         </div>
                     </div>
                     
@@ -47,4 +48,4 @@ const VendorDeals = ()=>{
     );
 }
 
-export default VendorDeals;
+export default VendorOffers;

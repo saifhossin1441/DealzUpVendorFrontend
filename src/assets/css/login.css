@@ -42,10 +42,15 @@ border-radius: 10px !important;
 }
 
 .element {
-  margin-top:7% ;
+  margin-top:120px !important ;
+  width: 70% !important;
   margin-bottom:5% ;
   width: 90%; /* Set a percentage value */
   max-width: 1000px; /* Optionally limit the maximum width */ 
+}
+.heading{
+  padding: 0%;
+  margin-bottom: 20px !important;
 }
 .element-registration{
   margin-top:7% ;
@@ -97,7 +102,7 @@ input[type=text]{
     border-bottom: 1px solid #000;
     background-color: #ffffff00;
     border-radius: 0;
-    color: #000 !important;
+    color: #fff ;
     margin-bottom:25px;
     padding:0 0px 15px;
 }
@@ -124,7 +129,7 @@ select{
     border-bottom: 1px solid #000;
     background-color: #ffffff00;
     border-radius: 0;
-    color: #000 !important;
+    color: #000 ;
     margin-bottom:25px;
     padding:0 0px 15px;
 }
@@ -202,7 +207,7 @@ input[type=email]:focus{
 }
 .custom_form_box{
   background-color: #E7E7E7;
-  padding: 40px 40px;
+  padding: 40px 40px !important; 
   color: #000;
 }
 
@@ -594,7 +599,7 @@ color: #000!important;
 .btn-dark:hover{
   background-color: #fff !important;
   font-size: 16px;
-  color:#000;
+  color:#000 !important;
   border:1px solid;
   padding: 8px 24px 8px 24px;
  }

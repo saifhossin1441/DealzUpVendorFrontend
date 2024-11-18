@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------------
 
-  Theme Name: Dealzup
+  Theme Name: Dealzup Frontend
   Description: This stylesheet contains styles for the Landing Page.
   Author: Mohammad Saif Hossain
 
@@ -15,6 +15,10 @@
 /* Media Qery */
 
 @import url("//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css");
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+
+                
 /* Search */
 .search {
   position: relative;
@@ -96,9 +100,9 @@
   outline:none !important;
   color:black  !important;
 }
-
-
 /* Search */
+
+
 .container{
   justify-content: center; /* Horizontal centering */
   align-items: center; /* Vertical centering */
@@ -110,7 +114,7 @@
 /* // RESETS, demo only */
 
 *{ box-sizing: border-box; }
-body{ padding: 0; margin: 0; }
+body{ padding: 0; margin: 0; background-color: #fff !important; color: #000 !important; }
 img {
    max-width: 100%; 
   /* // Max = actual size OR not larger than container */ 
@@ -119,7 +123,6 @@ img {
 
 
 /* // Video */
-
 .video-wrapper {
   /* // Fullscreen */
   height: 100vh !important;
@@ -170,9 +173,8 @@ img {
 
 h1{
   padding-left: 5%;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size: 48px;
-  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;    font-size: 42px;
+  font-weight: 600;
   align-items: left;
   justify-content: left;
   text-align: left;
@@ -188,7 +190,7 @@ p{
 .container-app p{
   color: #000;
 }
-
+/* // Video */
 
 
 /* Gradient */
@@ -285,6 +287,7 @@ p{
     display: inline-block;
     border: #F9F9F9 solid 1px;
     border-radius: 5px;   
+    margin-left: 30px;
   }
   
   .animatedText {
@@ -314,7 +317,6 @@ p{
   }
   
   .custom_box_container{
-    
    padding: 60px;
   }
 
@@ -323,13 +325,14 @@ p{
      margin: 30px;
      border:0.5px solid;
      padding-top: 40px;
-     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
      
      border-radius: 25px;
   }
 
   .col_left{
-     margin-left: 60px;
+    margin: 0 auto;
+    margin-top: 25px;
   }
   .custom_box h5{
     font-size: 22px ;
@@ -350,6 +353,7 @@ p{
   }
 
   .custom_box p{
+    
     padding: 0px 40px 10px 40px;
   }
 
@@ -362,68 +366,213 @@ p{
   }
 /* Download App Section */
 
+
+.heart {
+  position: relative;
+  animation: heartbeat 1s infinite;
+}
+
+.heart::before, .heart::after {
+  content: "";
+  position: absolute;
+  
+  background-color: red;
+  border-radius: 50%;
+}
+
+
+.logo img {
+  width: 150px;
+  height: auto;
+  padding-top:20px ;
+}
+
+
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1)}
+  50% { transform: scale(1); }
+  100% { transform: scale(1.1);}
+}
+/* Banner */
+.banner{
+  height: 120vh; /* Full viewport height */
+  width: 100%; /* Full width */
+  display: flex; /* Aligns content horizontally */
+  justify-content: center; /* Horizontally center content */
+  padding: 50px !important; /* Space inside the hero section */
+  /* background-image: url('your-image.jpg'); Hero background image */
+  background-size: cover; /* Cover the entire area */
+  background-position: center;
+}
+.banner h1{
+  color: #FFF;
+  font-family: 'Value Serif',  serif;
+  font-weight: 700;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  padding-top:160px;
+  
+}
+.banner h2{
+  color: #F6D088;
+  font-family: 'Value Serif',  serif;
+  font-size: 42px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  padding-left: 30px;
+  margin-top: -60px;  
+ 
+}
+
+.banner h3{
+  color: #F6D088;
+  font-family: 'Value Serif',  serif;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  padding-left: 30px;
+  padding-bottom: 0%;
+  padding-top: 20px;
+}
+
+.banner button{
+  margin-left: 30px;
+}
+
+.banner p{
+  color:#fff;
+  padding-left: 30px;
+}
+
+.banner .app-img{
+  margin-top: 0px; 
+  margin-left: 30px;
+}
+
+/* Banner */
+
 /* Media Qery */
-  @media screen and (max-width: 767px) {
-
-    @media only screen and (max-width: 767px){
-      .content {
-        padding-left: 10px !important;
-      }
-    
-      .search{
-        padding-left: 10px !important;
-    
-      }
-    
-      .content p{
-        padding-left: 10px;
-        width: 100%;
-    
-      }
-      h1{
-        padding-left: 10px !important;}
-    
-      .search-box {
-          width: 320px !important; }
-    
-    }
-
-    .custom_box{
-      margin: 10px 0px 15px 0px;
-      justify-content:center ;
-      width: 300px;}
-    .animatedText{
-      font-size: 27px !important;
-      height: 39px;
-    }
-    .image{
-      width: 100%;
-      justify-content: center;
-    }
-    .app-img{
-      margin-top: 20px;
-      width: 100%;
-    }
-    .column-image {
-      justify-content: center;
-      width:50%;
-      padding: 3px;
-    }
-    .text-left{
-      padding: 30px 15px 30px 15px;
-    }
-    h2{
-      font-size: 30px;
-    }
-    h3{
-      font-size: 30px;
-    }
-    .custom-gradient {
-      padding: 30px 15px 30px 15px;}
-      .col_left{
-        margin-left: -10px !important;
-     }
+@media screen and (max-width: 767px) {
+  .logo img {
+    width: 120px;
+    height: auto;
   }
+  .banner{
+  align-items: center; /* Vertically center content */
+  justify-content: left; /* Horizontally center content */
+  padding: 20px !important; /* Space inside the hero section */
+  }
+  .banner h1{
+
+    padding-top: 180px;
+    font-size: 28px;
+    text-align: left;
+  }
+  .banner h2{
+    padding: auto;
+    text-align: left;
+    font-size: 24px;
+    padding-left:10px ;
+  }
+  .banner button{
+    margin-left: 10px;
+  }
+  
+  .banner h3{
+    padding: auto;
+    text-align: left;
+    font-size: 20px;
+    padding-left:10px ;
+  }
+  .banner p{
+    padding-left: 10px;
+  }
+
+  .banner .app-img{
+    margin-top: 0px; 
+    margin-left: 10px;
+    width: 75px;
+    border: none;
+    
+  }
+  .content {
+    padding-left: 10px; /* Avoid !important unless necessary */
+  }
+
+  .search {
+    padding-left: 10px; /* Avoid !important unless necessary */
+  }
+  .search-input {
+    width: 50% !important;
+    display: none;
+  }
+  
+  .search-box{display: none;}
+  .content p {
+    padding-left: 10px;
+    width: 100%;
+  }
+
+  h1 {
+    padding-left: 10px; /* Avoid !important unless necessary */
+  }
+
+  .search-box {
+    width: 320px; /* Avoid !important unless necessary */
+  }
+
+  .custom_box {
+    justify-content: center;
+    width: 300px;
+  }
+
+  .animatedText {
+    font-size: 27px; /* Avoid !important unless necessary */
+    height: 39px;
+  }
+
+  .image {
+    width: 100%;
+    justify-content: center; /* Note: `justify-content` needs a flex parent */
+  }
+
+  .app-img {
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .column-image {
+    justify-content: center; /* Note: `justify-content` needs a flex parent */
+    width: 50%;
+    padding: 3px;
+  }
+
+  .text-left {
+    padding: 30px 15px;
+  }
+
+  h2 {
+    font-size: 30px;
+  }
+
+  h3 {
+    font-size: 30px;
+  }
+
+  .custom-gradient {
+    padding: 30px 15px;
+  }
+
+  .col_left {
+    margin-left: -10px; /* Avoid !important unless necessary */
+  }
+}
+
 
 
   @media only screen and (max-width: 1024px) and (min-width: 768px) {
@@ -466,3 +615,10 @@ p{
      }
   } 
 /* Media Query */
+
+
+@media (max-width: 480px) {
+  .logo img{
+    width: 100px;
+  }
+}

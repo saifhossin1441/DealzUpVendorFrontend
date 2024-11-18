@@ -40,7 +40,7 @@ const ForgotPassword = ()=>{
             </div>
             <div className="container element-forgot-password">
                 <div className="row justify-content-center">
-                <div className="custom_form_box column  form_border_radius">
+                <div className="custom_form_box column col-md-6  form_border_radius">
                     <form className="" onSubmit={handleSubmit}>
                             <h1>Forgot Password?</h1>
                 

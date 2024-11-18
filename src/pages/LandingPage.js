@@ -1,21 +1,20 @@
 import React from 'react';
 import './../assets/css/styles.css'; 
-// import SliderComponent from './Slider';
-import Typewriter from './../components/Typewriter';
-import DealzupApp from './../assets/images/DealzupApp.png';
+// import Typewriter from './../components/Typewriter';
+// import DealzupApp from './../assets/images/DealzupApp.png';
 import appStore from './../assets/images/appStore.png';
 import googlePlay from './../assets/images/googlePlay.png';
 import dealzup_earn from './../assets/images/dealzup_earn.jpeg';
 import dealzup_save from './../assets/images/dealzup_save.jpg';
-
-
-
+import banner from './../assets/images/banner.svg'; 
+import mobile from './../assets/images/mobile.png'; 
+import bank from './../assets/images/DBank.png'; 
 
 const LandingPage = ()=>{
     return (
       <>
       {/* Video Banner Start*/}
-      <div className="video-wrapper">
+      {/* <div className="video-wrapper">
         <video className="background" autoPlay muted loop poster="https://cyphers-thecyphersagency.netdna-ssl.com/wp-content/uploads/2016/10/web-texture.jpg">
                 <source src="https://thecyphersagency.com/wp-content/uploads/2018/07/TCA-homepage-video-web-compress.mp4" type="video/mp4"/>
         </video>
@@ -27,42 +26,92 @@ const LandingPage = ()=>{
           
           <p className='banner_fonts'>Dealzup is supporting the next generation of users, entrepreneurs, and everyone in between.</p>
           </div>
-      </div>
-     
+      </div> */}
       {/* Video Banner */}
 
-      {/* 2nd Section Start */}
+      {/* 1st Section Start */}
+      <div className=" container-fluid banner" style={{
+        backgroundImage: `url(${banner})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        height: '120vh',
+      }}>
+        <div className="container">
+              <div className='row'>
+                <div className='col-md-6'>
+                  <h1>Shop smarter with Dealzup – Get cashback directly into your bank account!</h1>
+                </div>
+                <div className='col-md-6' style={{
+                      marginTop:'60px',
+                    }}>
+                    
+                    <div className='image' >
+                        <img src={bank}  alt="Dealzup App" className="img-fluid " />
+                    </div>
+                </div>
+              </div>
 
-      {/* 2nd Section */}
+              <div className='row'>
+                <div className='col-md-6'>
+                  <h2>Boost Your Brand For Free.</h2>
+                  <button type="button" class="btn btn-dark">Get Started</button>
+                  {/* <p>Enter your postal code below to discover the latest deals in your area</p> */}
+                  {/* <div className="search-box search">
+                    <i className="fa fa-search"></i> <input className="search-input" type="text" placeholder="Update Pincode.." />
+                  </div> */}
+                </div>
+                <div className='col-md-6' >
+                <button type="button" class="btn btn-primary">Get Started</button>
+
+                </div>
+              </div>
+              <div className='row'>
+                <div className='col-md-4'>
+                  <h3>It’s easier in the apps</h3>
+                  <img className="app-img" src={appStore} alt="Dealzup App Store" />
+                  <img className="app-img" src={googlePlay} alt="Dealzup Google Play" /> 
+                </div>
+                <div className='col-md-4'>
+                  <div className='image'>
+                    <img src={mobile}  alt="Dealzup App" className="img-fluid heart" />
+                  </div>
+                </div>
+                <div className='col-md-4'></div>
+              </div>
+            </div>
+      </div>
+      {/* 1st Section End*/}
       
-      {/* 3rd Section Start */}
-
-
-      {/* 3rd Section End */}
+      {/* 2nd Section Start */}
       <div className='container custom_box_container '>
         <div className='row justify-content-center'>
-          <h2 className='text-center'>Save time, money and earn rewards</h2>
-         
+          <div className='col-md-12'>
+          <h2 className='text-center'>Empowering Customers & Vendors: Discover What We Offer</h2>
+          </div>
           <div className='col-md-6 wow fadeInUp '>
-            <div className='custom_box col_left'>
-              <h5> How to save?</h5>
+            <div className='custom_box '>
+              <h5> Customers</h5>
               <p>Discover flyers, promotions, and enticing deals to find products at affordable rates.</p>
+              <p>Explore rewards for earning cash and points, and engage in our Spin to Win game!</p>
               <a href="/">Know More &#8594;  </a>
               <img className="img-box" src={dealzup_save}alt="Dealzup" />
             </div>
           </div>
-          <div className='col-md-6 wow fadeInUp'>
-            <div className='custom_box col_left'>
-              <h5> How to earn?</h5>
-              <p>Explore rewards for earning cash and points, and engage in our Spin to Win game!</p>
-              <a href="/">Know More &#8594; </a>
+          <div className='col-md-6 wow'>
+            <div className='custom_box  '>
+              <h5> Vendors</h5>
+              <p>Everything you need to promote and profit. The Easiest Way to Grow Your 
+Revenue</p>
+              <p>Promote your products, discover new customers, and gain insights from top marketing experts </p>
+              <a href="/">Know More &#8594;  </a>
               <img className="img-box" src={dealzup_earn}alt="Dealzup" />
             </div>
           </div>
           
         </div>
       </div>
-
+      {/* 2nd Section End */}
+      
       {/* Gradient Section  */}
       <div className=" justify-content-center custom-gradient ">
         <div className=" container justify-content-center align-items-center">
@@ -83,26 +132,30 @@ const LandingPage = ()=>{
         {/* Gradient Section  */}
       
         {/* Download App Section Start */}
-        <div className='container'>
-            <div className='container-app'>
-              <div className="row">
-                <div className='col-md-6 text-left '>
-                  <h2>Download the App</h2>
-                  <p >Dealzup is supporting the next generation of users, entrepreneurs, and everyone in between.</p>
-                  <Typewriter />
-                  <br/>
-                    <div className='column-image'><img className="app-img" src={appStore}  alt="Dealzup App Store"/>  </div>
-                    <div className='column-image'><img className="app-img" src={googlePlay} alt="Dealzup Google Play" /></div>
+        {/* <div className='container'>
+          <div className='container-app'>
+            <div className="row">
+              <div className='col-md-6 text-left'>
+                <h2>Download the App</h2>
+                <p>Dealzup is supporting the next generation of users, entrepreneurs, and everyone in between.</p>
+                <Typewriter />
+                <br />
+                <div className='column-image'>
+                  <img className="app-img" src={appStore} alt="Dealzup App Store" />
                 </div>
-                <div className='col-md-6'>
-                  <div className='image'><img src={DealzupApp} alt="Dealzup App" /></div>
+                <div className='column-image'>
+                  <img className="app-img" src={googlePlay} alt="Dealzup Google Play" />
+                </div>
+              </div>
+              <div className='col-md-6'>
+                <div className='image'>
+                  <img src={DealzupApp} alt="Dealzup App" className="img-fluid" />
                 </div>
               </div>
             </div>
           </div>
+        </div> */}
         {/* Download App Section End */}
-        {/* <SliderComponent /> */}
-
       </>
       );
 

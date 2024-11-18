@@ -1,67 +1,68 @@
-import React, { useState}  from 'react'
+import React, {useState} from 'react';
 
-
-    const UserRegistration = ()=>{
+const VendorRegistration = ()=>{
     const[name, setName] = useState("");
     const[email, setEmail] = useState("");
+    const[country, setCountry] = useState("");
+    const[city, setCity] = useState("");
+    const[province, setProvince] = useState("");
+    const[address, setAddress] = useState("");
+    const[apartment, setApartment] = useState("");
+    const[postalcode, setPostalCode] = useState("");
     const[password, setPassword] = useState("");
     const[confirmpassword, setConfirmPassword] = useState("");
-    const[isStudent, setIsStudent] = useState(null); // State to track student status
-    const[promocode, setPromoCode] = useState("");
-    const[studentid, setStudentId] = useState("");
-    const[university, setUniversity] = useState("");
-    const[graduationyear,setGraduationYear] = useState("");
-   
-    // const [selectedValue, setSelectedValue] = useState('Are you a Student?');
 
-
-      const handleNameChange = (event) => {
+    const handleNameChange = (event) => {
         setName(event.target.value);
-      };
-    
-      const handleEmailChange = (event) => {
+    };
+
+    const handleEmailChange = (event) => {
         setEmail(event.target.value);
-      };
+    };
+
+    const handleCountryChange = (event) => {
+        setCountry(event.target.value);
+    };
+
+    const handleCityChange = (event) => {
+        setCity(event.target.value);
+    };
+
+    const handleProvinceChange = (event) => {
+        setProvince(event.target.value);
+    };
+
+    const handleAddressChange = (event) => {
+        setAddress(event.target.value);
+    };
+
+    const handleApartmentChange = (event) => {
+        setApartment(event.target.value);
+    };
     
-      const handlePasswordChange = (event) => {
+    const handlePostalCodeChange = (event) => {
+        setPostalCode(event.target.value);
+    };
+
+    const handlePasswordChange = (event) => {
         setPassword(event.target.value);
-      };
+    };
 
-      const handleConfirmPasswordChange = (event) => {
+    const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
-      };
+    };
 
-      const handleStudentChange = (event) => {
-        setIsStudent(event.target.value === "yes");
-     };
-
-      const handlePromoCode = (event) =>{
-        setPromoCode(event.target.value);
-     };
-
-     const handleStudentId = (event) =>{
-        setStudentId(event.target.value);
-     };
-
-     const handleUniversity= (event) =>{
-        setUniversity(event.target.value);
-     };
-
-     const handleGraduationYear = (event) =>{
-        setGraduationYear(event.target.value);
-     };
-    
-      const handleSubmit = (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         // Here you can perform authentication logic with the username and password
         console.log('Username:', email);
         console.log('Password:', password);
-        console.log('Is student:', isStudent);
+        
       };
-    
-    return(
+
+      return(
         <>
-            <div id="background-wrap">
+          <div id="background-wrap">
                 <div className="bubble1 x1"></div>
                 <div className="bubble2 x2"></div>
                 <div className="bubble3 x3"></div>
@@ -87,13 +88,54 @@ import React, { useState}  from 'react'
                 <div className="row justify-content-center">
                 <div className="custom_form_box column  form_border_radius_reg">
                     <form className="" onSubmit={handleSubmit}>
-                            <h1 style={{textAlign:'center'}}>Sign Up</h1>
+                        <div className="mb-3 ">
+                            <h1 style={{textAlign:'center'}}> Vendor Sign Up</h1>
+                        </div>
                             <div className="mb-3">
-                                <input type="text"placeholder='Name' autoComplete="name" onChange={handleNameChange}  value={name}  id="exampleInputName"  />
-                                <div id="emailHelp" className="form-text"></div>
+                                <input type="text" placeholder='Name' autoComplete="name" onChange={handleNameChange}  value={name}  id="exampleInputName"  />
+                                <div id="Name" className="form-text"></div>
                             </div>
                             <div className="mb-3">
                                 <input type="email"placeholder='Email' autoComplete="email" onChange={handleEmailChange}  value={email}  id="exampleInputEmail1" aria-describedby="emailHelp" />
+                                <div id="emailHelp" className="form-text"></div>
+                            </div>
+                            <div className="mb-3">
+                                {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
+                                <label htmlFor="select-container" class="form-label">Country</label>
+                                <select id="select-container" value={country} onChange={handleCountryChange} >
+                                    <option value="">Choose Country</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="India">India</option>
+                                </select>
+                            </div>
+                            <div className="mb-3">
+                                {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
+                                <label htmlFor="select-container" class="form-label">City</label>
+                                <select id="select-container"  value={city}  onChange={handleCityChange} >
+                                    <option value="">Choose City</option>
+                                    <option value="Toronto">Toronto</option>
+                                    <option value="Kitchener">Kitchener</option>
+                                </select>
+                            </div>
+                            <div className="mb-3">
+                                {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
+                                <label htmlFor="select-container" class="form-label">Province</label>
+                                <select id="select-container" value={province} onChange={handleProvinceChange} >
+                                    <option value="">Choose Province</option>
+                                    <option value="Ontario">Ontario</option>
+                                    <option value="Alberta">Alberta</option>
+                                </select>
+                            </div>
+                            <div className="mb-3">
+                                <input type="text" placeholder='Address'  onChange={handleAddressChange}  value={address} />
+                                <div id="emailHelp" className="form-text"></div>
+                            </div>
+                            <div className="mb-3">
+                                <input type="text" placeholder='Apartment'  onChange={handleApartmentChange}  value={apartment} />
+                                <div id="emailHelp" className="form-text"></div>
+                            </div>
+                            <div className="mb-3">
+                                <input type="text" placeholder='Postalcode'  onChange={handlePostalCodeChange}  value={postalcode} />
                                 <div id="emailHelp" className="form-text"></div>
                             </div>
                             <div className="mb-3">
@@ -102,31 +144,7 @@ import React, { useState}  from 'react'
                             <div className="mb-3">
                                 <input autoComplete="current-password"  placeholder="Confirm Password" onChange={handleConfirmPasswordChange} type="password" value={confirmpassword} id="exampleInputConfirmPassword1" />
                             </div>
-                            <div className="mb-3">
-                            {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
-                            <label htmlFor="select-container" class="form-label">Are you Student?</label>
-                            <select id="select-container" onChange={handleStudentChange} value={isStudent === null ? '' : isStudent ? 'yes' : 'no'}>
-                                <option value="no">No</option>
-                                <option value="yes">Yes</option>
-                                
-                            </select>
-                         </div>
-                         {isStudent === true && ( // Render additional fields if user is a student
-                            <>
-                                <div className="mb-3">
-                                    <input type="text"  onChange={handlePromoCode}  value={promocode}  placeholder="Have a promo code?" autoComplete="promo code" />
-                                </div>
-                                <div className="mb-3">
-                                    <input type="text" onChange={handleStudentId} value={studentid} placeholder="Student ID" autoComplete="student id" />
-                                </div>
-                                <div className="mb-3">
-                                    <input type="text" onChange={handleUniversity} value={university} placeholder="School/College/University" autoComplete="School" />
-                                </div>
-                                <div className="mb-3">
-                                    <input type="text" onChange={handleGraduationYear} value={graduationyear} placeholder="Graduation Year" autoComplete="Graduation Year" />
-                                </div>
-                            </>
-                        )}
+                            
                             
 
                             <div className=" form-check ">
@@ -164,8 +182,6 @@ import React, { useState}  from 'react'
                 </div>
             </div>
         </>
-    );
-     
+      )
 }
-
-export default UserRegistration; 
+export default VendorRegistration;

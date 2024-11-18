@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 
 const Header = (props) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-body-tertiary fixed-top">
+    <nav className="navbar navbar-expand-lg navbar-light bg-body-dark fixed-top" style={{width:'100%', backgroundColor:'#784BF6'}}>
       <div className="container-fluid">
-        <a className="navbar-brand" href="/">Dealzup</a>
+       
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -14,19 +14,17 @@ const Header = (props) => {
             <li className="nav-item">
               <a className="nav-link active" aria-current="page" href="/">Home</a>
             </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/">Link</a>
-            </li>
+            
           </ul>
           <form className="d-flex me-3" role="search">
             <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-            <button className="btn btn-outline-success" type="submit">Search</button>
+            <button className="btn btn-outline-success"  style={{borderColor:'#fff',color:'#fff'}} type="submit">Search</button>
             
           </form>
           
           <ul className="navbar-nav">
             <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a className="nav-link dropdown-toggle" style={{borderRadius:'10px'}} href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Saif
               </a>
               <ul className="dropdown-menu dropdown-menu-end">

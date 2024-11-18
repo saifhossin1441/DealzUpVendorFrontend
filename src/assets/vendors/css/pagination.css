@@ -1,0 +1,88 @@
+.pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #EE5635;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    color: #EE5635;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.completed .circle {
+    background-color: #EE5635;
+    color: white;
+}
+
+.label {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #EE5635;
+}
+
+.line {
+    width: 50px;
+    height: 2px;
+    background-color: #EE5635;
+    margin: 0 10px;
+}
+
+.content {
+    margin-top: 20px;
+    width: 80%;
+    text-align: center;
+}
+
+.container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label {
+    margin: 10px 0 5px;
+    color: #EE5635;
+}
+
+input[type="text"],
+input[type="file"] {
+    padding: 8px;
+    border: 1px solid #EE5635;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+button {
+    margin: 10px 5px;
+    padding: 10px 20px;
+    background-color: #EE5635;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

@@ -1,13 +1,12 @@
 import React from "react";
 import './../../assets/vendors/css/styles.css'; 
 import Header from './../../components/vendors/Header';
-import DealsImg1 from './../../assets/vendors/images/deals/1.jpg';
-import DealsImg2 from './../../assets/vendors/images/deals/2.jpg';
+import flyerImg1 from './../../assets/vendors/images/flyers/1.png';
 import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
 
 
-const VendorDeals = ()=>{
+const VendorBanners = ()=>{
     return (
         <>
         <Header />
@@ -16,28 +15,43 @@ const VendorDeals = ()=>{
                 <Sidebar />
                     <div className="col-md-8" >
                         <div className="content-box ">
-                          <div>Current Deals</div>
+                          <div>Current Banners</div>
                         </div>
                         <br/>
                         <div class="flex_wrapper">
                             <div class="flyers_wrap">
-                                <img src={DealsImg1} alt="Food App" /> 
+                                <img src={flyerImg1} alt="Food App" /> 
                                 <h3>Walmart</h3>
                                 <p>Start Date : Aug 15, 2024 <br /> End Date  &nbsp;: Aug 20, 2024</p>
                                 <p></p>
                             </div>
 
                             <div class="flyers_wrap">
-                                <img src={DealsImg2} alt="Best Grocery App" /> 
+                                <img src={flyerImg1} alt="Best Grocery App" /> 
                                 <h3>Walmart</h3>
                                 <p>Start Date : Aug 21, 2024 <br /> End Date  &nbsp;: Aug 24, 2024</p>
                                
                             </div>
 
+                            <div class="flyers_wrap">
+                                <img src={flyerImg1}  alt="Dealzup" /> 
+                                <h3>Walmart</h3>
+                                <p>Start Date : Aug 25, 2024 <br/> End Date  &nbsp;: Aug 28, 2024 </p>
+                               
+                            </div>
+
+                            <div class="flyers_wrap">
+                                <img src={flyerImg1}  alt="Dealzup" /> 
+                                <h3>Walmart</h3>
+                                <p>Start Date : Aug 28, 2024 <br /> End Date &nbsp;: Aug 30, 2024</p>
+                                
+                            </div>
+
+                            
                         </div>
                         <br />
                         <div className="content-box ">
-                          <div><u><Link to="/VendorCreateDeals" style={{color:"White"}}>Add a new Deal</Link></u></div>
+                          <div><u><Link to="/VendorCreateBanners" style={{color:"White"}}>Add a new Banner</Link></u></div>
                         </div>
                     </div>
                     
@@ -47,4 +61,4 @@ const VendorDeals = ()=>{
     );
 }
 
-export default VendorDeals;
+export default VendorBanners;

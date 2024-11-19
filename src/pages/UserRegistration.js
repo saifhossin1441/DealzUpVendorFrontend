@@ -1,171 +1,187 @@
-import React, { useState}  from 'react'
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
+const UserRegistration = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmpassword, setConfirmPassword] = useState("");
+  const [isStudent, setIsStudent] = useState(null);
+  const [promocode, setPromoCode] = useState("");
+  const [studentid, setStudentId] = useState("");
+  const [university, setUniversity] = useState("");
+  const [graduationyear, setGraduationYear] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false); // State for Terms & Conditions checkbox
+  const [agreePrivacy, setAgreePrivacy] = useState(false); // State for Privacy Policy checkbox
 
-    const UserRegistration = ()=>{
-    const[name, setName] = useState("");
-    const[email, setEmail] = useState("");
-    const[password, setPassword] = useState("");
-    const[confirmpassword, setConfirmPassword] = useState("");
-    const[isStudent, setIsStudent] = useState(null); // State to track student status
-    const[promocode, setPromoCode] = useState("");
-    const[studentid, setStudentId] = useState("");
-    const[university, setUniversity] = useState("");
-    const[graduationyear,setGraduationYear] = useState("");
-   
-    // const [selectedValue, setSelectedValue] = useState('Are you a Student?');
+  const navigate = useNavigate(); // Hook for navigation
 
+  const handleNameChange = (event) => setName(event.target.value);
+  const handleEmailChange = (event) => setEmail(event.target.value);
+  const handlePasswordChange = (event) => setPassword(event.target.value);
+  const handleConfirmPasswordChange = (event) => setConfirmPassword(event.target.value);
+  const handleStudentChange = (event) => setIsStudent(event.target.value === "yes");
+  const handlePromoCode = (event) => setPromoCode(event.target.value);
+  const handleStudentId = (event) => setStudentId(event.target.value);
+  const handleUniversity = (event) => setUniversity(event.target.value);
+  const handleGraduationYear = (event) => setGraduationYear(event.target.value);
 
-      const handleNameChange = (event) => {
-        setName(event.target.value);
-      };
-    
-      const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-      };
-    
-      const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-      };
+  const handleAgreeTermsChange = (event) => setAgreeTerms(event.target.checked); // Handle Terms checkbox
+  const handleAgreePrivacyChange = (event) => setAgreePrivacy(event.target.checked); // Handle Privacy checkbox
 
-      const handleConfirmPasswordChange = (event) => {
-        setConfirmPassword(event.target.value);
-      };
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent form from submitting normally
 
-      const handleStudentChange = (event) => {
-        setIsStudent(event.target.value === "yes");
-     };
+    if (password !== confirmpassword) {
+      alert('Passwords do not match!');
+      return;
+    }
 
-      const handlePromoCode = (event) =>{
-        setPromoCode(event.target.value);
-     };
+    if (!agreeTerms || !agreePrivacy) {
+      alert('You must agree to the Terms & Conditions and Privacy Policy.');
+      return;
+    }
 
-     const handleStudentId = (event) =>{
-        setStudentId(event.target.value);
-     };
+    // Set the email as the username
+    const formData = {
+      name,
+      email,
+      password,
+      password_confirmation: confirmpassword,
+      is_student: isStudent === null ? false : isStudent,
+      promo_code: isStudent ? promocode : '',
+      student_id: isStudent ? studentid : '',
+      university: isStudent ? university : '',
+      graduation_year: isStudent ? graduationyear : '',
+      username: email,  // Use email as username
+    };
 
-     const handleUniversity= (event) =>{
-        setUniversity(event.target.value);
-     };
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/auth/register/', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Registration successful:', response.data);
 
-     const handleGraduationYear = (event) =>{
-        setGraduationYear(event.target.value);
-     };
-    
-      const handleSubmit = (event) => {
-        event.preventDefault();
-        // Here you can perform authentication logic with the username and password
-        console.log('Username:', email);
-        console.log('Password:', password);
-        console.log('Is student:', isStudent);
-      };
-    
-    return(
-        <>
-            <div id="background-wrap">
-                <div className="bubble1 x1"></div>
-                <div className="bubble2 x2"></div>
-                <div className="bubble3 x3"></div>
-                <div className="bubble4 x4"></div>
-                <div className="bubble5 x5"></div>
-                <div className="bubble1 x6"></div>
-                <div className="bubble2 x7"></div>
-                <div className="bubble3 x8"></div>
-                <div className="bubble4 x9"></div>
-                <div className="bubble5 x10"></div>
-                <div className="bubble1 x11"></div>
-                <div className="bubble2 x12"></div>
-                <div className="bubble3 x13"></div>
-                <div className="bubble4 x14"></div>
-                <div className="bubble5 x15"></div>
-                <div className="bubble1 x16"></div>
-                <div className="bubble2 x17"></div>
-                <div className="bubble3 x18"></div>
-                <div className="bubble4 x19"></div>
-                <div className="bubble5 x20"></div>
+      // Redirect to the login page upon success
+      navigate('/login'); // Navigate to the login page
+    } catch (error) {
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      } else {
+        console.error('Error message:', error.message);
+      }
+    }
+  };
+
+  return (
+    <div className="container" style={{ marginTop: 200 }}>
+      <form onSubmit={handleSubmit}>
+        {/* Name */}
+        <div className="mb-3">
+          <input
+            type="text"
+            placeholder="Name"
+            autoComplete="name"
+            onChange={handleNameChange}
+            value={name}
+          />
+        </div>
+
+        {/* Email (used as username) */}
+        <div className="mb-3">
+          <input
+            type="email"
+            placeholder="Email"
+            autoComplete="email"
+            onChange={handleEmailChange}
+            value={email}
+          />
+        </div>
+
+        {/* Password */}
+        <div className="mb-3">
+          <input
+            type="password"
+            placeholder="Password"
+            autoComplete="current-password"
+            onChange={handlePasswordChange}
+            value={password}
+          />
+        </div>
+
+        {/* Confirm Password */}
+        <div className="mb-3">
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            autoComplete="current-password"
+            onChange={handleConfirmPasswordChange}
+            value={confirmpassword}
+          />
+        </div>
+
+        {/* Are you a student? */}
+        <div className="mb-3">
+          <label htmlFor="select-container" className="form-label">Are you a Student?</label>
+          <select id="select-container" onChange={handleStudentChange} value={isStudent === null ? '' : isStudent ? 'yes' : 'no'}>
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+
+        {/* Student-specific fields */}
+        {isStudent === true && (
+          <>
+            <div className="mb-3">
+              <input type="text" onChange={handlePromoCode} value={promocode} placeholder="Have a promo code?" autoComplete="promo code" />
             </div>
-            <div className="container element-registration" style={{width:'50%',MarginTop:'50px !important'}}>
-                <div className="row justify-content-center">
-                <div className="custom_form_box column  form_border_radius_reg">
-                    <form className="" onSubmit={handleSubmit}>
-                            <h1 style={{textAlign:'center'}}>Sign Up</h1>
-                            <div className="mb-3">
-                                <input type="text"placeholder='Name' autoComplete="name" onChange={handleNameChange}  value={name}  id="exampleInputName"  />
-                                <div id="emailHelp" className="form-text"></div>
-                            </div>
-                            <div className="mb-3">
-                                <input type="email"placeholder='Email' autoComplete="email" onChange={handleEmailChange}  value={email}  id="exampleInputEmail1" aria-describedby="emailHelp" />
-                                <div id="emailHelp" className="form-text"></div>
-                            </div>
-                            <div className="mb-3">
-                                <input autoComplete="current-password"  placeholder="Password" onChange={handlePasswordChange}type="password" value={password} id="exampleInputPassword1" />
-                            </div>
-                            <div className="mb-3">
-                                <input autoComplete="current-password"  placeholder="Confirm Password" onChange={handleConfirmPasswordChange} type="password" value={confirmpassword} id="exampleInputConfirmPassword1" />
-                            </div>
-                            <div className="mb-3">
-                            {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
-                            <label htmlFor="select-container" class="form-label">Are you Student?</label>
-                            <select id="select-container" onChange={handleStudentChange} value={isStudent === null ? '' : isStudent ? 'yes' : 'no'}>
-                                <option value="no">No</option>
-                                <option value="yes">Yes</option>
-                                
-                            </select>
-                         </div>
-                         {isStudent === true && ( // Render additional fields if user is a student
-                            <>
-                                <div className="mb-3">
-                                    <input type="text"  onChange={handlePromoCode}  value={promocode}  placeholder="Have a promo code?" autoComplete="promo code" />
-                                </div>
-                                <div className="mb-3">
-                                    <input type="text" onChange={handleStudentId} value={studentid} placeholder="Student ID" autoComplete="student id" />
-                                </div>
-                                <div className="mb-3">
-                                    <input type="text" onChange={handleUniversity} value={university} placeholder="School/College/University" autoComplete="School" />
-                                </div>
-                                <div className="mb-3">
-                                    <input type="text" onChange={handleGraduationYear} value={graduationyear} placeholder="Graduation Year" autoComplete="Graduation Year" />
-                                </div>
-                            </>
-                        )}
-                            
-
-                            <div className=" form-check ">
-                                <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                                <label className="form-check-label form-text" htmlFor="exampleCheck1"> I agree to the <b>Terms & Condition</b> </label>
-                             </div>
-                            <div className="mb-3 form-check">
-                               <input type="checkbox" className="form-check-input" id="exampleCheck2" />
-                                <label className="form-check-label form-text" htmlFor="exampleCheck2"> I agree to the   <b> Privacy Policy</b></label>
-                            
-                            </div>
-                            
-                            
-                            <button type="submit" className="btn btn-dark mb-3">Submit</button>
-  
-                            <div id="g_id_onload"
-                                data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                                data-login_uri="https://your.domain/your_login_endpoint"
-                                data-auto_prompt="false">
-                            </div>
-                            <div className="g_id_signin mb-3"
-                                data-type="standard"
-                                data-size="large"
-                                data-theme="outline"
-                                data-text="sign_in_with"
-                                data-shape="rectangular"
-                                data-logo_alignment="left">
-                            </div>
-                            
-                            <div  className="form-text1 mb-3">Already have an account?</div>
-                            <div  className="form-text3 mb-3"><a  href="/login"><b>Sign in</b></a></div>
-                        </form>
-                    </div>
-                      
-                </div>
+            <div className="mb-3">
+              <input type="text" onChange={handleStudentId} value={studentid} placeholder="Student ID" autoComplete="student id" />
             </div>
-        </>
-    );
-     
-}
+            <div className="mb-3">
+              <input type="text" onChange={handleUniversity} value={university} placeholder="School/College/University" autoComplete="School" />
+            </div>
+            <div className="mb-3">
+              <input type="text" onChange={handleGraduationYear} value={graduationyear} placeholder="Graduation Year" autoComplete="Graduation Year" />
+            </div>
+          </>
+        )}
 
-export default UserRegistration; 
+        {/* Terms & Conditions */}
+        <div className="form-check">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            onChange={handleAgreeTermsChange}
+            checked={agreeTerms}
+            required
+            style={{ zIndex: 1 }}
+          />
+          <label className="form-check-label form-text" htmlFor="exampleCheck1"> I agree to the <b>Terms & Condition</b> </label>
+        </div>
+
+        {/* Privacy Policy */}
+        <div className="mb-3 form-check">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            onChange={handleAgreePrivacyChange}
+            checked={agreePrivacy}
+            required
+            style={{ zIndex: 1 }}
+          />
+          <label className="form-check-label form-text" htmlFor="exampleCheck2"> I agree to the <b>Privacy Policy</b></label>
+        </div>
+
+        <button type="submit" className="btn btn-dark">Submit</button>
+      </form>
+    </div>
+  );
+};
+
+export default UserRegistration;

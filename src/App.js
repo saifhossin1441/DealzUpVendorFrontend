@@ -22,6 +22,9 @@ import VendorCreateBanners from './pages/vendor/VendorCreateBanners';
 import VendorRegistration from './pages/vendor/VendorRegistration';
 import VendorLogin from './pages/vendor/VendorLogin';
 import VendorForgotPassword from './pages/vendor/VendorForgotPassword';
+import VendorVerification from './pages/vendor/VendorVerification';
+import VendorResetPassword from './pages/vendor/VendorResetPassword';
+import VendorAddToWallet from './pages/vendor/VendorAddToWallet';
 
 
 function App() {
@@ -50,11 +53,14 @@ function App() {
           <Route path="/registration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><UserRegistration /><Footer /></>} />
           <Route path="/ForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><ForgotPassword /><Footer /></>} />
           <Route path="/VendorLogin" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorLogin /><Footer /></>} />
+          <Route path="/VendorVerification" element={<><VendorVerification /></>} />
+          <Route path="/VendorResetPassword" element={<><VendorResetPassword /></>} />
           <Route path="/VendorRegistration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorRegistration /><Footer /></>} />
           {/* Vendors */}
           <Route path="/VendorForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorForgotPassword /><Footer /></>} />
           <Route path="/VendorDashboard" element={<VendorDashboard />} />
           <Route path="/VendorWallets" element={<VendorWallets />} />
+          <Route path="/VendorAddToWallet" element={<VendorAddToWallet />} />
           <Route path="/VendorProfile" element={<VendorProfile />} />
           <Route path="/VendorCreateBusiness" element={<VendorCreateBusiness />} />
           <Route path="/VendorCreateBusinessPagination" element={<VendorCreateBusinessPagination />} />

@@ -1,32 +1,66 @@
-import React, { useState} from 'react'
+import React, { useState } from 'react'
 /* eslint-disable-next-line no-unused-vars */
 import { Link } from 'react-router-dom';
 import loginImage from './../assets/images/login-side-image.jpg'
-import './../assets/css/login.css'; 
-import './../assets/css/styles.css'; 
+import './../assets/css/login.css';
+import './../assets/css/styles.css';
 
-const UserLogin = ()=>{
-    const[email, setEmail] = useState("");
-    const[password, setPassword] = useState("");
+const UserLogin = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
-      };
-    
-      const handlePasswordChange = (event) => {
+    };
+
+    const handlePasswordChange = (event) => {
         setPassword(event.target.value);
-      };
-    
-      const handleSubmit = (event) => {
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
         // Here you can perform authentication logic with the username and password
         console.log('Username:', email); //Testing purpose
         console.log('Password:', password);
-      };
-    
-    return(
+
+        const apiEndpoint = 'http://127.0.0.1:8000/auth/user/login/';
+
+
+        // Data to be sent
+        const data = {
+            username: email,
+            password: password,
+        };
+
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+            const result = await response.json();
+            console.log('Login successful:', result);
+            // Redirect to another page on successful login
+            // navigate('/VendorDashboard'); // 
+        }
+        catch (error) {
+
+            console.error('Error:', error);
+            setError('Invalid credentials. Please try again.');
+        }
+
+    };
+
+    return (
         <>
-        
+
             <div id="background-wrap">
                 <div className="bubble1 x1"></div>
                 <div className="bubble2 x2"></div>
@@ -51,28 +85,28 @@ const UserLogin = ()=>{
             </div>
             <div className="container element">
                 <div className="row justify-content-center">
-                <div className="custom_form_box column col-md-6 form_border_radius">
-                    <form className="" onSubmit={handleSubmit}>
+                    <div className="custom_form_box column col-md-6 form_border_radius">
+                        <form className="" onSubmit={handleSubmit}>
                             <h1 className='heading'>Sign in</h1>
                             <div className="mb-3">
-                                <input type="email"placeholder='Email' autoComplete="email" onChange={handleEmailChange}  value={email}  id="exampleInputEmail1" aria-describedby="emailHelp" />
+                                <input type="email" placeholder='User Name' autoComplete="email" onChange={handleEmailChange} value={email} id="exampleInputEmail1" aria-describedby="emailHelp" />
                                 <div id="emailHelp" className="form-text"></div>
                             </div>
                             <div className="mb-3">
-                                <input autoComplete="current-password"  placeholder="Password" onChange={handlePasswordChange}type="password" value={password} id="exampleInputPassword1" />
+                                <input autoComplete="current-password" placeholder="Password" onChange={handlePasswordChange} type="password" value={password} id="exampleInputPassword1" />
                             </div>
                             <div className=" form-check ">
                                 <input type="checkbox" className="form-check-input" id="exampleCheck1" />
                                 <label className="form-check-label form-text" htmlFor="exampleCheck1"> I agree to the <b>Terms & Condition</b> </label>
-                             </div>
-                            <div className="mb-3 form-check">
-                               <input type="checkbox" className="form-check-input" id="exampleCheck2" />
-                                <label className="form-check-label form-text" htmlFor="exampleCheck2"> I agree to the   <b> Privacy Policy</b></label>
-                            
                             </div>
-                            <div  className="form-text2 mb-3"><Link  to="/ForgotPassword">Forgot Password?</Link></div>
+                            <div className="mb-3 form-check">
+                                <input type="checkbox" className="form-check-input" id="exampleCheck2" />
+                                <label className="form-check-label form-text" htmlFor="exampleCheck2"> I agree to the   <b> Privacy Policy</b></label>
+
+                            </div>
+                            <div className="form-text2 mb-3"><Link to="/ForgotPassword">Forgot Password?</Link></div>
                             <button type="submit" className="btn btn-dark mb-3">Submit</button>
-  
+
                             <div id="g_id_onload"
                                 data-client_id="YOUR_GOOGLE_CLIENT_ID"
                                 data-login_uri="https://your.domain/your_login_endpoint"
@@ -86,14 +120,14 @@ const UserLogin = ()=>{
                                 data-shape="rectangular"
                                 data-logo_alignment="left">
                             </div>
-                            
-                            <div  className="form-text1 mb-3">Don't have an account?</div>
-                            <div  className="form-text3 mb-3"><Link  to="/registration">Create an account</Link></div>
+
+                            <div className="form-text1 mb-3">Don't have an account?</div>
+                            <div className="form-text3 mb-3"><Link to="/registration">Create an account</Link></div>
                         </form>
                     </div>
                     <div className="col-md-6 custom_shadow_box image_border_radius" >
-                        <img className='image-login' src={loginImage} alt="DealzUp login"/>
-                     </div>   
+                        <img className='image-login' src={loginImage} alt="DealzUp login" />
+                    </div>
                 </div>
             </div>
         </>

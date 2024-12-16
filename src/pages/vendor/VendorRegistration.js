@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as yup from 'yup'
 
 const VendorRegistration = () => {
     const [name, setName] = useState("");
@@ -10,8 +11,36 @@ const VendorRegistration = () => {
     const [phone, setPhone] = useState("");
     const [postalcode, setPostalCode] = useState("");
     const [password, setPassword] = useState("");
+    const [apartment, setApartment] = useState("");
     const [confirmpassword, setConfirmPassword] = useState("");
-    const [error, setError] = useState("")
+    const [error, setError] = useState("");
+
+
+    const schema = yup.object().shape({
+        full_name: yup.string().required("Full name is required"),
+        email: yup.string().email("Invalid email address").required("Email is required"),
+        address: yup.string().required("Address is required"),
+        apartment: yup.string().required(), // Optional field; allow null or empty
+        phone: yup
+            .string()
+            .matches(/^\d{10}$/, "Phone number must be 10 digits")
+            .required("Phone number is required"),
+        state: yup.string().required("State is required"),
+        pin: yup
+            .string()
+            .matches(/^\d{6}$/, "PIN must be 6 digits")
+            .required("PIN is required"),
+        password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+        confirm_password: yup
+            .string()
+            .oneOf([yup.ref('password'), null], "Passwords must match")
+            .required("Confirm password is required"),
+        city: yup.string().required("City is required"),
+        country: yup.string().required("Country is required"),
+    });
+
+
+
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -41,6 +70,10 @@ const VendorRegistration = () => {
         setPhone(event.target.value);
     };
 
+    const handleApartmentChange = (event) => {
+        setApartment(event.target.value);
+    };
+
     const handlePostalCodeChange = (event) => {
         setPostalCode(event.target.value);
     };
@@ -56,8 +89,8 @@ const VendorRegistration = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         // Here you can perform authentication logic with the username and password
-        console.log('Username:', email);
-        console.log('Password:', password);
+        // console.log('Username:', email);
+        // console.log('Password:', password);
 
         const apiEndpoint = 'http://127.0.0.1:8000/auth/vendors-registration/';
 
@@ -70,34 +103,38 @@ const VendorRegistration = () => {
             phone,
             state: province,
             pin: postalcode,
+            apartment,
             password,
             confirm_password: confirmpassword,
             city,
             country,
         };
+        schema.validate(data)
+            .then(valid => console.log(valid))
+            .catch(error => console.log(error));
 
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
+        // try {
+        //     const response = await fetch(apiEndpoint, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify(data),
+        //     });
 
-            if (!response.ok) {
-                throw new Error('Login failed');
-            }
-            const result = await response.json();
-            console.log('Login successful:', result);
-            // Redirect to another page on successful login
-            // navigate('/VendorDashboard'); // 
-        }
-        catch (error) {
+        //     if (!response.ok) {
+        //         throw new Error('Login failed');
+        //     }
+        //     const result = await response.json();
+        //     console.log('Login successful:', result);
+        //     // Redirect to another page on successful login
+        //     // navigate('/VendorDashboard'); // 
+        // }
+        // catch (error) {
 
-            console.error('Error:', error);
-            setError('Invalid credentials. Please try again.');
-        }
+        //     console.error('Error:', error);
+        //     setError('Invalid credentials. Please try again.');
+        // }
 
 
     };
@@ -142,8 +179,12 @@ const VendorRegistration = () => {
                                 <div id="emailHelp" className="form-text"></div>
                             </div>
                             <div className="mb-3">
+                                <input type="text" placeholder='Phone Number' onChange={handlePhoneChange} value={phone} />
+                                <div id="Phone" className="form-text"></div>
+                            </div>
+                            <div className="mb-3">
                                 {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
-                                <label htmlFor="select-container" class="form-label">Country</label>
+                                <label htmlFor="select-container" className="form-label">Country</label>
                                 <select id="select-container" value={country} onChange={handleCountryChange} >
                                     <option value="">Choose Country</option>
                                     <option value="Canada">Canada</option>
@@ -152,7 +193,7 @@ const VendorRegistration = () => {
                             </div>
                             <div className="mb-3">
                                 {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
-                                <label htmlFor="select-container" class="form-label">City</label>
+                                <label htmlFor="select-container" className="form-label">City</label>
                                 <select id="select-container" value={city} onChange={handleCityChange} >
                                     <option value="">Choose City</option>
                                     <option value="Toronto">Toronto</option>
@@ -161,7 +202,7 @@ const VendorRegistration = () => {
                             </div>
                             <div className="mb-3">
                                 {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
-                                <label htmlFor="select-container" class="form-label">Province</label>
+                                <label htmlFor="select-container" className="form-label">Province</label>
                                 <select id="select-container" value={province} onChange={handleProvinceChange} >
                                     <option value="">Choose Province</option>
                                     <option value="Ontario">Ontario</option>
@@ -170,15 +211,16 @@ const VendorRegistration = () => {
                             </div>
                             <div className="mb-3">
                                 <input type="text" placeholder='Address' onChange={handleAddressChange} value={address} />
-                                <div id="emailHelp" className="form-text"></div>
+                                <div id="Address" className="form-text"></div>
                             </div>
+
                             <div className="mb-3">
-                                <input type="text" placeholder='Phone Number' onChange={handlePhoneChange} value={phone} />
-                                <div id="emailHelp" className="form-text"></div>
+                                <input type="text" placeholder='Apartment' onChange={handleApartmentChange} value={apartment} />
+                                <div id="Apartment" className="form-text"></div>
                             </div>
                             <div className="mb-3">
                                 <input type="text" placeholder='Postalcode' onChange={handlePostalCodeChange} value={postalcode} />
-                                <div id="emailHelp" className="form-text"></div>
+                                <div id="Postalcode" className="form-text"></div>
                             </div>
                             <div className="mb-3">
                                 <input autoComplete="current-password" placeholder="Password" onChange={handlePasswordChange} type="password" value={password} id="exampleInputPassword1" />

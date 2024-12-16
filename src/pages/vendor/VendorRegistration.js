@@ -13,7 +13,7 @@ const VendorRegistration = () => {
     const [password, setPassword] = useState("");
     const [apartment, setApartment] = useState("");
     const [confirmpassword, setConfirmPassword] = useState("");
-    const [error, setError] = useState("");
+    // const [error, setError] = useState("");
 
 
     const schema = yup.object().shape({
@@ -91,8 +91,8 @@ const VendorRegistration = () => {
         // Here you can perform authentication logic with the username and password
         // console.log('Username:', email);
         // console.log('Password:', password);
-
-        const apiEndpoint = 'http://127.0.0.1:8000/auth/vendors-registration/';
+        // console.log(error)
+        // const apiEndpoint = 'http://127.0.0.1:8000/auth/vendors-registration/';
 
 
         // Data to be sent

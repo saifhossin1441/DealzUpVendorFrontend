@@ -60,6 +60,7 @@ const UserRegistration = () => {
         console.log('Username:', email);
         console.log('Password:', password);
         console.log('Is student:', isStudent);
+        console.log(error)
 
 
 

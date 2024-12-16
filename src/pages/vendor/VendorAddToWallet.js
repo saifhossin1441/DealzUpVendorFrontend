@@ -5,16 +5,16 @@ import Header from './../../components/vendors/Header';
 
 const VendorAddToWallet = () => {
 
-    const [email, setEmail] = useState("");
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-    };
+    // const [email, setEmail] = useState("");
+    // const handleEmailChange = (event) => {
+    //     setEmail(event.target.value);
+    // };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        // Here you can perform authentication logic with the username and password
-        console.log('Username:', email);
-    };
+    // const handleSubmit = (event) => {
+    //     event.preventDefault();
+    //     // Here you can perform authentication logic with the username and password
+    //     console.log('Username:', email);
+    // };
 
     return (
         <>

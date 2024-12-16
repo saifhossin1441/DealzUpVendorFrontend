@@ -23,7 +23,7 @@ const UserLogin = () => {
         // Here you can perform authentication logic with the username and password
         console.log('Username:', email); //Testing purpose
         console.log('Password:', password);
-
+        console.log(error)
         const apiEndpoint = 'http://127.0.0.1:8000/auth/user/login/';
 
 

@@ -13,7 +13,8 @@ const VendorRegistration = () => {
     const [password, setPassword] = useState("");
     const [apartment, setApartment] = useState("");
     const [confirmpassword, setConfirmPassword] = useState("");
-    // const [error, setError] = useState("");
+    const [isChecked, setIsChecked] = useState({ term1: false, term2: false });
+    const [error, setError] = useState({});
 
 
     const schema = yup.object().shape({
@@ -25,11 +26,11 @@ const VendorRegistration = () => {
             .string()
             .matches(/^\d{10}$/, "Phone number must be 10 digits")
             .required("Phone number is required"),
-        state: yup.string().required("State is required"),
+        state: yup.string().required("Province is required"),
         pin: yup
             .string()
-            .matches(/^\d{6}$/, "PIN must be 6 digits")
-            .required("PIN is required"),
+            .matches(/^\d{6}$/, "Postal Code must be 6 digits")
+            .required("Postal Code is required"),
         password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
         confirm_password: yup
             .string()
@@ -89,11 +90,7 @@ const VendorRegistration = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         // Here you can perform authentication logic with the username and password
-        // console.log('Username:', email);
-        // console.log('Password:', password);
-        // console.log(error)
-        // const apiEndpoint = 'http://127.0.0.1:8000/auth/vendors-registration/';
-
+        setError({})
 
         // Data to be sent
         const data = {
@@ -109,35 +106,94 @@ const VendorRegistration = () => {
             city,
             country,
         };
+
+
         schema.validate(data)
-            .then(valid => console.log(valid))
-            .catch(error => console.log(error));
+            .then(valid => {
+                console.log(valid, error)
+                console.log(isChecked.term1, isChecked.term2)
+                if (!isChecked.term1 || !isChecked.term2) {
+                    setError(prevErrors => ({
+                        ...prevErrors,
+                        term1: !isChecked.term1 ? "You must agree to the Terms & Conditions" : null,
+                        term2: !isChecked.term2 ? "You must agree to the Privacy Policy" : null,
+                    }));
+                } else {
+                    // Clear checkbox-related errors if checkboxes are valid
+                    setError(prevErrors => ({
+                        ...prevErrors,
+                        term1: null,
+                        term2: null,
+                    }));
+                    SendDataToDatabase(data)
+                }
+            })
+            .catch(error => {
 
-        // try {
-        //     const response = await fetch(apiEndpoint, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(data),
-        //     });
+                const newErrors = {};
+                Object.keys(error.value).forEach(field => {
+                    if (error.value[field] === "") {
+                        newErrors[field] = `Required`;
+                    }
+                    if (error.params.path) {
+                        console.log("first")
+                        newErrors[error.params.path] = error.errors
+                    }
+                });
+                setError(newErrors);
+            });
 
-        //     if (!response.ok) {
-        //         throw new Error('Login failed');
-        //     }
-        //     const result = await response.json();
-        //     console.log('Login successful:', result);
-        //     // Redirect to another page on successful login
-        //     // navigate('/VendorDashboard'); // 
-        // }
-        // catch (error) {
-
-        //     console.error('Error:', error);
-        //     setError('Invalid credentials. Please try again.');
-        // }
 
 
     };
+
+
+    const SendDataToDatabase = async (data) => {
+        console.log(data)
+        const apiEndpoint = 'http://127.0.0.1:8000/auth/vendors-registration/';
+
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const result = await response.json()
+                setError(result)
+            } else {
+                const result = await response.json();
+                console.log('Registration successful:', result);
+                // Redirect to another page on successful login
+                // navigate('/VendorDashboard'); // 
+            }
+            console.log(error)
+
+        }
+        catch (error) {
+
+            console.error('Error:', error);
+            throw new Error('Server Down');
+        }
+    }
+    const handleCheckboxChange = (e, term) => {
+        console.log('t', term, e.target.checked);
+        setIsChecked(prevState => ({
+            ...prevState,
+            [term]: e.target.checked,
+        }));
+
+        // Clear the error when the checkbox is checked
+        if (e.target.checked) {
+            setError(prevErrors => ({
+                ...prevErrors,
+                [term]: false,
+            }));
+        }
+    }
 
     return (
         <>
@@ -171,16 +227,16 @@ const VendorRegistration = () => {
                                 <h1 style={{ textAlign: 'center' }}> Vendor Sign Up</h1>
                             </div>
                             <div className="mb-3">
-                                <input type="text" placeholder='Name' autoComplete="name" onChange={handleNameChange} value={name} id="exampleInputName" />
-                                <div id="Name" className="form-text"></div>
+                                <input type="text" placeholder='Full Name' autoComplete="name" onChange={handleNameChange} value={name} id="exampleInputName" />
+                                {error.full_name && <div id="Name" className="form-text2">{error.full_name}</div>}
                             </div>
                             <div className="mb-3">
-                                <input type="email" placeholder='Email' autoComplete="email" onChange={handleEmailChange} value={email} id="exampleInputEmail1" aria-describedby="emailHelp" />
-                                <div id="emailHelp" className="form-text"></div>
+                                <input type="email" placeholder='Email' autoComplete="email" onChange={handleEmailChange} value={email} aria-describedby="emailHelp" />
+                                {error.email && <div id="emailHelp" className="form-text2">{error.email}</div>}
                             </div>
                             <div className="mb-3">
                                 <input type="text" placeholder='Phone Number' onChange={handlePhoneChange} value={phone} />
-                                <div id="Phone" className="form-text"></div>
+                                {error.phone && <div id="Phone" className="form-text2">{error.phone}</div>}
                             </div>
                             <div className="mb-3">
                                 {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
@@ -190,6 +246,7 @@ const VendorRegistration = () => {
                                     <option value="Canada">Canada</option>
                                     <option value="India">India</option>
                                 </select>
+                                {error.country && <div id="Phone" className="form-text2">{error.country}</div>}
                             </div>
                             <div className="mb-3">
                                 {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
@@ -199,6 +256,7 @@ const VendorRegistration = () => {
                                     <option value="Toronto">Toronto</option>
                                     <option value="Kitchener">Kitchener</option>
                                 </select>
+                                {error.city && <div id="Phone" className="form-text2">{error.city}</div>}
                             </div>
                             <div className="mb-3">
                                 {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
@@ -208,35 +266,38 @@ const VendorRegistration = () => {
                                     <option value="Ontario">Ontario</option>
                                     <option value="Alberta">Alberta</option>
                                 </select>
+                                {error.state && <div id="Phone" className="form-text2">{error.state}</div>}
                             </div>
                             <div className="mb-3">
                                 <input type="text" placeholder='Address' onChange={handleAddressChange} value={address} />
-                                <div id="Address" className="form-text"></div>
+                                {error.address && <div id="Address" className="form-text2">{error.address}</div>}
                             </div>
 
                             <div className="mb-3">
                                 <input type="text" placeholder='Apartment' onChange={handleApartmentChange} value={apartment} />
-                                <div id="Apartment" className="form-text"></div>
+                                {error.apartment && <div id="Apartment" className="form-text2">{error.apartment}</div>}
                             </div>
                             <div className="mb-3">
                                 <input type="text" placeholder='Postalcode' onChange={handlePostalCodeChange} value={postalcode} />
-                                <div id="Postalcode" className="form-text"></div>
+                                {error.pin && <div id="Postalcode" className="form-text2">{error.pin}</div>}
                             </div>
                             <div className="mb-3">
-                                <input autoComplete="current-password" placeholder="Password" onChange={handlePasswordChange} type="password" value={password} id="exampleInputPassword1" />
+                                <input autoComplete="current-password" placeholder="Password" onChange={handlePasswordChange} type="password" value={password} />
+                                {error.password && <div id="Password" className="form-text2">{error.password}</div>}
                             </div>
                             <div className="mb-3">
-                                <input autoComplete="current-password" placeholder="Confirm Password" onChange={handleConfirmPasswordChange} type="password" value={confirmpassword} id="exampleInputConfirmPassword1" />
+                                <input autoComplete="current-password" placeholder="Confirm Password" onChange={handleConfirmPasswordChange} type="password" value={confirmpassword} />
+                                {error.confirm_password && <div id="ConfirmPassword" className="form-text2">{error.confirm_password}</div>}
                             </div>
 
 
 
-                            <div className=" form-check ">
-                                <input type="checkbox" className="form-check-input" id="exampleCheck1" />
+                            <div className={"form-check"}>
+                                <input type="checkbox" className={`form-check-input ${error.term1 ? 'is-invalid' : ''}`} id="exampleCheck1" onChange={(e) => handleCheckboxChange(e, 'term1')} checked={isChecked.term1} />
                                 <label className="form-check-label form-text" htmlFor="exampleCheck1"> I agree to the <b>Terms & Condition</b> </label>
                             </div>
                             <div className="mb-3 form-check">
-                                <input type="checkbox" className="form-check-input" id="exampleCheck2" />
+                                <input type="checkbox" className={`form-check-input ${error.term2 ? 'is-invalid' : ''}`} id="exampleCheck2" onChange={(e) => handleCheckboxChange(e, 'term2')} checked={isChecked.term2} />
                                 <label className="form-check-label form-text" htmlFor="exampleCheck2"> I agree to the   <b> Privacy Policy</b></label>
 
                             </div>
@@ -263,8 +324,8 @@ const VendorRegistration = () => {
                         </form>
                     </div>
 
-                </div>
-            </div>
+                </div >
+            </div >
         </>
     )
 }

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 import * as yup from 'yup'
 
 const VendorRegistration = () => {
@@ -15,29 +17,32 @@ const VendorRegistration = () => {
     const [confirmpassword, setConfirmPassword] = useState("");
     const [isChecked, setIsChecked] = useState({ term1: false, term2: false });
     const [error, setError] = useState({});
-
+    const navigate = useNavigate();
 
     const schema = yup.object().shape({
-        full_name: yup.string().required("Full name is required"),
-        email: yup.string().email("Invalid email address").required("Email is required"),
-        address: yup.string().required("Address is required"),
-        apartment: yup.string().required(), // Optional field; allow null or empty
-        phone: yup
-            .string()
-            .matches(/^\d{10}$/, "Phone number must be 10 digits")
-            .required("Phone number is required"),
-        state: yup.string().required("Province is required"),
-        pin: yup
-            .string()
-            .matches(/^\d{6}$/, "Postal Code must be 6 digits")
-            .required("Postal Code is required"),
-        password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
         confirm_password: yup
             .string()
+            .required("Confirm password is required")
             .oneOf([yup.ref('password'), null], "Passwords must match")
-            .required("Confirm password is required"),
+        ,
+        password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
+        pin: yup
+            .string()
+            .required("Postal Code is required")
+            .matches(/^\d{6}$/, "Postal Code must be 6 digits")
+        ,
+        apartment: yup.string().required(), // Optional field; allow null or empty
+        address: yup.string().required("Address is required"),
+        state: yup.string().required("Province is required"),
         city: yup.string().required("City is required"),
         country: yup.string().required("Country is required"),
+        phone: yup
+            .string()
+            .required("Phone number is required")
+            .matches(/^\d{10}$/, "Phone number must be 10 digits")
+        ,
+        email: yup.string().required("Email is required").email("Invalid email address"),
+        full_name: yup.string().required("Full name is required"),
     });
 
 
@@ -131,10 +136,8 @@ const VendorRegistration = () => {
             .catch(error => {
 
                 const newErrors = {};
+                console.log(error)
                 Object.keys(error.value).forEach(field => {
-                    if (error.value[field] === "") {
-                        newErrors[field] = `Required`;
-                    }
                     if (error.params.path) {
                         console.log("first")
                         newErrors[error.params.path] = error.errors
@@ -168,7 +171,7 @@ const VendorRegistration = () => {
                 const result = await response.json();
                 console.log('Registration successful:', result);
                 // Redirect to another page on successful login
-                // navigate('/VendorDashboard'); // 
+                navigate('/VendorLogin'); // 
             }
             console.log(error)
 
@@ -176,7 +179,7 @@ const VendorRegistration = () => {
         catch (error) {
 
             console.error('Error:', error);
-            throw new Error('Server Down');
+            toast('Server Down. Please contact Administrator');
         }
     }
     const handleCheckboxChange = (e, term) => {
@@ -323,7 +326,7 @@ const VendorRegistration = () => {
                             <div className="form-text3 mb-3"><a href="/login"><b>Sign in</b></a></div>
                         </form>
                     </div>
-
+                    <ToastContainer />
                 </div >
             </div >
         </>

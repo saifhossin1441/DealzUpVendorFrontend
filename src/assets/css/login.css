@@ -204,6 +204,7 @@ input[type=email]:focus{
     border-radius: 0px 0px 10px 0px;
   }
 }
+
 .custom_form_box{
   background-color: #E7E7E7;
   padding: 40px 40px !important; 

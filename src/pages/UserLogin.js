@@ -4,11 +4,21 @@ import { Link } from 'react-router-dom';
 import loginImage from './../assets/images/login-side-image.jpg'
 import './../assets/css/login.css';
 import './../assets/css/styles.css';
+import * as yup from 'yup'
 
 const UserLogin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isChecked, setIsChecked] = useState({ term1: false, term2: false });
     const [error, setError] = useState("");
+    const [termerror, setTermError] = useState("");
+    // const navigate = useNavigate();
+
+    const schema = yup.object().shape({
+        password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
+        username: yup.string().required("UserName is required"),
+    });
+
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -17,22 +27,8 @@ const UserLogin = () => {
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
     };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        // Here you can perform authentication logic with the username and password
-        console.log('Username:', email); //Testing purpose
-        console.log('Password:', password);
-        console.log(error)
+    const ApiCall = async (data) => {
         const apiEndpoint = 'http://127.0.0.1:8000/auth/user/login/';
-
-
-        // Data to be sent
-        const data = {
-            username: email,
-            password: password,
-        };
-
         try {
             const response = await fetch(apiEndpoint, {
                 method: 'POST',
@@ -48,15 +44,70 @@ const UserLogin = () => {
             const result = await response.json();
             console.log('Login successful:', result);
             // Redirect to another page on successful login
-            // navigate('/VendorDashboard'); // 
+            // navigate('/LandingPage'); 
         }
         catch (error) {
 
             console.error('Error:', error);
+            console.log(JSON.stringify(error))
             setError('Invalid credentials. Please try again.');
         }
 
+    }
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        // Here you can perform authentication logic with the username and password
+        console.log('Username:', email); //Testing purpose
+        console.log('Password:', password);
+        setError("")
+
+        // Data to be sent
+        const data = {
+            username: email,
+            password: password,
+        };
+        schema.validate(data)
+            .then(valid => {
+                console.log(valid, error)
+                console.log(isChecked.term1, isChecked.term2)
+                if (!isChecked.term1 || !isChecked.term2) {
+                    setTermError(prevErrors => ({
+                        ...prevErrors,
+                        term1: !isChecked.term1 ? "You must agree to the Terms & Conditions" : null,
+                        term2: !isChecked.term2 ? "You must agree to the Privacy Policy" : null,
+                    }));
+                } else {
+                    // Clear checkbox-related errors if checkboxes are valid
+                    setTermError(prevErrors => ({
+                        ...prevErrors,
+                        term1: null,
+                        term2: null,
+                    }));
+                    ApiCall(data)
+                }
+            })
+            .catch(error => {
+                console.log(JSON.stringify(error))
+                setError(error.errors);
+            });
     };
+
+    const handleCheckboxChange = (e, term) => {
+        console.log('t', term, e.target.checked);
+        setIsChecked(prevState => ({
+            ...prevState,
+            [term]: e.target.checked,
+        }));
+
+        // Clear the error when the checkbox is checked
+        if (e.target.checked) {
+            setTermError(prevErrors => ({
+                ...prevErrors,
+                [term]: false,
+            }));
+        }
+    }
 
     return (
         <>
@@ -88,19 +139,21 @@ const UserLogin = () => {
                     <div className="custom_form_box column col-md-6 form_border_radius">
                         <form className="" onSubmit={handleSubmit}>
                             <h1 className='heading'>Sign in</h1>
+                            {error && <div className="alert alert-danger">{error}</div>}
+
                             <div className="mb-3">
-                                <input type="email" placeholder='User Name' autoComplete="email" onChange={handleEmailChange} value={email} id="exampleInputEmail1" aria-describedby="emailHelp" />
+                                <input type="text" placeholder='User Name' autoComplete="email" onChange={handleEmailChange} value={email} id="exampleInputEmail1" aria-describedby="emailHelp" />
                                 <div id="emailHelp" className="form-text"></div>
                             </div>
                             <div className="mb-3">
                                 <input autoComplete="current-password" placeholder="Password" onChange={handlePasswordChange} type="password" value={password} id="exampleInputPassword1" />
                             </div>
                             <div className=" form-check ">
-                                <input type="checkbox" className="form-check-input" id="exampleCheck1" />
+                                <input type="checkbox" className={`form-check-input ${termerror.term1 ? 'is-invalid' : ''}`} id="exampleCheck1" onChange={(e) => handleCheckboxChange(e, 'term1')} checked={isChecked.term1} />
                                 <label className="form-check-label form-text" htmlFor="exampleCheck1"> I agree to the <b>Terms & Condition</b> </label>
                             </div>
                             <div className="mb-3 form-check">
-                                <input type="checkbox" className="form-check-input" id="exampleCheck2" />
+                                <input type="checkbox" className={`form-check-input ${termerror.term2 ? 'is-invalid' : ''}`} id="exampleCheck2" onChange={(e) => handleCheckboxChange(e, 'term2')} checked={isChecked.term2} />
                                 <label className="form-check-label form-text" htmlFor="exampleCheck2"> I agree to the   <b> Privacy Policy</b></label>
 
                             </div>

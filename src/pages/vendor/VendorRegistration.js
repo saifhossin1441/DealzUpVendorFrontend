@@ -153,7 +153,7 @@ const VendorRegistration = () => {
 
     const SendDataToDatabase = async (data) => {
         console.log(data)
-        const apiEndpoint = 'http://127.0.0.1:8000/auth/vendors-registration/';
+        const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/vendors-registration/`;
 
         try {
             const response = await fetch(apiEndpoint, {

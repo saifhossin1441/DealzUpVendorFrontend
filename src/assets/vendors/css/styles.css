@@ -333,8 +333,18 @@ background: #EE5C74 !important;
   flex-flow: column;
   border: 1px solid #f9f9f9;
   border-radius: 20px;
-  
-  
+  /* align-self: center;
+  width: 400px; */
+}
+.uploadGallerySection2{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+  border: 1px solid #f9f9f9;
+  border-radius: 20px;
+  /* align-self: center; */
+  width: 400px;
 }
 
 .uploadGallerySection p{

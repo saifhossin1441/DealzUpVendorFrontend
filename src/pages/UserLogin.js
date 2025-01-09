@@ -28,7 +28,7 @@ const UserLogin = () => {
         setPassword(event.target.value);
     };
     const ApiCall = async (data) => {
-        const apiEndpoint = 'http://127.0.0.1:8000/auth/user/login/';
+        const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/user/login/`;
         try {
             const response = await fetch(apiEndpoint, {
                 method: 'POST',

@@ -25,7 +25,7 @@ import VendorForgotPassword from './pages/vendor/VendorForgotPassword';
 import VendorVerification from './pages/vendor/VendorVerification';
 import VendorResetPassword from './pages/vendor/VendorResetPassword';
 import VendorAddToWallet from './pages/vendor/VendorAddToWallet';
-
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   const [mode, setMode] = useState('light'); // default appearance
@@ -47,6 +47,7 @@ function App() {
   return (
     <>
       <Router>
+        <ToastContainer />
         <Routes>
           <Route path="/" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><LandingPage /><Footer /></>} />
           <Route path="/login" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><UserLogin /><Footer /></>} />

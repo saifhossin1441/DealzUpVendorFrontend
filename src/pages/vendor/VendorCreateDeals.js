@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
-import './../../assets/vendors/css/styles.css'; 
+import React, { useState } from "react";
+import './../../assets/vendors/css/styles.css';
 import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
 import images from './../../assets/images/uploadGallery.png';
+import * as yup from 'yup'
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
 
 const styles = {
     form: {
@@ -48,7 +51,7 @@ const styles = {
         padding: '20px',
         border: '1px solid #F9F9F9',
         background: 'transparent',
-        color: 'white !important',
+        color: 'white',
         borderRadius: '8px',
     },
     select: {
@@ -80,18 +83,120 @@ const styles = {
 
 const VendorCreateDeals = () => {
     const [image, setImage] = useState(null);
-    const [fileName, setFileName] = useState('');
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [category, setCategory] = useState('');
-    const [subCategory, setSubCategory] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState({})
+    const [formData, setFormData] = useState({
+        category: '',
+        name: '',
+        descripton: '',
+        on_click: '',
+        active: true,
+        image: null,
+        start_date: '',
+        end_date: ''
+    });
 
-    useEffect(() => {
-        // Optional: Fetch initial data if needed
-    }, []);
+    const navigate = useNavigate()
+
+    const schema = yup.object().shape({
+        category: yup.string().required("Category is required"),
+        descripton: yup.string().required("Description is required"),
+        image: yup.string().required("Image is required"),
+        name: yup.string().required("Flyer name is required"),
+        start_date: yup
+            .string()
+            .required("Start Date is required")
+            .test(
+                "is-future-date",
+                "Start Date must be today or in the future",
+                (value) => value && new Date(value).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0)
+            ),
+        end_date: yup
+            .string()
+            .required("End Date is required")
+            .test(
+                "is-future-date",
+                "End Date must be today or in the future",
+                (value) => value && new Date(value).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0)
+            ).when("start_date", (start_date, schema) =>
+                schema.test(
+                    "is-after-start-date",
+                    "End Date must be on or after Start Date",
+                    (end_date) =>
+                        end_date &&
+                        new Date(end_date).setHours(0, 0, 0, 0) >=
+                        new Date(start_date).setHours(0, 0, 0, 0)
+                )
+            )
+    });
+
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Form Data:', formData);
+        schema.validate(formData)
+            .then(valid => {
+                console.log(valid, error)
+                setError({});
+                SendDataToDatabase(formData)
+            })
+            .catch(error => {
+
+                const newErrors = {};
+                console.log(error)
+                Object.keys(error.value).forEach(field => {
+                    if (error.params.path) {
+                        console.log("first")
+                        newErrors[error.params.path] = error.errors
+                    }
+                });
+                setError(newErrors);
+            });
+
+    };
+
+    const SendDataToDatabase = async (data) => {
+        // console.log(data)
+        const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/deals/`;
+        let formData = new FormData();
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== null) { // Only append non-null values
+                formData.append(key, value);
+            }
+        });
+        for (let pair of formData.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
+        }
+
+
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const result = await response.json()
+                console.log(result, "error result")
+                setError(result)
+            } else {
+                const result = await response.json();
+                console.log('Business Registration successful:', result);
+                // Redirect to another page on successful login
+                toast('Deal Uploaded Successfully')
+                // Redirect to another page on successful login
+                navigate('/VendorDeals');
+                // navigate('/VendorLogin'); 
+            }
+            console.log(error, "Business Errror")
+
+        }
+        catch (error) {
+
+            console.error('Error:', error);
+            setError('Server Down. Please contact Administrator');
+        }
+    }
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
@@ -99,44 +204,26 @@ const VendorCreateDeals = () => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setImage(reader.result);
+                setFormData({
+                    ...formData,
+                    image: file
+                });
             };
             reader.readAsDataURL(file);
-            setFileName(file.name); // Set the file name
+            // setFileName(file.name); // Set the file name
         } else {
             alert('File size should be less than 1MB');
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleChange = (e) => {
+        const { name, value } = e.target;
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("category", category);
-        formData.append("sub_category", subCategory);
-        formData.append("start_date", startDate);
-        formData.append("end_date", endDate);
-        if (image) {
-            formData.append("image", image);
-        }
-
-        setLoading(true);
-
-        fetch("http://35.183.28.28:8080/deals/deals/", {
-            method: "POST",
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Success:", data);
-            setLoading(false);
-            // Optional: Reset form or handle success
-        })
-        .catch(error => {
-            console.error("Error posting the deal:", error);
-            setLoading(false);
+        setFormData({
+            ...formData,
+            [name]: value
         });
+
     };
 
     return (
@@ -174,9 +261,10 @@ const VendorCreateDeals = () => {
                                     onChange={handleImageUpload}
                                 />
                             </div>
-                            {fileName && <p style={styles.fileName}>{fileName}</p>} {/* Display file name */}
+                            {/* {fileName && <p style={styles.fileName}>{fileName}</p>} Display file name */}
                             <p>Maximum Size: 1MB</p>
                             <p>Size Dimension: 1920 x 1080</p>
+                            {error.image && <div id="Error" className="form-text2">{error.image}</div>}
                         </div>
 
                         <form onSubmit={handleSubmit} style={styles.form}>
@@ -184,8 +272,8 @@ const VendorCreateDeals = () => {
                                 name="category"
                                 required
                                 style={styles.select}
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
+                                value={formData.category}
+                                onChange={handleChange}
                             >
                                 <option value="" disabled>Select Category</option>
                                 <option value="Grocery">Grocery</option>
@@ -193,13 +281,14 @@ const VendorCreateDeals = () => {
                                 <option value="Fashion">Fashion</option>
                                 <option value="Education">Education</option>
                             </select>
+                            {error.category && <div id="Error" className="form-text2">{error.category}</div>}
 
                             <select
                                 name="sub_category"
                                 required
                                 style={styles.select}
-                                value={subCategory}
-                                onChange={(e) => setSubCategory(e.target.value)}
+                                value={formData.category}
+                                onChange={handleChange}
                             >
                                 <option value="" disabled>Select Sub Category</option>
                                 <option value="Grocery">Grocery</option>
@@ -214,19 +303,21 @@ const VendorCreateDeals = () => {
                                 placeholder="Title"
                                 required
                                 style={styles.input}
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                onChange={handleChange} value={formData.name}
                             />
+                            {error.name && <div id="Error" className="form-text2">{error.name}</div>}
+
 
                             <input
                                 type="text"
-                                name="description"
+                                name="descripton"
                                 placeholder="Description"
                                 required
                                 style={styles.input}
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={handleChange} value={formData.descripton}
                             />
+                            {error.descripton && <div id="Error" className="form-text2">{error.descripton}</div>}
+
 
                             <div className="row">
                                 <div className="col-md-6">
@@ -234,31 +325,33 @@ const VendorCreateDeals = () => {
                                     <input
                                         type="date"
                                         id="startDate"
-                                        name="startDate"
+                                        name="start_date"
                                         required
                                         style={styles.input}
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
+                                        onChange={handleChange} value={formData.start_date}
                                     />
-                                </div>  
+                                </div>
+                                {error.start_date && <div id="Error" className="form-text2">{error.start_date}</div>}
+
                                 <div className="col-md-6">
                                     <label htmlFor="endDate">End Date</label>
                                     <input
                                         type="date"
                                         id="endDate"
-                                        name="endDate"
+                                        name="end_date"
                                         required
                                         style={styles.input}
-                                        value={endDate}
-                                        onChange={(e) => setEndDate(e.target.value)}
+                                        onChange={handleChange} value={formData.end_date}
                                     />
-                                </div>                          
+                                </div>
+                                {error.end_date && <div id="Error" className="form-text2">{error.end_date}</div>}
                             </div>
 
-                            <button type="submit" style={styles.submitButton} disabled={loading}>
-                                {loading ? "Submitting..." : "Submit"}
+                            <button type="submit" style={styles.submitButton}>
+                                Submit
                             </button>
                         </form>
+                        <ToastContainer />
                     </div>
                 </div>
             </div>

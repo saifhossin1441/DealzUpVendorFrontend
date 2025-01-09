@@ -2,10 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Header = (props) => {
+  let vendorInfo = localStorage.getItem('vendorInfo');
+  if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
+  vendorInfo = JSON.parse(vendorInfo);
+  console.log(vendorInfo?.vendor?.full_name)
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-body-dark fixed-top" style={{width:'100%', backgroundColor:'#784BF6'}}>
+    <nav className="navbar navbar-expand-lg navbar-light bg-body-dark fixed-top" style={{ width: '100%', backgroundColor: '#784BF6' }}>
       <div className="container-fluid">
-       
+
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -14,23 +18,23 @@ const Header = (props) => {
             <li className="nav-item">
               <a className="nav-link active" aria-current="page" href="/">Home</a>
             </li>
-            
+
           </ul>
           <form className="d-flex me-3" role="search">
-            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-            <button className="btn btn-outline-success"  style={{borderColor:'#fff',color:'#fff'}} type="submit">Search</button>
-            
+            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+            <button className="btn btn-outline-success" style={{ borderColor: '#fff', color: '#fff' }} type="submit">Search</button>
+
           </form>
-          
+
           <ul className="navbar-nav">
             <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" style={{borderRadius:'10px'}} href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Saif
+              <a className="nav-link dropdown-toggle" style={{ borderRadius: '10px' }} href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {vendorInfo?.vendor?.full_name}
               </a>
               <ul className="dropdown-menu dropdown-menu-end">
                 <li><Link className="dropdown-item" to="/VendorProfile">Profile</Link></li>
                 <li><Link className="dropdown-item" to="/VendorDashboard">Dashboard</Link></li>
-                <li><hr className="dropdown-divider"/></li>
+                <li><hr className="dropdown-divider" /></li>
                 <li><a className="dropdown-item" href="/">Logout</a></li>
               </ul>
             </li>

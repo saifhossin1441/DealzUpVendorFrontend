@@ -143,7 +143,7 @@ const UserRegistration = () => {
 
     const SendDataToDatabase = async (data) => {
 
-        const apiEndpoint = 'http://127.0.0.1:8000/auth/register/';
+        const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/register/`;
 
 
         // Data to be sent

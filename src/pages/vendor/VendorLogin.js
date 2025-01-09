@@ -30,7 +30,7 @@ const VendorLogin = () => {
 
     const ApiCall = async (data) => {
         // API endpoint for login
-        const apiEndpoint = 'http://127.0.0.1:8000/auth/vendor-login/';
+        const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/vendor-login/`;
 
         try {
             const response = await fetch(apiEndpoint, {
@@ -46,8 +46,10 @@ const VendorLogin = () => {
             }
             const result = await response.json();
             console.log('Login successful:', result);
+
+            localStorage.setItem('vendorInfo', JSON.stringify(result))
             // Redirect to another page on successful login
-            navigate('/VendorDashboard'); // 
+            navigate('/VendorCreateBusiness'); // 
         }
         catch (error) {
             console.error('Error:', error);

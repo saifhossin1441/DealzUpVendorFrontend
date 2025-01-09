@@ -4,7 +4,7 @@ import Header from './../../components/vendors/Header';
 // import flyerImg1 from './../../assets/vendors/images/flyers/1.png';
 import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/flyers/`;
 const VendorFlyers = () => {

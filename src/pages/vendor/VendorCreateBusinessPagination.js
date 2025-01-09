@@ -277,7 +277,9 @@ const VendorCreateBusinessPagination = () => {
 
         SendDataToDatabase(formData)
 
-
+        if (!verified) {
+            setVerified(true)
+        }
     };
 
     const SendDataToDatabase = async (data) => {

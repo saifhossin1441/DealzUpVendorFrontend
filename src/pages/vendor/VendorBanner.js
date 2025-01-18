@@ -39,6 +39,9 @@ const VendorBanners = () => {
                                     <h3>{banner.name}</h3>
                                     <p>Start Date : {banner.start_date} <br /> End Date  &nbsp;: {banner.end_date}</p>
                                     <p>{banner.descripton}</p>
+                                    <button className="heart-button" >
+                                        ❤️
+                                    </button>
                                 </div>
                             ))}
 

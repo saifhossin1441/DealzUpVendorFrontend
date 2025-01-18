@@ -6,14 +6,17 @@ const Sidebar = () => {
   return (
     <div className="col-md-2">
       <div className="sidenav ">
-      <Link to="/VendorDashboard">Dashboard</Link>
-        <a href="/VendorFlyers">Flyer</a>
+        <Link to="/VendorDashboard">Dashboard</Link>
+        <a href="/VendorFlyers">Flyers</a>
         <a href="/VendorDeals">Deals</a>
-        <Link to="/VendorWallets">Wallets</Link>
+        <a href="/VendorOffers">Offers</a>
+        <a href="/VendorDeals">Banners</a>
+        <a href="/VendorWishes">WishList</a>
+        <Link to="/VendorBanners">Wallets</Link>
         <a href="/VendorCreateBusiness">Business</a>
         <div className="upgrade-box">
-          Upgrade Dealzup<br/>
-          Enjoy 2 month <br/> free Trial!
+          Upgrade Dealzup<br />
+          Enjoy 2 month <br /> free Trial!
         </div>
       </div>
     </div>

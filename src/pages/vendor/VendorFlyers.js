@@ -65,9 +65,9 @@ const VendorFlyers = () => {
                                     <h3>{flyer.name}</h3>
                                     <p>Start Date : {flyer.start_date} <br /> End Date  &nbsp;: {flyer.end_date}</p>
                                     <p>{flyer.descripton}</p>
-                                    <button className="heart-button" onClick={() => addToWishList(flyer.id)} >
+                                    {/* <button className="heart-button" onClick={() => addToWishList(flyer.id)} >
                                         ❤️
-                                    </button>
+                                    </button> */}
                                 </div>
                             ))}
                             {/* <div class="flyers_wrap">

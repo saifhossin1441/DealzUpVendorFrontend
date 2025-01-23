@@ -10,9 +10,9 @@ const Sidebar = () => {
         <a href="/VendorFlyers">Flyers</a>
         <a href="/VendorDeals">Deals</a>
         <a href="/VendorOffers">Offers</a>
-        <a href="/VendorDeals">Banners</a>
-        <a href="/VendorWishes">WishList</a>
-        <Link to="/VendorBanners">Wallets</Link>
+        <a href="/VendorBanners">Banners</a>
+        {/* <a href="/VendorWishes">WishList</a> */}
+        {/* <Link to="/VendorBanners">Wallets</Link> */}
         <a href="/VendorCreateBusiness">Business</a>
         <div className="upgrade-box">
           Upgrade Dealzup<br />

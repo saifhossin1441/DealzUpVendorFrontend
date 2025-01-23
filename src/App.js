@@ -27,6 +27,7 @@ import VendorResetPassword from './pages/vendor/VendorResetPassword';
 import VendorAddToWallet from './pages/vendor/VendorAddToWallet';
 import { ToastContainer } from 'react-toastify'
 import VendorWishes from './pages/vendor/VendorWishes';
+import MembershipPlan from './pages/vendor/MembershipPlan';
 
 function App() {
   const [mode, setMode] = useState('light'); // default appearance
@@ -75,6 +76,7 @@ function App() {
           <Route path="/VendorBanners" element={<VendorBanners />} />
           <Route path="/VendorCreateBanners" element={<VendorCreateBanners />} />
           <Route path="/VendorWishes" element={<VendorWishes />} />
+          <Route path="/VendorMembershipPlan" element={<MembershipPlan />} />
         </Routes>
       </Router>
     </>

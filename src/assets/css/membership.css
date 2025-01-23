@@ -1,0 +1,122 @@
+/* General styles */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  /* background: linear-gradient(135deg, #6f42c1, #0d6efd, #6610f2); */
+  color: #fff;
+}
+
+.plans-container {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 80px;
+}
+
+.plans-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Card styles */
+.plan-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 50px;
+  width: 250px;
+  text-align: left;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plan-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.4);
+}
+
+.most-popular {
+  background: linear-gradient(135deg, #6e3ef2, #8a4ef4);
+  border-color: transparent;
+  position: relative;
+  color: #fff;
+}
+
+.most-popular::after {
+  content: "Most Popular";
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  background-color: #f9b208;
+  color: #24243e;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.plan-card h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.plan-card .price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f9b208;
+  margin-bottom: 15px;
+}
+
+.plan-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.plan-card li {
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: #ddd;
+}
+
+/* Button styles */
+.next-button {
+  margin-top: 30px;
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #e50914;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.next-button:hover {
+  background-color: #b20710;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .plans-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .plan-card {
+    width: 90%;
+  }
+}

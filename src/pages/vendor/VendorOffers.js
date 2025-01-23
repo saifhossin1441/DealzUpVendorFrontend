@@ -40,9 +40,9 @@ const VendorOffers = () => {
                                     <h3>{offer.name}</h3>
                                     <p>Start Date : {offer.start_date} <br /> End Date  &nbsp;: {offer.end_date}</p>
                                     <p>{offer.descripton}</p>
-                                    <button className="heart-button" >
+                                    {/* <button className="heart-button" >
                                         ❤️
-                                    </button>
+                                    </button> */}
                                 </div>
                             ))}
 

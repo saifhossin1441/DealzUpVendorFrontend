@@ -22,12 +22,19 @@ import VendorCreateBanners from './pages/vendor/VendorCreateBanners';
 import VendorRegistration from './pages/vendor/VendorRegistration';
 import VendorLogin from './pages/vendor/VendorLogin';
 import VendorForgotPassword from './pages/vendor/VendorForgotPassword';
+
+import VendorAddToWallet from './pages/vendor/VendorAddToWallet';
+import VendorResetPassword from './pages/vendor/VendorResetPassword';
+import VendorForgotVerification from './pages/vendor/VendorForgotVerification';
+import VendorTransaction from './pages/vendor/VendorTransaction';
+
 import VendorVerification from './pages/vendor/VendorVerification';
 import VendorResetPassword from './pages/vendor/VendorResetPassword';
 import VendorAddToWallet from './pages/vendor/VendorAddToWallet';
 import { ToastContainer } from 'react-toastify'
 import VendorWishes from './pages/vendor/VendorWishes';
 import MembershipPlan from './pages/vendor/MembershipPlan';
+
 
 function App() {
   const [mode, setMode] = useState('light'); // default appearance
@@ -59,6 +66,9 @@ function App() {
           <Route path="/VendorVerification" element={<><VendorVerification /></>} />
           <Route path="/VendorResetPassword" element={<><VendorResetPassword /></>} />
           <Route path="/VendorRegistration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorRegistration /><Footer /></>} />
+          <Route path="/VendorResetPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorResetPassword /><Footer /></>} />
+          <Route path="/VendorForgotVerification" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorForgotVerification /><Footer /></>} />
+          
           {/* Vendors */}
           <Route path="/VendorForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorForgotPassword /><Footer /></>} />
           <Route path="/VendorDashboard" element={<VendorDashboard />} />
@@ -75,8 +85,14 @@ function App() {
           <Route path="/VendorCreateOffers" element={<VendorCreateOffers />} />
           <Route path="/VendorBanners" element={<VendorBanners />} />
           <Route path="/VendorCreateBanners" element={<VendorCreateBanners />} />
+
+          <Route path="/VendorAddToWallet" element={<VendorAddToWallet />} />
+          <Route path="/VendorTransaction" element={<VendorTransaction/>} />
+          
+
           <Route path="/VendorWishes" element={<VendorWishes />} />
           <Route path="/VendorMembershipPlan" element={<MembershipPlan />} />
+
         </Routes>
       </Router>
     </>

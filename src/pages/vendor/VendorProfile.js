@@ -18,11 +18,35 @@ const VendorCreateBusinessPagination = () => {
 
     return (
         <>
+
+        <Header />
+        <div className="container-fluid content-section align">
+        <div className="row">
+            
+                <Sidebar />
+            
+
+            <div className="col-md-8 main_content" >
+                {/* Profile Pic and Name */}
+                <div className="col-md-12">
+                    
+                    <div className="profile-container">
+                    <img className="profile-picture" src={profilePic} alt="Dealzup" />
+                        <div className="profile-details">
+                            <h2>John Doe</h2>
+                            <p>Email: john.doe@example.com</p>
+                            <p>Phone: (123) 456-7890</p>
+                        </div>
+                        </div>
+                </div>
+                <div></div>
+
             <Header />
             <div className="container-fluid content-section align">
                 <div className="row">
 
                     <Sidebar />
+
 
 
                     <div className="col-md-8 main_content" >

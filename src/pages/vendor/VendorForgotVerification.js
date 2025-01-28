@@ -1,10 +1,9 @@
 import React, { useState}  from 'react'
-
+import './../../assets/vendors/css/styles.css'; 
 import './../../assets/css/login.css'; 
 import './../../assets/css/styles.css'; 
 
-
-const VendorResetPassword = ()=>{
+const VendorForgotVerification = ()=>{
     
       const[email, setEmail] = useState("");
       const handleEmailChange = (event) => {
@@ -45,18 +44,15 @@ const VendorResetPassword = ()=>{
                 <div className="row justify-content-center">
                 <div className="custom_form_box column col-md-6  form_border_radius">
                     <form className="" onSubmit={handleSubmit}>
-                            <h1 >Reset Password</h1>
+                            <h1 >Enter the Verification code</h1>
                 
                             <div className="mb-3">
-                                <input type="email" placeholder='Password' autoComplete="email" onChange={handleEmailChange}  value={email}  id="exampleInputEmail1" aria-describedby="emailHelp" />
+                                <input type="email" placeholder='Enter code' autoComplete="email" onChange={handleEmailChange}  value={email}  id="exampleInputEmail1" aria-describedby="emailHelp" />
                                 <div id="emailHelp" className="form-text"></div>
                             </div>
-                            <div className="mb-3">
-                                <input type="email"placeholder='Confirm Password' autoComplete="email" onChange={handleEmailChange}  value={email}  id="exampleInputEmail1" aria-describedby="emailHelp" />
-                                <div id="emailHelp" className="form-text"></div>
-                            </div>
+                     
                             <button type="submit" className="btn btn-dark mb-3">Submit</button>
-                            <div  className="form-text1 mb-3">Password Changed Successfully.</div>
+                            <div  className="form-text1 mb-3">We have sent code to your email.</div>
                             {/* <div  className="form-text3 mb-3"><a  href="/registration">Create an account</a></div> */}
                         </form>
                     </div>
@@ -68,4 +64,4 @@ const VendorResetPassword = ()=>{
      
 }
 
-export default VendorResetPassword; 
+export default VendorForgotVerification; 

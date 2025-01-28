@@ -1,9 +1,16 @@
 import React from 'react'
+
+import Header from '../../components/vendors/Header';
+import './../../assets/css/login.css'; 
+import './../../assets/css/styles.css'; 
+
 import '../../assets/css/addtowallet.css'
 import Header from './../../components/vendors/Header';
 
 
+
 const VendorAddToWallet = () => {
+
 
     // const [email, setEmail] = useState("");
     // const handleEmailChange = (event) => {
@@ -15,6 +22,7 @@ const VendorAddToWallet = () => {
     //     // Here you can perform authentication logic with the username and password
     //     console.log('Username:', email);
     // };
+
 
     return (
         <>

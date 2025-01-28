@@ -32,7 +32,7 @@ const VendorCreateBusinessPagination = ()=>{
                         </div>
                         </div>
                 </div>
-
+                <div></div>
 
                 <div className="col-md-12"><br/></div>
                

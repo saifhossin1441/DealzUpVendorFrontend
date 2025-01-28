@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
-import './../../assets/vendors/css/styles.css'; 
-import './../../components/vendors/Header'; 
+import './../../assets/vendors/css/styles.css';
+import './../../components/vendors/Header';
 import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
+import uploadGallery from './../../assets/images/uploadGallery.png';
+import { useNavigate } from "react-router-dom";
+import { useRefreshToken } from '../../hooks/useRefreshToken';
+import * as yup from 'yup'
+
 
 const styles = {
     form: {
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
+        // justifyContent: 'center',
         alignItems: 'center',
         gap: '15px',
         color: 'white',
@@ -43,6 +49,11 @@ const styles = {
         width: '100%',
         height: '100%',
         objectFit: 'cover',
+    },
+    imagePrevieww: {
+        width: '40%',
+        height: '50%',
+        objectFit: 'cover'
     },
     input: {
         marginTop: '10px',
@@ -100,6 +111,22 @@ const mobileStyles = `
 
 const VendorCreateBusinessPagination = () => {
     const [currentStep, setCurrentStep] = useState(1);
+    const [verified, setVerified] = useState(true);
+    const [image, setImage] = useState(null);
+    const [formData, setFormData] = useState({
+        name: '',
+        phone: '',
+        email: '',
+        country: '',
+        address: '',
+        city: 'Not To Be Blank',
+        state: 'Not To Be Blank',
+        postal_code: '',
+        business_registration_number: '',
+        business_verification_document: null,
+        business_logo: null
+    });
+    const [error, setError] = useState({})
 
     const steps = [
         { number: 1, label: 'Basic' },
@@ -108,11 +135,105 @@ const VendorCreateBusinessPagination = () => {
         { number: 4, label: 'Submission' },
         { number: 5, label: 'Status' },
     ];
+    const navigate = useNavigate()
+    const { refreshAccessToken, refresherror } = useRefreshToken();
+
+    const schema = yup.object().shape({
+        country: yup.string().required("Country is required"),
+        email: yup.string().required("Email is required").email("Invalid email address"),
+        phone: yup
+            .string()
+            .required("Phone number is required")
+            .matches(/^\d{10}$/, "Phone number must be 10 digits")
+        ,
+        name: yup.string().required("Business name is required"),
+    });
+
+    const schema2 = yup.object().shape({
+        // city: yup.string().required("City is required"),
+        // state: yup.string().required("Province is required"),
+        postal_code: yup
+            .string()
+            .required("Postal Code is required")
+            .matches(/^\d{6}$/, "Postal Code must be 6 digits")
+        ,
+        address: yup.string().required("Address is required"),
+    });
+
+    const schema3 = yup.object().shape({
+        business_logo: yup.mixed().required("Business Logo is required"),
+        business_verification_document: yup.mixed().required("Business Verification Document is required."), // Optional field; allow null or empty
+        business_registration_number: yup.number().required("Business Registration Number is required")
+    });
 
     const handleNext = () => {
-        if (currentStep < steps.length) {
-            setCurrentStep(currentStep + 1);
+        if (currentStep === 1) {
+            schema.validate(formData)
+                .then(valid => {
+                    console.log(valid, error)
+                    setError({});
+                    setCurrentStep(currentStep + 1);
+                })
+                .catch(error => {
+
+                    const newErrors = {};
+                    console.log(error)
+                    Object.keys(error.value).forEach(field => {
+                        if (error.params.path) {
+                            console.log("first")
+                            newErrors[error.params.path] = error.errors
+                        }
+                    });
+                    setError(newErrors);
+                });
         }
+
+        if (currentStep === 2) {
+            schema2.validate(formData)
+                .then(valid => {
+                    console.log(valid, error)
+                    setError({});
+                    setCurrentStep(currentStep + 1);
+                })
+                .catch(error => {
+
+                    const newErrors = {};
+                    console.log(error)
+                    Object.keys(error.value).forEach(field => {
+                        if (error.params.path) {
+                            console.log("first")
+                            newErrors[error.params.path] = error.errors
+                        }
+                    });
+                    setError(newErrors);
+                });
+
+        }
+
+        if (currentStep === 3) {
+            schema3.validate(formData)
+                .then(valid => {
+                    console.log(valid, error)
+                    setError({});
+                    setCurrentStep(currentStep + 1);
+                })
+                .catch(error => {
+
+                    const newErrors = {};
+                    console.log(error)
+                    Object.keys(error.value).forEach(field => {
+                        if (error.params.path) {
+                            console.log("first")
+                            newErrors[error.params.path] = error.errors
+                        }
+                    });
+                    setError(newErrors);
+                });
+        }
+
+        // if (currentStep < steps.length) {
+
+        // }
     };
 
     const handlePrev = () => {
@@ -121,13 +242,6 @@ const VendorCreateBusinessPagination = () => {
         }
     };
 
-    const [image, setImage] = useState(null);
-    const [formData, setFormData] = useState({
-        businessName: '',
-        phone: '',
-        email: '',
-        country: ''
-    });
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
@@ -144,16 +258,78 @@ const VendorCreateBusinessPagination = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        if (name === 'business_verification_document' || name === 'business_logo') {
+            setFormData({
+                ...formData,
+                [name]: e.target.files[0]
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value
+            });
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Form Data:', formData);
+
+        SendDataToDatabase(formData)
+
+        if (!verified) {
+            setVerified(true)
+        }
     };
+
+    const SendDataToDatabase = async (data) => {
+        // console.log(data)
+        const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/create/`;
+        let formData = new FormData();
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== null) { // Only append non-null values
+                formData.append(key, value);
+            }
+        });
+        for (let pair of formData.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
+        }
+        const newAccessToken = await refreshAccessToken();
+        console.log(newAccessToken, 'refresh token', refresherror)
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const result = await response.json()
+                console.log(result.error.fields)
+                if (result.error.fields) {
+                    setError({ api: "Email or Phone is already Registered. " })
+                } else {
+                    setError(result)
+                }
+
+            } else {
+                const result = await response.json();
+                console.log('Business Registration successful:', result);
+                // Redirect to another page on successful login
+                setCurrentStep(currentStep + 1);
+            }
+            console.log(error, "Business Errror")
+
+        }
+        catch (error) {
+
+            console.error('Error:', error);
+            setError('Server Down. Please contact Administrator');
+        }
+    }
 
     return (
         <>
@@ -196,7 +372,7 @@ const VendorCreateBusinessPagination = () => {
                                         color: #EE5635;
                                         font-size: 18px;
                                         font-weight: bold;
-                                    }
+                                    }  
                                     .completed .circle {
                                         background-color: #EE5635;
                                         color: white;
@@ -249,8 +425,9 @@ const VendorCreateBusinessPagination = () => {
                             <div className="steps">
                                 {steps.map((step, index) => (
                                     <React.Fragment key={step.number}>
-                                        <div className={`step ${currentStep > step.number ? 'completed' : ''}`}>
-                                            <div className="circle">{currentStep > step.number ? '✓' : step.number}</div>
+                                        <div className={`step ${currentStep > step.number || currentStep >= 5 ? 'completed' : ''}`}>
+                                            {/* <div className="circle">{currentStep > step.number ? '✓' : step.number}</div> */}
+                                            <div className="circle">   {currentStep > step.number || currentStep >= 5 ? '✓' : step.number}</div>
                                             <div className="label">{step.label}</div>
                                         </div>
                                         {index < steps.length - 1 && <div className="line"></div>}
@@ -261,9 +438,9 @@ const VendorCreateBusinessPagination = () => {
                                 {currentStep === 1 && (
                                     <div className="container">
                                         <h1>Basic</h1>
-                                        <form onSubmit={handleSubmit} style={styles.form}>
+                                        <form style={styles.form}>
 
-                                            <div style={styles.uploadContainer}>
+                                            {/* <div style={styles.uploadContainer}>
                                                 {image ? (
                                                     <img src={image} alt="Business Logo" style={styles.imagePreview} />
                                                 ) : (
@@ -281,18 +458,42 @@ const VendorCreateBusinessPagination = () => {
                                                     onChange={handleImageUpload}
                                                     className="white-placeholder"
                                                 />
+                                            </div> */}
+
+                                            <div className="uploadGallerySection2">
+
+                                                {image ? (
+                                                    <img src={image} alt="Business Logo" style={styles.imagePrevieww} />
+                                                ) : (
+                                                    <>
+                                                        <label htmlFor="fileUpload">
+                                                            <img className="uploadGallery" src={uploadGallery} alt="DealzupUploadGallery" />
+                                                        </label>  <p>Maximum Size: 100KB</p>
+                                                        <p>Size Dimension: 1920 x 1080</p>
+                                                    </>)}
+                                                <input
+                                                    id="fileUpload"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    style={{ display: "none" }}
+                                                    name="fileUpload"
+                                                    onChange={handleImageUpload}
+                                                />
+                                                {error.image && <div id="Error" className="form-text2">{error.image}</div>}
                                             </div>
+
 
                                             <input
                                                 type="text"
-                                                name="businessName"
+                                                name="name"
                                                 placeholder="Business Name"
                                                 required
                                                 style={styles.input}
-                                                value={formData.businessName}
+                                                value={formData.name}
                                                 onChange={handleChange}
                                                 className="white-placeholder"
                                             />
+                                            {error.name && <div id="Bname" className="form-text2">{error.name}</div>}
 
                                             <input
                                                 type="number"
@@ -304,6 +505,7 @@ const VendorCreateBusinessPagination = () => {
                                                 onChange={handleChange}
                                                 className="white-placeholder"
                                             />
+                                            {error.phone && <div id="Phone" className="form-text2">{error.phone}</div>}
 
                                             <input
                                                 type="email"
@@ -315,6 +517,7 @@ const VendorCreateBusinessPagination = () => {
                                                 onChange={handleChange}
                                                 className="white-placeholder"
                                             />
+                                            {error.email && <div id="Email" className="form-text2">{error.email}</div>}
 
                                             <select
                                                 name="country"
@@ -331,92 +534,280 @@ const VendorCreateBusinessPagination = () => {
                                                 <option value="USA">USA</option>
                                                 <option value="UK">UK</option>
                                             </select>
+                                            {error.country && <div id="Country" className="form-text2">{error.country}</div>}
 
-                                            <button type="submit" style={styles.submitButton}>
+                                            {/* <button type="submit" style={styles.submitButton}>
                                                 Submit
-                                            </button>
+                                            </button> */}
                                         </form>
                                     </div>
                                 )}
 
                                 {currentStep === 2 && (
-                                <div  style={{ paddingTop: '0% !important', width: "100%" }}>
-                                    <h2>Location</h2>
-                                    <div className="container">
-                                       
-                                        <input type="text" style={styles.input}
-                                        placeholder='GPS Location'
-                                        className="white-placeholder" />
-                                        <p>OR</p>
-                                       
-                                        <input type="text"  style={styles.input}
-                                        placeholder='Address'
-                                        className="white-placeholder"/>
+                                    <div style={{ paddingTop: '0% !important', width: "100%" }}>
+                                        <h2>Location</h2>
+                                        <div className="container">
 
-                                        <label></label>
-                                        <input type="text"  style={styles.input}
-                                        placeholder='Postal Code'
-                                        className="white-placeholder"/>
-                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                            <button onClick={handlePrev} style={styles.button}>Previous</button>
-                                            <button onClick={handleNext} style={styles.button}>Next</button>
+                                            <input type="text" style={styles.input}
+                                                placeholder='GPS Location'
+                                                className="white-placeholder" />
+                                            <p>OR</p>
+
+                                            <input type="text" style={styles.input}
+                                                placeholder='Address'
+                                                name='address'
+                                                value={formData.address}
+                                                onChange={handleChange}
+                                                className="white-placeholder" />
+                                            {error.address && <div id="Country" className="form-text2">{error.address}</div>}
+
+                                            <label></label>
+                                            <input type="text" style={styles.input}
+                                                placeholder='Postal Code'
+                                                name='postal_code'
+                                                value={formData.postal_code}
+                                                onChange={handleChange}
+                                                className="white-placeholder" />
+                                            {error.postal_code && <div id="Country" className="form-text2">{error.postal_code}</div>}
+
+                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                                 )}
 
                                 {currentStep === 3 && (
                                     <div style={{ paddingTop: '0% !important', width: "100%" }}>
                                         <h2>Verification</h2>
-                                    <div className="container">
-                                        <label></label>
-                                        <input type="text"  placeholder='Business Registration Number' style={styles.input} className="white-placeholder"/>
-                                        <label>Upload Business Verification Document</label>
-                                        <input type="file" style={styles.input} className="white-placeholder"/>
-                                        
+                                        <div className="container">
+                                            <label></label>
+                                            <input type="number" placeholder='Business Registration Number' style={styles.input} className="white-placeholder"
+                                                name='business_registration_number'
+                                                value={formData.business_registration_number}
+                                                onChange={handleChange} />
+                                            {error.business_registration_number && <div id="Country" className="form-text2">{error.business_registration_number}</div>}
+
+                                            <label>Upload Business Verification Document</label>
+                                            <input type="file" encType="multipart/form-data" style={styles.input} className="white-placeholder"
+                                                name='business_verification_document'
+
+                                                onChange={handleChange}
+                                            />
+                                            {error.business_verification_document && <div id="Country" className="form-text2">{error.business_verification_document}</div>}
+
                                             <label>Upload your Store Picture (only image file)</label>
-                                            <input type="file" accept="image/*" style={styles.input} className="white-placeholder"/>
+                                            <input id="fileUpload" type="file" accept="image/*" style={styles.input} className="white-placeholder"
+                                                name='business_logo'
+
+                                                onChange={handleChange}
+                                            />
+                                            {error.business_logo && <div id="Country" className="form-text2">{error.business_logo}</div>}
+
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                            <button onClick={handlePrev} style={styles.button}>Previous</button>
-                                            <button onClick={handleNext} style={styles.button}>Next</button>
                                         </div>
                                     </div>
                                 )}
+                                {/* <div style={{ paddingTop: '0% !important', width: "100%" }}>
+                                        <h2>Confirm</h2>
+                                        <p>Review and confirm your business details and documents before submitting.</p>
 
+                                        <div style={{ marginTop: "20px", padding: "10px", border: "1px solid #ccc", borderRadius: "8px", backgroundColor: "#0000", }}>
+                                            <ul style={{ listStyleType: "none", paddingLeft: "0", alignItems: 'center' }}>
+                                                {formData.business_logo ? (
+                                                    <div>
+                                                        <img
+                                                            src={URL.createObjectURL(formData.business_logo)}
+                                                            alt="Business Logo Preview"
+                                                            style={{ width: "10%", height: "10%", marginTop: "10px" }}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <p><strong>Not Uploaded</strong></p>
+                                                )}
+                                                <li><strong>Business Name:</strong> {formData.name || "N/A"}</li>
+                                                <li><strong>Phone:</strong> {formData.phone || "N/A"}</li>
+                                                <li><strong>Email:</strong> {formData.email || "N/A"}</li>
+                                                <li><strong>Country:</strong> {formData.country || "N/A"}</li>
+                                                <li><strong>Address:</strong> {formData.address || "N/A"}</li>
+                                                <li><strong>Postal Code:</strong> {formData.postal_code || "N/A"}</li>
+                                                <li><strong>Business Registration Number:</strong> {formData.business_registration_number || "N/A"}</li>
+                                                {formData.business_verification_document && (
+                                                    <p>
+                                                        <strong>Business Verification Document:</strong> Uploaded
+                                                    </p>
+                                                )}
+                                            </ul>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <button onClick={handleSubmit} style={styles.button}>Submit</button>
+                                        </div>
+                                    </div> */}
                                 {currentStep === 4 && (
-                                     <div style={{ paddingTop: '0% !important', width: "100%" }}>
-                                     <h2>Confirm</h2>
-                                     <p>Review and confirm your business details and documents before submitting.</p>
-                                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                         <button onClick={handlePrev} style={styles.button}>Previous</button>
-                                         <button onClick={handleNext} style={styles.button}>Submit</button>
-                                     </div>
-                                 </div>
+                                    <div style={{ paddingTop: '0% !important', width: "100%" }}>
+                                        <h2>Confirm</h2>
+                                        <p>Review and confirm your business details and documents before submitting.</p>
+
+                                        <div
+                                            style={{
+                                                marginTop: "20px",
+                                                padding: "20px",
+                                                border: "1px solid #ccc",
+                                                borderRadius: "8px",
+                                                backgroundColor: "#0000",
+                                                textAlign: "center",
+                                            }}
+                                        >
+                                            {formData.business_logo ? (
+                                                <div style={{ marginBottom: "20px" }}>
+                                                    <img
+                                                        src={URL.createObjectURL(formData?.business_logo)}
+                                                        alt="Business Logo Preview"
+                                                        style={{
+                                                            width: "160px",
+                                                            height: "160px",
+                                                            borderRadius: "5px",
+                                                            objectFit: "cover",
+                                                        }}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <p><strong>Business Logo:</strong> Not Uploaded</p>
+                                            )}
+
+                                            <table
+                                                style={{
+                                                    width: "100%",
+                                                    borderCollapse: "collapse",
+                                                    margin: "0 auto",
+                                                }}
+                                            >
+                                                <tbody>
+                                                    <tr>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Business Name</td>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.name || "N/A"}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Phone</td>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.phone || "N/A"}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Email</td>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.email || "N/A"}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Country</td>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.country || "N/A"}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Address</td>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.address || "N/A"}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Postal Code</td>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.postal_code || "N/A"}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Business Registration Number</td>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.business_registration_number || "N/A"}</td>
+                                                    </tr>
+                                                    {formData.business_verification_document && (
+                                                        <tr>
+                                                            <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Business Verification Document</td>
+                                                            <td style={{ padding: "10px", border: "1px solid #ccc" }}>Uploaded</td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {error.api && <div id="Api Error" style={{
+                                            margin: "20px auto",
+                                            padding: "10px",
+                                            color: "red",
+                                            fontWeight: "bold",
+                                            border: "1px solid red",
+                                            borderRadius: "8px",
+                                            backgroundColor: "#ffe6e6",
+                                            textAlign: "center",
+                                            width: "60%",
+                                        }} className="form-text2">{error.api}</div>}
+
+                                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                                            <button onClick={handleSubmit} style={styles.button}>Submit</button>
+                                        </div>
+                                    </div>
+
                                 )}
 
-                                {currentStep === 5 && (
-                                    <div style={{ paddingTop: '0% !important', width: "100%" }}>
-                                    <h2>Status</h2>
-                                    <p>Business details and documents submitted. Pending approval.</p>
-                                    <div className="steps">
-                                        {steps.map((step) => (
-                                            <div key={step.number} className="step completed">
-                                                <div className="circle">✓</div>
-                                                <div className="label">{step.label}</div>
-                                            </div>
-                                        ))}
+                                {/* <div style={{ paddingTop: '0% !important', width: "100%" }}>
+                                        <h2>Status</h2>
+                                        <p>Business details and documents submitted. Pending approval.</p>
+                                        <div className="steps">
+                                            {steps.map((step) => (
+                                                <div key={step.number} className="step completed">
+                                                    <div className="circle">✓</div>
+                                                    <div className="label">{step.label}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div> */}
+
+                                {currentStep === 5 && (verified ? (
+                                    <div
+                                        style={{
+                                            padding: '30px',
+                                            backgroundColor: '#000',
+                                            color: '#fff',
+                                            borderRadius: '8px',
+                                            textAlign: 'center',
+                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+                                            margin: '0 auto',
+                                        }}
+                                    >
+                                        <h2 style={{ fontSize: '2em', marginBottom: '15px', color: '#f9c74f', textAlign: 'center', }}>
+                                            🎉 Your Account Has Been Successfully Verified
+                                        </h2>
+                                        <p style={{ fontSize: '1.2em', marginBottom: '20px' }}>
+                                            Congratulations! Your account is now fully verified and ready for use.
+                                        </p>
+                                        <button
+                                            style={{
+                                                backgroundColor: '#f9c74f',
+                                                color: '#000',
+                                                padding: '10px 20px',
+                                                fontSize: '1.1em',
+                                                border: 'none',
+                                                borderRadius: '5px',
+                                                cursor: 'pointer',
+                                                transition: 'background-color 0.3s ease',
+                                            }}
+                                            onClick={() => navigate('/VendorDashboard')}
+                                        >
+                                            View Dashboard
+                                        </button>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div style={{ padding: '20px', backgroundColor: '#000000', borderRadius: '8px', textAlign: 'center', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+                                        <h2>Status</h2>
+                                        <p style={{ fontSize: '1.2em', color: '#FFF' }}>
+                                            🎉 Your business details and documents have been submitted!
+                                        </p>
+                                        <p style={{ fontSize: '1em', color: '#999' }}>Currently under review. Approval is pending. Stay tuned!</p>
+                                    </div>
+                                )
                                 )}
 
                                 <div style={{ marginTop: '20px' }}>
-                                    <button onClick={handlePrev} disabled={currentStep === 1}>
-                                        Previous
-                                    </button>
-                                    <button onClick={handleNext} disabled={currentStep === steps.length}>
+
+                                    {![1, 5].includes(currentStep) && (
+                                        <button onClick={handlePrev}>Previous</button>
+                                    )}
+
+
+                                    {![4, 5].includes(currentStep) && <button onClick={handleNext} disabled={currentStep === steps.length}>
                                         Next
-                                    </button>
+                                    </button>}
+
                                 </div>
                             </div>
                         </div>

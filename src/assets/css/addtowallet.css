@@ -1,0 +1,144 @@
+/* styles.css */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #fff;
+}
+
+.contain {
+    display: flex;
+    flex-direction: row;
+    margin-top: 120px;
+}
+
+.bloat {
+
+    background-color: #1e1e1e;
+    /* padding: 10px; */
+    border-radius: 8px;
+    width: 60%;
+    margin-right: 10%;
+}
+
+.add-money-section {
+    flex: 1;
+    flex-direction: row;
+    align-self:self-end;
+    background-color: #1e1e1e;
+    padding: 20px;
+    margin-top: 60px;
+    border-radius: 8px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+}
+
+.search-bar {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: none;
+    background-color: #1e1e1e;
+    color: #fff;
+    margin-right: 20px;
+}
+
+.icons {
+    display: flex;
+    gap: 10px;
+}
+
+.icon {
+    font-size: 20px;
+}
+
+.profile-pic {
+    width: 32px;
+    height: 32px;
+    background-color: #ccc;
+    border-radius: 50%;
+}
+
+
+
+.balance-section {
+    flex: 2;
+}
+
+.update-note {
+    background-color: #252525;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.balance-info h2,
+.balance-info .balance,
+.used-balance {
+    margin: 5px 0;
+}
+
+.transactions a {
+    color: #0a84ff;
+    text-decoration: none;
+}
+
+
+.amount-input{
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #252525;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.amount-input::-webkit-outer-spin-button,
+.amount-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+     margin: 0;
+}
+
+
+
+
+.quick-buttons button {
+    background-color: #0a84ff;
+    border: none;
+    padding: 5px;
+    margin: 5px;
+    color: #fff;
+    border-radius: 50px;
+    margin-bottom: 20px;
+}
+
+.linked-account {
+    margin: 10px 0;
+}
+
+.add-money-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #0a84ff;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}

@@ -102,8 +102,7 @@ input[type=text]{
     border-bottom: 1px solid #000;
     background-color: #ffffff00;
     border-radius: 0;
-    color: #fff ;
-    margin-bottom:25px;
+    /* margin-bottom:25px; */
     padding:0 0px 15px;
 }
 input[type=text]:focus{
@@ -167,7 +166,7 @@ input[type=password]{
     background-color: #ffffff00;
     border-radius: 0;
     color: #000 !important;
-    margin-bottom:25px;
+    /* margin-bottom:25px; */
     padding:0 0px 15px;
 }
 input[type=password]:focus{
@@ -183,7 +182,7 @@ input[type=email]{
     border-bottom: 1px solid #000;
     background-color: #ffffff00;
     border-radius: 0;
-    margin-bottom:25px;
+    /* margin-bottom:25px; */
     padding:0 0px 15px;
     outline:none !important;
 }
@@ -205,6 +204,7 @@ input[type=email]:focus{
     border-radius: 0px 0px 10px 0px;
   }
 }
+
 .custom_form_box{
   background-color: #E7E7E7;
   padding: 40px 40px !important; 
@@ -226,6 +226,7 @@ color: #000!important;
 .form-text3 {
   color: #EE5635 !important;
 }
+
 
 /* FORM ENDS*/
 
@@ -282,7 +283,10 @@ color: #000!important;
     border: #E7E7E7 1px solid;;
   }
 
- 
+.form-check-input.is-invalid {
+    border-color: #dc3545; /* Red border for invalid state */
+    box-shadow: 0 0 5px #dc3545; /* Optional: Add glow effect */
+}
   
  
   /* KEYFRAMES BUBBLES */

@@ -4,7 +4,7 @@
 }
 
 .bg-white {
-    background: white;
+    background: white !important;
     border-bottom-left-radius: 25px; /* Rounded corner at the bottom left */
     border-bottom-right-radius: 25px;
     width: 90%;
@@ -47,4 +47,14 @@
 .navbar{
     width: 90%;
     margin: 0 auto; 
+}
+
+@media screen and (max-width: 767px){
+    .bg-white-mobile{
+        background: white !important;   
+        border-bottom-left-radius: 25px; /* Rounded corner at the bottom left */
+        border-bottom-right-radius: 25px;
+        width: 90%;
+        margin: 0 auto;
+    }
 }

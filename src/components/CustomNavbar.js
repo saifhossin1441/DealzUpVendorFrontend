@@ -24,7 +24,7 @@ const CustomNavbar = () => {
 
     return (
         <Navbar
-            className={`navbar ${scrolling ? 'bg-white' : 'transparent'} fixed-top`}
+            className={`navbar ${scrolling ? 'bg-white' : 'transparent'} fixed-top bg-white-mobile`}
             expand="lg"
         >
             <Container fluid>
@@ -34,10 +34,10 @@ const CustomNavbar = () => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mx-auto">
-                        <Nav.Link href="#flyers">Flyers</Nav.Link>
+                        {/* <Nav.Link href="#flyers">Flyers</Nav.Link>
                         <Nav.Link href="#deals">Deals</Nav.Link>
                         <Nav.Link href="#about">About Us</Nav.Link>
-                        <Nav.Link href="#contact">Contact Us</Nav.Link>
+                        <Nav.Link href="#contact">Contact Us</Nav.Link> */}
                     </Nav>
                     <div className=" d-flex align-items-center ml-auto">
                         <Dropdown className='dropdown'>

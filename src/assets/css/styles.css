@@ -12,7 +12,7 @@
 /* Gradient */
 /*custom button*/
 /* Download App Section */
-/* Media Qery */
+/* Media Query */
 
 @import url("//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css");
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
@@ -173,7 +173,8 @@ img {
 
 h1{
   padding-left: 5%;
-  font-family: 'Montserrat', sans-serif;    font-size: 42px;
+  font-family: 'Montserrat', sans-serif;    
+  font-size: 42px;
   font-weight: 600;
   align-items: left;
   justify-content: left;
@@ -394,9 +395,10 @@ p{
   50% { transform: scale(1); }
   100% { transform: scale(1.1);}
 }
+@media screen and (min-width: 767px) {
 /* Banner */
 .banner{
-  height: 120vh; /* Full viewport height */
+  /* Full viewport height */
   width: 100%; /* Full width */
   display: flex; /* Aligns content horizontally */
   justify-content: center; /* Horizontally center content */
@@ -405,6 +407,11 @@ p{
   background-size: cover; /* Cover the entire area */
   background-position: center;
 }
+.left-align{
+  margin-left: -120px !important;
+}
+}
+
 .banner h1{
   color: #FFF;
   font-family: 'Value Serif',  serif;
@@ -424,8 +431,6 @@ p{
   font-weight: 700;
   line-height: normal;
   padding-left: 30px;
-  margin-top: -60px;  
- 
 }
 
 .banner h3{
@@ -485,7 +490,6 @@ p{
   
   .banner h3{
     padding: auto;
-    text-align: left;
     font-size: 20px;
     padding-left:10px ;
   }
@@ -571,6 +575,8 @@ p{
   .col_left {
     margin-left: -10px; /* Avoid !important unless necessary */
   }
+
+  
 }
 
 
@@ -621,4 +627,70 @@ p{
   .logo img{
     width: 100px;
   }
+}
+/* Media Query for Mobile Devices */
+@media only screen and (max-width: 767px) {
+  .container-fluid.banner {
+    height: auto; /* Allow the height to adjust dynamically */
+    padding: 20px; /* Add padding for better spacing */
+  }
+
+  .row {
+    flex-direction: column; /* Stack items vertically */
+  }
+
+  .col-md-6, .col-md-4 {
+    width: 100%; /* Make columns take full width */
+    margin-bottom: 20px; /* Add spacing between stacked elements */
+  }
+
+  .content p, .search-box {
+    width: 100%; /* Adjust the width for smaller screens */
+    padding: 0; /* Remove extra padding */
+  }
+
+  .app-img {
+    width: 120px; /* Scale down app store/play store images */
+    margin: 5px auto; /* Center them */
+  }
+
+  .custom_box {
+    margin-bottom: 20px; /* Add spacing between sections */
+  }
+
+  .custom_button {
+  
+    margin-bottom: 10px; /* Add spacing between buttons */
+  }
+
+  .banner h2, h3, h5 {
+    font-size: 22px !important;  /* Adjust font sizes for readability */
+
+  }
+
+  .banner h1{
+    font-size: 28px !important; 
+  }
+
+  .image img {
+    margin: 0 auto; /* Center images */
+    display: block;
+  }
+  .center{
+    
+    justify-content: center;
+  }
+}
+.container-fluid.banner {
+  height: auto;
+  padding: 10px;
+}
+.custom_button {
+  display: block;
+ 
+  margin-bottom: 10px;
+}
+.image img, .img-box {
+  width: 100%; /* Ensure images are not overflowing */
+  height: auto;
 }

@@ -22,6 +22,10 @@ import VendorCreateBanners from './pages/vendor/VendorCreateBanners';
 import VendorRegistration from './pages/vendor/VendorRegistration';
 import VendorLogin from './pages/vendor/VendorLogin';
 import VendorForgotPassword from './pages/vendor/VendorForgotPassword';
+import VendorAddToWallet from './pages/vendor/VendorAddToWallet';
+import VendorResetPassword from './pages/vendor/VendorResetPassword';
+import VendorForgotVerification from './pages/vendor/VendorForgotVerification';
+import VendorTransaction from './pages/vendor/VendorTransaction';
 
 
 function App() {
@@ -51,6 +55,9 @@ function App() {
           <Route path="/ForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><ForgotPassword /><Footer /></>} />
           <Route path="/VendorLogin" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorLogin /><Footer /></>} />
           <Route path="/VendorRegistration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorRegistration /><Footer /></>} />
+          <Route path="/VendorResetPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorResetPassword /><Footer /></>} />
+          <Route path="/VendorForgotVerification" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorForgotVerification /><Footer /></>} />
+          
           {/* Vendors */}
           <Route path="/VendorForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorForgotPassword /><Footer /></>} />
           <Route path="/VendorDashboard" element={<VendorDashboard />} />
@@ -66,6 +73,9 @@ function App() {
           <Route path="/VendorCreateOffers" element={<VendorCreateOffers />} />
           <Route path="/VendorBanners" element={<VendorBanners />} />
           <Route path="/VendorCreateBanners" element={<VendorCreateBanners />} />
+          <Route path="/VendorAddToWallet" element={<VendorAddToWallet />} />
+          <Route path="/VendorTransaction" element={<VendorTransaction/>} />
+          
         </Routes>
       </Router>
     </>

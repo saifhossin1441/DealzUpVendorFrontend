@@ -622,3 +622,175 @@ p{
     width: 100px;
   }
 }
+
+/* Media Query for Mobile Devices */
+@media only screen and (max-width: 767px) {
+  .container-fluid.banner {
+    height: auto; /* Allow the height to adjust dynamically */
+    padding: 20px; /* Add padding for better spacing */
+  }
+
+  .row {
+    flex-direction: column; /* Stack items vertically */
+  }
+
+  .col-md-6, .col-md-4 {
+    width: 100%; /* Make columns take full width */
+    margin-bottom: 20px; /* Add spacing between stacked elements */
+  }
+
+  .content p, .search-box {
+    width: 100%; /* Adjust the width for smaller screens */
+    padding: 0; /* Remove extra padding */
+  }
+
+  .app-img {
+    width: 120px; /* Scale down app store/play store images */
+    margin: 5px auto; /* Center them */
+  }
+
+  .custom_box {
+    margin-bottom: 20px; /* Add spacing between sections */
+  }
+
+  .custom_button {
+  
+    margin-bottom: 10px; /* Add spacing between buttons */
+  }
+
+  .banner h2, h3, h5 {
+    font-size: 22px !important;  /* Adjust font sizes for readability */
+
+  }
+
+  .banner h1{
+    font-size: 28px !important; 
+  }
+
+  .image img {
+    margin: 0 auto; /* Center images */
+    display: block;
+  }
+  .center{
+    
+    justify-content: center;
+  }
+}
+.container-fluid.banner {
+  height: auto;
+  padding: 10px;
+}
+.custom_button {
+  display: block;
+ 
+  margin-bottom: 10px;
+}
+.image img, .img-box {
+  width: 100%; /* Ensure images are not overflowing */
+  height: auto;
+}
+
+/* Popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.popup-content {
+  background: #f9f9f9;
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  width: 40%;
+}
+
+.popup-content h3 {
+  margin: 0 0 5px;
+  color:#000;
+  cursor: pointer;
+}
+
+.popup-content input{
+  color: #000;
+}
+.popup-content  p{
+  color: #000;
+}
+.popup-content div{
+  margin: 0 0 20px;
+}
+
+.popup-content h3, p {
+  text-align: left;}
+
+.popup-content button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+
+}
+
+.popup-content button:hover {
+  background: #0056b3;
+  cursor: pointer;
+}
+
+.popup-content .paymentMethod{
+  margin: 5px;
+  box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5)
+}
+
+.ViewTransaction{
+  margin-top: 25px !important;
+}
+.ViewTransaction p{
+  padding: 10px;
+}
+
+@media (max-width: 768px) {
+  .popup-content {
+    width: 90%;
+  }
+
+.heart-button {
+  background-color: black;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem;
+  color: red;
+  outline: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.heart-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.heart-button:active {
+  transform: scale(0.95);
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+
+}
+}

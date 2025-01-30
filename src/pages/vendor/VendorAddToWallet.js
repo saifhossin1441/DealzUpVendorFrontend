@@ -1,7 +1,8 @@
 import React from 'react'
 import '../../assets/css/addtowallet.css'
 import Header from './../../components/vendors/Header';
-
+import './../../assets/css/login.css';
+import './../../assets/css/styles.css';
 
 const VendorAddToWallet = () => {
 

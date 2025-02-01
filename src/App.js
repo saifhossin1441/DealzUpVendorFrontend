@@ -28,6 +28,7 @@ import VendorAddToWallet from './pages/vendor/VendorAddToWallet';
 import { ToastContainer } from 'react-toastify'
 import VendorWishes from './pages/vendor/VendorWishes';
 import MembershipPlan from './pages/vendor/MembershipPlan';
+import GoogleMaps from './pages/vendor/Maps';
 
 function App() {
   const [mode, setMode] = useState('light'); // default appearance
@@ -77,6 +78,7 @@ function App() {
           <Route path="/VendorCreateBanners" element={<VendorCreateBanners />} />
           <Route path="/VendorWishes" element={<VendorWishes />} />
           <Route path="/VendorMembershipPlan" element={<MembershipPlan />} />
+          <Route path="/GoogleMaps" element={<GoogleMaps />} />
         </Routes>
       </Router>
     </>

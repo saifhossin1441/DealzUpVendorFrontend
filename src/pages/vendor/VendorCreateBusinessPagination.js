@@ -7,6 +7,9 @@ import uploadGallery from './../../assets/images/uploadGallery.png';
 import { useNavigate } from "react-router-dom";
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import * as yup from 'yup'
+import { geocode, RequestType } from "react-geocode";
+import { useGeolocated } from "react-geolocated";
+
 
 
 const styles = {
@@ -110,6 +113,7 @@ const mobileStyles = `
 `;
 
 const VendorCreateBusinessPagination = () => {
+
     const [currentStep, setCurrentStep] = useState(1);
     const [verified, setVerified] = useState(true);
     const [image, setImage] = useState(null);
@@ -127,6 +131,13 @@ const VendorCreateBusinessPagination = () => {
         business_logo: null
     });
     const [error, setError] = useState({})
+    const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+        useGeolocated({
+            positionOptions: {
+                enableHighAccuracy: true,
+            },
+            userDecisionTimeout: 5000,
+        });
 
     const steps = [
         { number: 1, label: 'Basic' },
@@ -166,6 +177,46 @@ const VendorCreateBusinessPagination = () => {
         business_registration_number: yup.number().required("Business Registration Number is required")
     });
 
+
+    const GeoLocate = () => {
+        geocode(RequestType.LATLNG, `${coords.latitude},${coords.longitude}`, {
+            key: "AIzaSyDsc0jaxFvFYsc1b3Tblah0n1LV3RfZZDQ",
+            location_type: "ROOFTOP", // Override location type filter for this request.
+            // enable_address_descriptor: true, // Include address descriptor in response.
+            language: "en",
+            region: "us",
+        })
+            .then(({ results }) => {
+                console.log(results)
+                const address = results[0].formatted_address;
+                const { city, state, country, postal_code } = results[0].address_components.reduce(
+                    (acc, component) => {
+                        if (component.types.includes("locality"))
+                            acc.city = component.long_name;
+                        else if (component.types.includes("administrative_area_level_1"))
+                            acc.state = component.long_name;
+                        else if (component.types.includes("country"))
+                            acc.country = component.long_name;
+                        else if (component.types.includes("postal_code"))
+                            acc.postal_code = component.long_name;
+                        return acc;
+                    },
+                    {}
+                );
+                console.log(city, state, country, postal_code);
+                console.log(address);
+                setFormData((prevData) => ({
+                    ...prevData,
+                    city: city || prevData.city,
+                    state: state || prevData.state,
+                    country: country || prevData.country,
+                    postal_code: postal_code || prevData.postal_code,
+                    address: address || prevData.address
+                }));
+            })
+            .catch(console.error);
+
+    }
     const handleNext = () => {
         if (currentStep === 1) {
             schema.validate(formData)
@@ -548,9 +599,7 @@ const VendorCreateBusinessPagination = () => {
                                         <h2>Location</h2>
                                         <div className="container">
 
-                                            <input type="text" style={styles.input}
-                                                placeholder='GPS Location'
-                                                className="white-placeholder" />
+                                            <button style={styles.input} onClick={GeoLocate}>GPS Location</button>
                                             <p>OR</p>
 
                                             <input type="text" style={styles.input}

@@ -45,7 +45,7 @@ const LandingPage = () => {
             </div>
 
             <div className='col-md-4  text-center'  >
-              <h3>It’s easier in the apps</h3>
+             <center><h3>It’s easier in the apps</h3></center> 
               <img className="app-img" src={appStore} alt="Dealzup App Store" />
               <img className="app-img" src={googlePlay} alt="Dealzup Google Play" />
             </div>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 import facebook from './../assets/images/facebook.png'
 import linkedin from './../assets/images/linkedin.png'
 import instagram from './../assets/images/instagram.png'
@@ -18,8 +19,8 @@ const Footer = ()=>{
                                 <h4>Help</h4>
                                 <p className='text'> Support</p>
                                 <p className='text'> Sitemap</p>
-                                <p className='text'> Privacy Policy</p>
-                                <p className='text'> Terms & Condition</p>
+                                <Link style={{textDecoration:'none'}} to="/PrivacyPolicy"><p className='text'> Privacy Policy</p> </Link>
+                                <Link  style={{textDecoration:'none'}} to="/TermsAndConditions"> <p className='text'> Terms & Condition</p></Link>
                             </div>
                             <div className='col-md-2'>
                                 <h4>Region</h4>

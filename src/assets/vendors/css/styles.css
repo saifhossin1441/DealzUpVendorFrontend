@@ -170,7 +170,7 @@ background: #EE5C74 !important;
   padding: 20px;
   /* border: 1px solid #ccc; */
   border-radius: 8px;
- 
+
   margin: 0 auto;
 }
 
@@ -246,6 +246,9 @@ background: #EE5C74 !important;
   .sidenav a {font-size: 18px;}
   }
   @media (max-width: 768px) {
+    .sidenav{
+      display: none;
+    }
     .sidenav {
     height: auto;
     position: relative;
@@ -253,7 +256,7 @@ background: #EE5C74 !important;
     margin-top:60;
     }
     .content-box{
-      width: 100%;
+      width: 92%;
     }
     
     .balance-box{
@@ -383,4 +386,44 @@ background: #EE5C74 !important;
 .heart-button:active {
   transform: scale(0.95);
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .col-md-8 {
+    display: flex;
+    justify-content: center;
+   
+    flex-direction: column;
+    text-align: center;
+    width: 95% !important;
+    flex-shrink: 0;
+  }
+  
+  .flex_wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  /* .flyers_wrap {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+   
+  } */
+  /* .flex_wrapper {
+      flex-direction: column;
+      align-items: center;
+  } */
+
+  /* .flyers_wrap {
+      width: 90%; 
+  } */
 }

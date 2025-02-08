@@ -4,12 +4,18 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { LoadScript } from "@react-google-maps/api";
 
-
+const googleMapsApiKey = "AIzaSyDsc0jaxFvFYsc1b3Tblah0n1LV3RfZZDQ";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <LoadScript
+      googleMapsApiKey={googleMapsApiKey}
+      libraries={["drawing", "places"]}
+    >
+      <App />
+    </LoadScript>
   </React.StrictMode>
 );
 

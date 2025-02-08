@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import './../../assets/vendors/css/styles.css';
 import './../../components/vendors/Header';
 import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
+import { Modal, Button, Form } from "react-bootstrap";
 import uploadGallery from './../../assets/images/uploadGallery.png';
 import { useNavigate } from "react-router-dom";
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import * as yup from 'yup'
+import { Autocomplete } from "@react-google-maps/api";
 import { geocode, RequestType } from "react-geocode";
 import { useGeolocated } from "react-geolocated";
-
+import Maps from './Maps';
 
 
 const styles = {
@@ -113,10 +115,13 @@ const mobileStyles = `
 `;
 
 const VendorCreateBusinessPagination = () => {
-
+    const [searchQuery, setSearchQuery] = useState("");
     const [currentStep, setCurrentStep] = useState(1);
     const [verified, setVerified] = useState(true);
     const [image, setImage] = useState(null);
+    const [autoComplete, setAutoComplete] = useState("");
+    const autocompleteRef = useRef(null);
+    const [OpenMaps, setOpenMaps] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -166,7 +171,7 @@ const VendorCreateBusinessPagination = () => {
         postal_code: yup
             .string()
             .required("Postal Code is required")
-            .matches(/^\d{6}$/, "Postal Code must be 6 digits")
+        // .matches(/^\d{6}$/, "Postal Code must be 6 digits")
         ,
         address: yup.string().required("Address is required"),
     });
@@ -176,8 +181,25 @@ const VendorCreateBusinessPagination = () => {
         business_verification_document: yup.mixed().required("Business Verification Document is required."), // Optional field; allow null or empty
         business_registration_number: yup.number().required("Business Registration Number is required")
     });
+    const onAutoCompleteIsLoad = (autocomplete) => {
+        autocompleteRef.current = autocomplete;
+    };
 
+    // Handle onPlaceChanged (Extract selected location)
+    const onAutoCompletePlaceIsChanged = () => {
+        if (autocompleteRef.current) {
+            const place = autocompleteRef.current.getPlace();
+            console.log(place, "Selected Place");
 
+            if (place?.geometry && place?.geometry?.location) {
+                const location = {
+                    lat: place?.geometry?.location.lat(),
+                    lng: place?.geometry?.location.lng(),
+                };
+                setSearchQuery(location); // Pass to parent component
+            }
+        }
+    };
     const GeoLocate = () => {
         geocode(RequestType.LATLNG, `${coords.latitude},${coords.longitude}`, {
             key: "AIzaSyDsc0jaxFvFYsc1b3Tblah0n1LV3RfZZDQ",
@@ -381,6 +403,16 @@ const VendorCreateBusinessPagination = () => {
             setError('Server Down. Please contact Administrator');
         }
     }
+    // console.log(searchQuery)
+    const handleLocationSelect = (location) => {
+        console.log("Selected Location:", location);
+        setSearchQuery({ formatted_address: location?.address, pincode: location?.pincode }); // Update search input with place name
+        setFormData((prevData) => ({
+            ...prevData,
+            postal_code: location?.pincode || prevData.postal_code,
+            address: location?.address || prevData.address
+        }));
+    };
 
     return (
         <>
@@ -599,7 +631,39 @@ const VendorCreateBusinessPagination = () => {
                                         <h2>Location</h2>
                                         <div className="container">
 
-                                            <button style={styles.input} onClick={GeoLocate}>GPS Location</button>
+                                            <button style={styles.input} onClick={() => setOpenMaps(!OpenMaps)}>GPS Location</button>
+
+                                            <Modal show={OpenMaps} onHide={() => setOpenMaps(false)} size="xl">
+                                                <Modal.Header closeButton>
+
+                                                    <Autocomplete
+                                                        onLoad={onAutoCompleteIsLoad}
+                                                        onPlaceChanged={onAutoCompletePlaceIsChanged}
+
+
+                                                    >
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Search location..."
+                                                            value={searchQuery?.formatted_address}
+
+                                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                                            style={{
+                                                                width: "300px",
+                                                                padding: "5px",
+                                                                borderRadius: "5px",
+                                                                border: "1px solid #ccc",
+                                                            }}
+                                                        />
+                                                    </Autocomplete>
+
+                                                </Modal.Header>
+                                                <Modal.Body>
+                                                    <div style={{ width: "100%", height: "700px", overflow: "hidden" }}>
+                                                        <Maps searchQuery={searchQuery} onLocationSelect={handleLocationSelect} /> {/* Pass search query to Maps */}
+                                                    </div>
+                                                </Modal.Body>
+                                            </Modal>
                                             <p>OR</p>
 
                                             <input type="text" style={styles.input}

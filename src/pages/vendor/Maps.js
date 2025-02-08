@@ -1,5 +1,5 @@
-import React from 'react'
-import { GoogleMap, useJsApiLoader, Marker, Circle } from '@react-google-maps/api'
+import React, { useState } from 'react'
+import { GoogleMap, useJsApiLoader, Marker, Circle, Autocomplete } from '@react-google-maps/api'
 
 const containerStyle = {
     width: '100vw',
@@ -11,17 +11,19 @@ const center = {
     lng: -106.3468 // Longitude of Canada
 }
 
-const Maps = () => {
+const Maps = (props) => {
+
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: "AIzaSyDsc0jaxFvFYsc1b3Tblah0n1LV3RfZZDQ",
     })
+    const [map, setMap] = useState(null)
 
-    const [map, setMap] = React.useState(null)
 
     const onLoad = React.useCallback(function callback(map) {
         // This is just an example of getting and using the map instance!!! don't just blindly copy!
         const bounds = new window.google.maps.LatLngBounds(center)
+        setMap(map)
         map.fitBounds(bounds)
 
         setMap(map)
@@ -58,18 +60,68 @@ const Maps = () => {
         fillOpacity: 0.35,
         radius: 500000, // Radius in meters (500km)
     };
+
+    const [markerPosition, setMarkerPosition] = useState(null);
+    const [placeName, setPlaceName] = useState("");
+    // console.log(markerPosition, "this is marker position")
+    // Handle map click to set marker
+    const handleMapClick = (event) => {
+        const clickedLatLng = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng(),
+        };
+        setMarkerPosition(clickedLatLng); // Update marker position
+        getPlaceName(clickedLatLng.lat, clickedLatLng.lng);
+    };
+
+    const getPlaceName = async (lat, lng) => {
+        if (!lat || !lng) return;
+
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                const addressComponents = results[0].address_components;
+                let postalCode = "";
+
+                // Extract postal code from address components
+                for (let component of addressComponents) {
+                    if (component.types.includes("postal_code")) {
+                        postalCode = component.long_name;
+                        break;
+                    }
+                }
+
+                const address = results[0].formatted_address;
+                // console.log(results, "therse are results")
+                setPlaceName(results[0].formatted_address);
+
+
+                props.onLocationSelect({ lat, lng, address: results[0].formatted_address, pincode: postalCode });
+
+            } else {
+                setPlaceName("Unknown location");
+            }
+        });
+    };
+
     return isLoaded ? (
         <GoogleMap
             mapContainerStyle={containerStyle}
-            center={center}
-            zoom={4}
+            center={props?.searchQuery?.lat ? props?.searchQuery : center}
+            zoom={10}
             options={options}
             onLoad={onLoad}
             onUnmount={onUnmount}
+            onClick={handleMapClick}
         >
             {/* Child components, such as markers, info windows, etc. */}
-            <Marker position={center} />
-            <Circle center={center} options={circleOptions} />
+
+            {markerPosition ? (
+                <Marker position={markerPosition} />
+            ) : props?.searchQuery?.lat && props?.searchQuery?.lng ? (
+                <Marker position={{ lat: props?.searchQuery?.lat, lng: props?.searchQuery?.lng }} />
+            ) : null}
+            {/* <Circle center={center} options={circleOptions} /> */}
         </GoogleMap>
     ) : (
         <></>

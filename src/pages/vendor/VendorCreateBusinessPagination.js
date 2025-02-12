@@ -128,9 +128,10 @@ const VendorCreateBusinessPagination = () => {
         email: '',
         country: '',
         address: '',
-        city: 'Not To Be Blank',
-        state: 'Not To Be Blank',
+        city: '',
+        state: '',
         postal_code: '',
+        location: "",
         business_registration_number: '',
         business_verification_document: null,
         business_logo: null
@@ -406,9 +407,13 @@ const VendorCreateBusinessPagination = () => {
     // console.log(searchQuery)
     const handleLocationSelect = (location) => {
         console.log("Selected Location:", location);
+
         setSearchQuery({ formatted_address: location?.address, pincode: location?.pincode }); // Update search input with place name
         setFormData((prevData) => ({
             ...prevData,
+            city: location?.city,
+            state: location?.city,
+            location: `POINT(${location?.lat} ${location?.lng})`,
             postal_code: location?.pincode || prevData.postal_code,
             address: location?.address || prevData.address
         }));

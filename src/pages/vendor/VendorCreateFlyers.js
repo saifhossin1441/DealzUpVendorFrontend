@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './../../assets/vendors/css/styles.css';
 import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
 import uploadGallery from './../../assets/images/uploadGallery.png';
 import * as yup from 'yup'
+import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -93,6 +94,9 @@ const styles = {
 const VendorCreateFlyers = () => {
   const [image, setImage] = useState(null);
   const [error, setError] = useState({})
+  const [business, setBusiness] = useState([])
+  const [categories, setCategories] = useState([])
+  const [subcategories, setSubcategories] = useState([])
   const [formData, setFormData] = useState({
     category: '1b353ae7-b8fe-4fe3-9c07-ef04086d4001',
     name: '',
@@ -100,11 +104,14 @@ const VendorCreateFlyers = () => {
     on_click: '',
     active: true,
     image: null,
+    business: '',
+    business_details: null,
     start_date: '',
     end_date: ''
   });
 
   const navigate = useNavigate()
+  const { refreshAccessToken, refresherror } = useRefreshToken();
 
   const schema = yup.object().shape({
     category: yup.string().required("Category is required"),
@@ -137,6 +144,77 @@ const VendorCreateFlyers = () => {
         )
       )
   });
+  useEffect(() => {
+    const GetBusiness = async () => {
+      let apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/`;
+      const newAccessToken = await refreshAccessToken();
+      console.log(newAccessToken, 'refresh token', refresherror)
+
+      fetch(apiEndpoint, {
+        method: 'GET', // Use 'POST', 'PUT', or 'DELETE' if appropriate for your API
+        headers: {
+          'Content-Type': 'application/json', // Optional if your API expects JSON
+          'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+          setBusiness(data); // Set the flyers data from API
+        })
+        .catch((error) => {
+          console.error('Error fetching the flyers:', error);
+        });
+
+    }
+    const GetCategories = async () => {
+      let apiEndpoint = `${process.env.REACT_APP_API_URL}deals/categories/`;
+      const newAccessToken = await refreshAccessToken();
+      console.log(newAccessToken, 'refresh token', refresherror)
+
+      fetch(apiEndpoint, {
+        method: 'GET', // Use 'POST', 'PUT', or 'DELETE' if appropriate for your API
+        headers: {
+          'Content-Type': 'application/json', // Optional if your API expects JSON
+          'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data, 'categories')
+          setCategories(data); // Set the flyers data from API
+        })
+        .catch((error) => {
+          console.error('Error fetching the flyers:', error);
+        });
+
+    }
+    const GetSubCategories = async () => {
+      let apiEndpoint = `${process.env.REACT_APP_API_URL}deals/subcategories/`;
+      const newAccessToken = await refreshAccessToken();
+      console.log(newAccessToken, 'refresh token', refresherror)
+
+      fetch(apiEndpoint, {
+        method: 'GET', // Use 'POST', 'PUT', or 'DELETE' if appropriate for your API
+        headers: {
+          'Content-Type': 'application/json', // Optional if your API expects JSON
+          'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data, 'setSubcategories')
+          setSubcategories(data)// Set the flyers data from API
+        })
+        .catch((error) => {
+          console.error('Error fetching the flyers:', error);
+        });
+
+    }
+    GetCategories()
+    GetSubCategories()
+    GetBusiness()
+  }, [])
 
 
   const handleSubmit = (e) => {
@@ -277,7 +355,6 @@ const VendorCreateFlyers = () => {
                 name="category"
                 required
                 style={styles.select}
-                className="white-placeholder"
                 value={formData.category}
                 onChange={handleChange}
               >
@@ -312,6 +389,35 @@ const VendorCreateFlyers = () => {
                 <option value="Education">Education</option>
               </select>
 
+
+              <select
+                name="business"
+                required
+                style={styles.select}
+                className="white-placeholder"
+                value={formData.category}
+                onChange={(e) => {
+                  const selectedBusiness = business?.find((item) => item.name === e.target.value);
+                  if (selectedBusiness) {
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      business: selectedBusiness.id, // Store data.id
+                      business_details: selectedBusiness, // Store full data object
+                    }));
+                  }
+                }}
+              >
+                <option value="" disabled>
+                  Select Business
+                </option>
+                {business?.map((data, index) => (
+                  <option key={index} value={data?.name}>
+                    {`${data?.name}`}
+                  </option>
+                ))}
+
+
+              </select>
               {/* {error.subcategory && <div id="Error" className="form-text2">{error.subcategory}</div>} */}
 
               <input

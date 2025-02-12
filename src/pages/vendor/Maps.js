@@ -26,7 +26,7 @@ const Maps = (props) => {
         setMap(map)
         map.fitBounds(bounds)
 
-        setMap(map)
+
     }, [])
 
     const onUnmount = React.useCallback(function callback(map) {
@@ -46,7 +46,7 @@ const Maps = (props) => {
         },
         gestureHandling: "greedy", // Improves zooming experience
         minZoom: 3,  // Prevents zooming out too much
-        maxZoom: 12, // Adjust for user experience
+        maxZoom: 18, // Adjust for user experience
         // mapTypeControl: false, // Hide map type controls if needed
         // disableDefaultUI: false, // Keep other controls
         fullscreenControl: true, // Keep fullscreen option
@@ -82,21 +82,31 @@ const Maps = (props) => {
             if (status === "OK" && results[0]) {
                 const addressComponents = results[0].address_components;
                 let postalCode = "";
+                let city = "";
+                let state = "";
 
                 // Extract postal code from address components
                 for (let component of addressComponents) {
                     if (component.types.includes("postal_code")) {
                         postalCode = component.long_name;
-                        break;
+                    }
+                    if (component.types.includes("locality")) {
+                        city = component.long_name;
+                    }
+                    if (component.types.includes("administrative_area_level_1")) {
+                        state = component.long_name;
                     }
                 }
 
                 const address = results[0].formatted_address;
                 // console.log(results, "therse are results")
-                setPlaceName(results[0].formatted_address);
+                setPlaceName(address);
 
 
-                props.onLocationSelect({ lat, lng, address: results[0].formatted_address, pincode: postalCode });
+                props.onLocationSelect({
+                    lat, lng, address: results[0].formatted_address, pincode: postalCode, city,
+                    state
+                });
 
             } else {
                 setPlaceName("Unknown location");
@@ -107,8 +117,8 @@ const Maps = (props) => {
     return isLoaded ? (
         <GoogleMap
             mapContainerStyle={containerStyle}
-            center={props?.searchQuery?.lat ? props?.searchQuery : center}
-            zoom={10}
+            center={props?.searchQuery?.lat ? props?.searchQuery : markerPosition ? markerPosition : center}
+            zoom={22}
             options={options}
             onLoad={onLoad}
             onUnmount={onUnmount}

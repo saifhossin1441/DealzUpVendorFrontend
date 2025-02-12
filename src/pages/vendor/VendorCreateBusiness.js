@@ -47,6 +47,11 @@ const VendorCreateBusiness = () => {
         <div className="row">
           <Sidebar />
           <div className="col-md-8 main_content" >
+            {data && data.length > 0 && <h2 style={{ textAlign: "center", color: "#007BFF" }}>
+              <Link to="/VendorCreateBusinessPagination" style={{ textDecoration: "none", color: "#007BFF" }}>
+                + Create Business
+              </Link>
+            </h2>}
             <div className="container" style={{ backgroundColor: "#000000", padding: "20px", minHeight: "100vh" }}>
               {data && data.length > 0 ? (
                 <div

@@ -7,7 +7,7 @@ import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { Link } from 'react-router-dom';
 
 
-const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/`;
+
 const VendorCreateBusiness = () => {
   const [data, setData] = useState()
   const { refreshAccessToken, refresherror } = useRefreshToken();
@@ -17,21 +17,28 @@ const VendorCreateBusiness = () => {
     const GetApi = async () => {
       const newAccessToken = await refreshAccessToken();
       console.log(newAccessToken, 'refresh token', refresherror)
+      let vendorInfo = localStorage.getItem('vendorInfo');
+      if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
+      vendorInfo = JSON.parse(vendorInfo);
+      if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
 
+      const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/vendor/1`;
       fetch(apiEndpoint, {
-        method: 'GET', // Use 'POST', 'PUT', or 'DELETE' if appropriate for your API
+        method: 'GET',
+        mode: 'no-cors',
+
         headers: {
-          'Content-Type': 'application/json', // Optional if your API expects JSON
-          'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${newAccessToken}`,
         },
       }).then((response) => response.json())
         .then((data) => {
 
           console.log(data, "isthis array i need")
-          setData(data); // Set the flyers data from API
+          setData(data);
         })
         .catch((error) => {
-          console.error('Error fetching the flyers:', error);
+          console.error('Error fetching the bussiness:', error);
         });
     }
     GetApi()

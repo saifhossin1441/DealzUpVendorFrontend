@@ -134,7 +134,8 @@ const VendorCreateBusinessPagination = () => {
         location: "",
         business_registration_number: '',
         business_verification_document: null,
-        business_logo: null
+        business_logo: null,
+        vendor: null
     });
     const [error, setError] = useState({})
     const { coords, isGeolocationAvailable, isGeolocationEnabled } =
@@ -347,9 +348,18 @@ const VendorCreateBusinessPagination = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Form Data:', formData);
+        let vendorInfo = localStorage.getItem('vendorInfo');
+        if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
 
-        SendDataToDatabase(formData)
+        vendorInfo = JSON.parse(vendorInfo); // Correct parsing
+
+        if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
+
+        // Set vendor ID in formData
+        const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id };
+        console.log('Form Data:', updatedFormData);
+
+        SendDataToDatabase(updatedFormData)
 
         if (!verified) {
             setVerified(true)
@@ -411,6 +421,7 @@ const VendorCreateBusinessPagination = () => {
         setSearchQuery({ formatted_address: location?.address, pincode: location?.pincode }); // Update search input with place name
         setFormData((prevData) => ({
             ...prevData,
+            country: location?.country,
             city: location?.city,
             state: location?.city,
             location: `POINT(${location?.lat} ${location?.lng})`,
@@ -668,6 +679,24 @@ const VendorCreateBusinessPagination = () => {
                                                         <Maps searchQuery={searchQuery} onLocationSelect={handleLocationSelect} /> {/* Pass search query to Maps */}
                                                     </div>
                                                 </Modal.Body>
+                                                <Modal.Footer>
+                                                    <button
+                                                        onClick={() => {
+                                                            // handleLocationSelect; 
+                                                            setOpenMaps(false); // Close the modal
+                                                        }}
+                                                        style={{
+                                                            backgroundColor: "red",
+                                                            color: "white",
+                                                            padding: "10px 15px",
+                                                            border: "none",
+                                                            borderRadius: "5px",
+                                                            cursor: "pointer",
+                                                        }}
+                                                    >
+                                                        Set Location
+                                                    </button>
+                                                </Modal.Footer>
                                             </Modal>
                                             <p>OR</p>
 
@@ -820,6 +849,14 @@ const VendorCreateBusinessPagination = () => {
                                                     <tr>
                                                         <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Address</td>
                                                         <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.address || "N/A"}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>City</td>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.city || "N/A"}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>State</td>
+                                                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>{formData.state || "N/A"}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: "10px", border: "1px solid #ccc", fontWeight: "bold" }}>Postal Code</td>

@@ -114,7 +114,12 @@
 /* // RESETS, demo only */
 
 *{ box-sizing: border-box; }
-body{ padding: 0; margin: 0; background-color: #fff !important; color: #000 !important; }
+body{ padding: 0; margin: 0; background-color: #fff !important; color: #000 !important; 
+ }
+body::-webkit-scrollbar {
+  display: none;
+}  
+
 img {
    max-width: 100%; 
   /* // Max = actual size OR not larger than container */ 

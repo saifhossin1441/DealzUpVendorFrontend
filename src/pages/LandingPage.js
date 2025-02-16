@@ -14,7 +14,7 @@ const LandingPage = () => {
   return (
     <>
       {/* 1st Section Start */}
-      <div className=" container-fluid banner" style={{
+      <div className="container-fluid banner" style={{
         backgroundImage: `url(${banner})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',

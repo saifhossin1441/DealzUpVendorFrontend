@@ -35,7 +35,9 @@ const Header = (props) => {
                 <li><Link className="dropdown-item" to="/VendorProfile">Profile</Link></li>
                 <li><Link className="dropdown-item" to="/VendorDashboard">Dashboard</Link></li>
                 <li><hr className="dropdown-divider" /></li>
-                <li><a className="dropdown-item" href="/">Logout</a></li>
+                <li><a className="dropdown-item" href="/" onClick={() => {
+                  localStorage.removeItem("vendorInfo");
+                }}>Logout</a></li>
               </ul>
             </li>
           </ul>

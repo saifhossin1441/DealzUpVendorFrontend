@@ -28,6 +28,7 @@ import VendorAddToWallet from './pages/vendor/VendorAddToWallet';
 import { ToastContainer } from 'react-toastify'
 import VendorWishes from './pages/vendor/VendorWishes';
 import MembershipPlan from './pages/vendor/MembershipPlan';
+import ProtectedRoute from './pages/Protectedroute';
 import GoogleMaps from './pages/vendor/Maps';
 
 function App() {
@@ -62,23 +63,26 @@ function App() {
           <Route path="/VendorRegistration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorRegistration /><Footer /></>} />
           {/* Vendors */}
           <Route path="/VendorForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorForgotPassword /><Footer /></>} />
-          <Route path="/VendorDashboard" element={<VendorDashboard />} />
-          <Route path="/VendorWallets" element={<VendorWallets />} />
-          <Route path="/VendorAddToWallet" element={<VendorAddToWallet />} />
-          <Route path="/VendorProfile" element={<VendorProfile />} />
-          <Route path="/VendorCreateBusiness" element={<VendorCreateBusiness />} />
-          <Route path="/VendorCreateBusinessPagination" element={<VendorCreateBusinessPagination />} />
-          <Route path="/VendorFlyers" element={<VendorFlyers />} />
-          <Route path="/VendorCreateFlyers" element={<VendorCreateFlyers />} />
-          <Route path="/VendorDeals" element={<VendorDeals />} />
-          <Route path="/VendorCreateDeals" element={<VendorCreateDeals />} />
-          <Route path="/VendorOffers" element={<VendorOffers />} />
-          <Route path="/VendorCreateOffers" element={<VendorCreateOffers />} />
-          <Route path="/VendorBanners" element={<VendorBanners />} />
-          <Route path="/VendorCreateBanners" element={<VendorCreateBanners />} />
-          <Route path="/VendorWishes" element={<VendorWishes />} />
-          <Route path="/VendorMembershipPlan" element={<MembershipPlan />} />
-          <Route path="/GoogleMaps" element={<GoogleMaps />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/VendorDashboard" element={<VendorDashboard />} />
+            <Route path="/VendorWallets" element={<VendorWallets />} />
+            <Route path="/VendorAddToWallet" element={<VendorAddToWallet />} />
+            <Route path="/VendorProfile" element={<VendorProfile />} />
+            <Route path="/VendorCreateBusiness" element={<VendorCreateBusiness />} />
+            <Route path="/VendorCreateBusinessPagination" element={<VendorCreateBusinessPagination />} />
+            <Route path="/VendorFlyers" element={<VendorFlyers />} />
+            <Route path="/VendorCreateFlyers" element={<VendorCreateFlyers />} />
+            <Route path="/VendorDeals" element={<VendorDeals />} />
+            <Route path="/VendorCreateDeals" element={<VendorCreateDeals />} />
+            <Route path="/VendorOffers" element={<VendorOffers />} />
+            <Route path="/VendorCreateOffers" element={<VendorCreateOffers />} />
+            <Route path="/VendorBanners" element={<VendorBanners />} />
+            <Route path="/VendorCreateBanners" element={<VendorCreateBanners />} />
+            <Route path="/VendorWishes" element={<VendorWishes />} />
+            <Route path="/VendorMembershipPlan" element={<MembershipPlan />} />
+            <Route path="/GoogleMaps" element={<GoogleMaps />} />
+          </Route>
         </Routes>
       </Router>
     </>

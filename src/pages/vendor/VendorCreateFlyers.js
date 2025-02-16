@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import './../../assets/vendors/css/styles.css';
 import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
 import uploadGallery from './../../assets/images/uploadGallery.png';
 import * as yup from 'yup'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
@@ -98,14 +100,14 @@ const VendorCreateFlyers = () => {
   const [categories, setCategories] = useState([])
   const [subcategories, setSubcategories] = useState([])
   const [formData, setFormData] = useState({
-    category: '1b353ae7-b8fe-4fe3-9c07-ef04086d4001',
+    category: '',
+    subcategory: '',
     name: '',
     descripton: '',
     on_click: '',
     active: true,
     image: null,
     business: '',
-    business_details: null,
     start_date: '',
     end_date: ''
   });
@@ -145,77 +147,42 @@ const VendorCreateFlyers = () => {
       )
   });
   useEffect(() => {
-    const GetBusiness = async () => {
-      let apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/`;
-      const newAccessToken = await refreshAccessToken();
-      console.log(newAccessToken, 'refresh token', refresherror)
+    const fetchData = async () => {
+      try {
+        const newAccessToken = await refreshAccessToken();
 
-      fetch(apiEndpoint, {
-        method: 'GET', // Use 'POST', 'PUT', or 'DELETE' if appropriate for your API
-        headers: {
-          'Content-Type': 'application/json', // Optional if your API expects JSON
-          'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data)
-          setBusiness(data); // Set the flyers data from API
-        })
-        .catch((error) => {
-          console.error('Error fetching the flyers:', error);
-        });
+        const fetchWithAuth = async (url, setter) => {
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${newAccessToken}`,
+            },
+          });
+          const data = await response.json();
+          setter(data);
+        };
 
-    }
-    const GetCategories = async () => {
-      let apiEndpoint = `${process.env.REACT_APP_API_URL}deals/categories/`;
-      const newAccessToken = await refreshAccessToken();
-      console.log(newAccessToken, 'refresh token', refresherror)
+        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/businesses/`, setBusiness);
+        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/categories/`, (data) => setCategories(data.data));
+        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/subcategories/`, setSubcategories);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-      fetch(apiEndpoint, {
-        method: 'GET', // Use 'POST', 'PUT', or 'DELETE' if appropriate for your API
-        headers: {
-          'Content-Type': 'application/json', // Optional if your API expects JSON
-          'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data, 'categories')
-          setCategories(data); // Set the flyers data from API
-        })
-        .catch((error) => {
-          console.error('Error fetching the flyers:', error);
-        });
+    fetchData();
+  }, []);
 
-    }
-    const GetSubCategories = async () => {
-      let apiEndpoint = `${process.env.REACT_APP_API_URL}deals/subcategories/`;
-      const newAccessToken = await refreshAccessToken();
-      console.log(newAccessToken, 'refresh token', refresherror)
+  const onSDateChangeHandler = useCallback(date => setFormData({
+    ...formData,
+    'start_date': date
+  }), [formData.start_date]);
 
-      fetch(apiEndpoint, {
-        method: 'GET', // Use 'POST', 'PUT', or 'DELETE' if appropriate for your API
-        headers: {
-          'Content-Type': 'application/json', // Optional if your API expects JSON
-          'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data, 'setSubcategories')
-          setSubcategories(data)// Set the flyers data from API
-        })
-        .catch((error) => {
-          console.error('Error fetching the flyers:', error);
-        });
-
-    }
-    GetCategories()
-    GetSubCategories()
-    GetBusiness()
-  }, [])
-
+  const onEDateChangeHandler = useCallback(date => setFormData({
+    ...formData,
+    'end_date': date
+  }), [formData.end_date]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -313,6 +280,7 @@ const VendorCreateFlyers = () => {
 
   return (
     <>
+
       <Header />
       <div className="container-fluid content-section align">
         <div className="row">
@@ -356,16 +324,25 @@ const VendorCreateFlyers = () => {
                 required
                 style={styles.select}
                 value={formData.category}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const selectedCategory = categories?.find((item) => item.name === e.target.value);
+                  if (selectedCategory) {
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      category: selectedCategory.id, // Store data.id
+                    }));
+                  }
+                }}
               >
                 <option value="" disabled>
                   Select Category
                 </option>
-                <option value="">Select Category</option>
-                <option value="Grocery">Grocery</option>
-                <option value="Medicine">Medicine</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Education">Education</option>
+                {categories?.map((data, index) => (
+                  <option key={index} value={data?.name}>
+                    {`${data?.name}`}
+                  </option>
+                ))}
+
                 {/* Add more options as needed */}
               </select>
               {error.category && <div id="Error" className="form-text2">{error.category}</div>}
@@ -376,17 +353,26 @@ const VendorCreateFlyers = () => {
                 required
                 style={styles.select}
                 className="white-placeholder"
-                value={formData.category}
-                onChange={(e) => { console.log(e.target) }}
+                value={formData.subcategory}
+                onChange={(e) => {
+                  const selectedCategory = subcategories?.find((item) => item.name === e.target.value);
+                  if (selectedCategory) {
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      subcategory: selectedCategory.id, // Store data.id
+                    }));
+                  }
+                }}
               >
                 <option value="" disabled>
                   Select Sub Category
                 </option>
-                <option value="">Select Sub Category</option>
-                <option value="Grocery">Grocery</option>
-                <option value="Medicine">Medicine</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Education">Education</option>
+                {subcategories?.map((data, index) => (
+                  <option key={index} value={data?.name}>
+                    {`${data?.name}`}
+                  </option>
+                ))}
+
               </select>
 
 
@@ -395,14 +381,13 @@ const VendorCreateFlyers = () => {
                 required
                 style={styles.select}
                 className="white-placeholder"
-                value={formData.category}
+                value={formData.business}
                 onChange={(e) => {
                   const selectedBusiness = business?.find((item) => item.name === e.target.value);
                   if (selectedBusiness) {
                     setFormData((prevData) => ({
                       ...prevData,
                       business: selectedBusiness.id, // Store data.id
-                      business_details: selectedBusiness, // Store full data object
                     }));
                   }
                 }}
@@ -447,29 +432,42 @@ const VendorCreateFlyers = () => {
               <div className="row" >
                 <div className="col-md-6">
                   <label htmlFor="startDate">Start Date</label>
-                  <input
-                    type="date"
-                    placeholder="Date"
-                    required
-                    style={styles.input}
-                    onChange={handleChange} value={formData.start_date}
-                    name="start_date"
-                    className="white-placeholder"
-                  />
+                  <DatePicker name="end_date" selected={formData.end_date} onChange={onSDateChangeHandler} wrapperClassName="date-picker"
+                    // showMonthYearPicker
+                    // showFullMonthYearPicker
+                    // showTwoColumnMonthYearPicker
+                    dropdownMode="selec" customInput={<input
+                      type="date"
+                      placeholder="Date"
+                      required
+                      style={styles.input}
+                      // onChange={handleChange} 
+                      value={formData.start_date}
+                      name="start_date"
+                      className="white-placeholder"
+                    />} />
                 </div>
                 {error.start_date && <div id="Error" className="form-text2">{error.start_date}</div>}
 
                 <div className="col-md-6">
                   <label>End Date</label>
-                  <input
-                    type="date"
-                    name="end_date"
-                    placeholder="Date"
-                    required
-                    style={styles.input}
-                    onChange={handleChange} value={formData.end_date}
-                    className="white-placeholder"
-                  />
+                  {/* <DatePicker name="end_date" selected={formData.end_date} onChange={onEDateChangeHandler} wrapperClassName="date-picker" showFullMonthYearPicker
+                    showMonthYearPicker
+                    showTwoColumnMonthYearPicker
+                    dropdownMode="selec"
+                    customInput={<input
+                      type="date"
+                      name="end_date"
+                      placeholder="Date"
+                      required
+                      style={styles.input}
+                      // onChange={handleChange} 
+                      value={formData.end_date}
+                      className="white-placeholder"
+                    />} /> */}
+
+
+
                 </div>
                 {error.end_date && <div id="Error" className="form-text2">{error.end_date}</div>}
               </div>

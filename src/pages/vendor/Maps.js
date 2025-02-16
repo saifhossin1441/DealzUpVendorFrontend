@@ -84,7 +84,7 @@ const Maps = (props) => {
                 let postalCode = "";
                 let city = "";
                 let state = "";
-
+                let country = "";
                 // Extract postal code from address components
                 for (let component of addressComponents) {
                     if (component.types.includes("postal_code")) {
@@ -96,6 +96,9 @@ const Maps = (props) => {
                     if (component.types.includes("administrative_area_level_1")) {
                         state = component.long_name;
                     }
+                    if (component.types.includes("country")) {
+                        country = component.long_name;
+                    }
                 }
 
                 const address = results[0].formatted_address;
@@ -105,7 +108,7 @@ const Maps = (props) => {
 
                 props.onLocationSelect({
                     lat, lng, address: results[0].formatted_address, pincode: postalCode, city,
-                    state
+                    state, country
                 });
 
             } else {

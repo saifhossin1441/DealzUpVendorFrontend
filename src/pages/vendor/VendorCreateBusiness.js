@@ -22,10 +22,10 @@ const VendorCreateBusiness = () => {
       vendorInfo = JSON.parse(vendorInfo);
       if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
 
-      const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/vendor/1`;
+      const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/vendor/3`;
       fetch(apiEndpoint, {
         method: 'GET',
-        mode: 'no-cors',
+        // mode: 'no-cors',
 
         headers: {
           'Content-Type': 'application/json',

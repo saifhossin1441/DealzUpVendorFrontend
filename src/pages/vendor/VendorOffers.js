@@ -16,12 +16,13 @@ const VendorOffers = () => {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data)
-                setOffers(data.data); // Set the flyers data from API
+                setOffers(data); // Set the flyers data from API
             })
             .catch((error) => {
                 console.error('Error fetching the flyers:', error);
             });
     }, []);
+
     return (
         <>
             <Header />

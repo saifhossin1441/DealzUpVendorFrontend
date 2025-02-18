@@ -14,6 +14,8 @@ const Sidebar = () => {
         {/* <a href="/VendorWishes">WishList</a> */}
         {/* <Link to="/VendorBanners">Wallets</Link> */}
         <a href="/VendorCreateBusiness">Business</a>
+        <a href="/VendorMembershipPlan">Subscriptions</a>
+        <a href="/VendorWallets">Wallets</a>
         <div className="upgrade-box">
           Upgrade Dealzup<br />
           Enjoy 2 month <br /> free Trial!

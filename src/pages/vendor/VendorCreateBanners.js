@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './../../assets/vendors/css/styles.css';
 import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
@@ -6,6 +6,7 @@ import uploadGallery from './../../assets/images/uploadGallery.png';
 import * as yup from 'yup'
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import { useRefreshToken } from "../../hooks/useRefreshToken";
 
 const styles = {
 
@@ -92,24 +93,39 @@ const styles = {
 const VendorCreateBanners = () => {
   const [image, setImage] = useState(null);
   const [error, setError] = useState({})
+  const [business, setBusiness] = useState([])
+  const [showcat, setShowcat] = useState('')
+  const [showSub, setshowSub] = useState('')
+  const [categories, setCategories] = useState([])
+  const [subcategories, setSubcategories] = useState([])
+  const [filteredSubcategories, setFilteredSubcategories] = useState([])
   const [formData, setFormData] = useState({
     category: '',
+    subcategory: '',
     name: '',
     descripton: '',
     on_click: '',
     active: true,
     image: null,
     start_date: '',
-    end_date: ''
+    end_date: '',
+    business: '',
+    vendor: ''
   });
   const navigate = useNavigate()
+  const { refreshAccessToken, refresherror } = useRefreshToken();
+
 
 
   const schema = yup.object().shape({
     category: yup.string().required("Category is required"),
+    subcategory: yup.string().required("SubCategory is required"),
+
     descripton: yup.string().required("Description is required"),
     image: yup.string().required("Image is required"),
     name: yup.string().required("Flyer name is required"),
+    business: yup.string().required("Business name is required"),
+
     start_date: yup
       .string()
       .required("Start Date is required")
@@ -137,15 +153,57 @@ const VendorCreateBanners = () => {
       )
   });
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const newAccessToken = await refreshAccessToken();
+
+        const fetchWithAuth = async (url, setter) => {
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${newAccessToken}`,
+            },
+          });
+          const data = await response.json();
+          setter(data);
+        };
+        let vendorInfo = localStorage.getItem('vendorInfo');
+        if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
+        vendorInfo = JSON.parse(vendorInfo);
+        if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
+
+        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/businesses/vendor/${vendorInfo?.vendor?.id}`, setBusiness);
+        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/categories/`, (data) => setCategories(data.data));
+        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/subcategories/`, setSubcategories);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
-    schema.validate(formData)
+
+    let vendorInfo = localStorage.getItem('vendorInfo');
+    if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
+
+    vendorInfo = JSON.parse(vendorInfo); // Correct parsing
+
+    if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
+
+    // Set vendor ID in formData
+    const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id };
+    console.log('Form Data:', updatedFormData);
+
+    schema.validate(updatedFormData)
       .then(valid => {
         console.log(valid, error)
         setError({});
-        SendDataToDatabase(formData)
+        SendDataToDatabase(updatedFormData)
       })
       .catch(error => {
 
@@ -231,6 +289,29 @@ const VendorCreateBanners = () => {
     });
 
   };
+
+
+  const handleCategoryChange = (e) => {
+    const selectedCategory = categories?.find((item) => item.name === e.target.value);
+    console.log(selectedCategory, "thos ")
+    setShowcat(selectedCategory.name)
+    if (selectedCategory) {
+      // Filter subcategories based on the selected category id
+      const subcategoriesForCategory = subcategories.filter(
+        (subcategory) => subcategory.category === selectedCategory.id
+      );
+      setFilteredSubcategories(subcategoriesForCategory);
+
+      // Update the form data
+      setFormData((prevData) => ({
+        ...prevData,
+        category: selectedCategory.id, // Store the category id
+        subcategory: '' // Reset subcategory when category changes
+      }));
+    }
+  };
+
+
   return (
     <>
       <Header />
@@ -273,49 +354,80 @@ const VendorCreateBanners = () => {
               </div>
 
 
-
               <select
                 name="category"
                 required
                 style={styles.select}
-                className="white-placeholder"
-                value={formData.category}
-                onChange={handleChange}
+                value={showcat}
+                onChange={handleCategoryChange}
               >
                 <option value="" disabled>
                   Select Category
                 </option>
-                <option value="">Select Category</option>
-                <option value="Grocery">Grocery</option>
-                <option value="Medicine">Medicine</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Education">Education</option>
-                {/* Add more options as needed */}
+                {categories?.map((data, index) => (
+                  <option key={index} value={data?.name}>
+                    {`${data?.name}`}
+                  </option>
+                ))}
+
               </select>
               {error.category && <div id="Error" className="form-text2">{error.category}</div>}
 
-
-
-
               <select
-                name="sub_category"
+                name="subcategory"
                 required
                 style={styles.select}
                 className="white-placeholder"
-                value={formData.category}
-                onChange={(e) => { console.log(e.target) }}
+                value={showSub}
+                onChange={(e) => {
+                  const selectedCategory = subcategories?.find((item) => item.name === e.target.value);
+                  if (selectedCategory) {
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      subcategory: selectedCategory.id, // Store data.id
+                    }));
+                    setshowSub(selectedCategory.name)
+                  }
+                }}
               >
                 <option value="" disabled>
                   Select Sub Category
                 </option>
-                <option value="">Select Sub Category</option>
-                <option value="Grocery">Grocery</option>
-                <option value="Medicine">Medicine</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Education">Education</option>
-                {/* Add more options as needed */}
-              </select>
+                {filteredSubcategories?.map((data, index) => (
+                  <option key={index} value={data?.name}>
+                    {`${data?.name}`}
+                  </option>
+                ))}
 
+              </select>
+              {error.subcategory && <div id="Error" className="form-text2">{error.subcategory}</div>}
+
+              <select
+                name="business"
+                required
+                style={styles.select}
+                className="white-placeholder"
+                value={formData.business}
+                onChange={(e) => {
+                  const selectedBusiness = business?.find((item) => item.name === e.target.value);
+                  if (selectedBusiness) {
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      business: selectedBusiness.id, // Store data.id
+                    }));
+                  }
+                }}
+              >
+                <option value="" disabled>
+                  Select Business
+                </option>
+                {business?.map((data, index) => (
+                  <option key={index} value={data?.name}>
+                    {`${data?.name}`}
+                  </option>
+                ))}
+              </select>
+              {error.business && <div id="Error" className="form-text2">{error.business}</div>}
 
 
               <input

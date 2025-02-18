@@ -46,7 +46,7 @@ const VendorDashboard = () => {
           fetch(endpoints.deals, { headers }).then((res) => res.json()),
           fetch(endpoints.offers, { headers }).then((res) => res.json()),
         ]);
-        console.log(bannersRes, offersRes)
+        console.log(bannersRes, offersRes, "data")
         // Update state with the fetched data
         setFlyers(flyersRes);
         setBanners(bannersRes);
@@ -83,7 +83,7 @@ const VendorDashboard = () => {
                 </div>
                 <div className="content-box col-md-5">
                   <div><Link style={{ color: "White" }} to="/VendorBanners">Banners</Link></div>
-                  <div className="circle">{`${banners?.count}`}</div>
+                  <div className="circle">{`${banners?.length}`}</div>
                   <div><Link style={{ color: "White" }} to="/VendorBanners">View More</Link></div>
                 </div>
               </div>
@@ -97,7 +97,7 @@ const VendorDashboard = () => {
                 </div>
                 <div className="content-box col-md-5">
                   <div><Link style={{ color: "White" }} to="/VendorOffers">Offer</Link></div>
-                  <div className="circle">{offers?.count}</div>
+                  <div className="circle">{offers?.length}</div>
                   <div><Link style={{ color: "White" }} to="/VendorOffers">View More</Link></div>
                 </div>
               </div>

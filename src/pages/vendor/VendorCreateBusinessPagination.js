@@ -682,7 +682,6 @@ const VendorCreateBusinessPagination = () => {
                                                 <Modal.Footer>
                                                     <button
                                                         onClick={() => {
-                                                            // handleLocationSelect; 
                                                             setOpenMaps(false); // Close the modal
                                                         }}
                                                         style={{

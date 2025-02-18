@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { GoogleMap, useJsApiLoader, Marker, Circle, Autocomplete } from '@react-google-maps/api'
 
 const containerStyle = {
@@ -60,6 +60,13 @@ const Maps = (props) => {
         fillOpacity: 0.35,
         radius: 500000, // Radius in meters (500km)
     };
+    useEffect(() => {
+
+        if (props?.searchQuery?.lat) {
+            getPlaceName(props?.searchQuery?.lat, props?.searchQuery?.lng);
+        }
+
+    }, [])
 
     const [markerPosition, setMarkerPosition] = useState(null);
     const [placeName, setPlaceName] = useState("");
@@ -75,6 +82,7 @@ const Maps = (props) => {
     };
 
     const getPlaceName = async (lat, lng) => {
+        console.log(lat, lng, "this is get")
         if (!lat || !lng) return;
 
         const geocoder = new window.google.maps.Geocoder();

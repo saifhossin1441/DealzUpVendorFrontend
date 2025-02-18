@@ -14,7 +14,7 @@ const VendorBanners = () => {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data)
-                setBanners(data.data); // Set the flyers data from API
+                setBanners(data); // Set the flyers data from API
             })
             .catch((error) => {
                 console.error('Error fetching the banners:', error);

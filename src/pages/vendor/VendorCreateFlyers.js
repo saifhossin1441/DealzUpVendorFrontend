@@ -376,7 +376,7 @@ const VendorCreateFlyers = () => {
                   </option>
                 ))}
 
-                {/* Add more options as needed */}
+
               </select>
               {error.category && <div id="Error" className="form-text2">{error.category}</div>}
 
@@ -386,7 +386,7 @@ const VendorCreateFlyers = () => {
                 required
                 style={styles.select}
                 className="white-placeholder"
-                value={formData.subcategory}
+                value={showSub}
                 onChange={(e) => {
                   const selectedCategory = subcategories?.find((item) => item.name === e.target.value);
                   if (selectedCategory) {
@@ -408,6 +408,8 @@ const VendorCreateFlyers = () => {
                 ))}
 
               </select>
+
+              {error.subcategory && <div id="Error" className="form-text2">{error.subcategory}</div>}
 
 
               <select
@@ -437,7 +439,7 @@ const VendorCreateFlyers = () => {
 
 
               </select>
-              {/* {error.subcategory && <div id="Error" className="form-text2">{error.subcategory}</div>} */}
+              {error.business && <div id="Error" className="form-text2">{error.business}</div>}
 
               <input
                 type="text"

@@ -173,7 +173,7 @@ const VendorCreateBusinessPagination = () => {
         postal_code: yup
             .string()
             .required("Postal Code is required")
-        // .matches(/^\d{6}$/, "Postal Code must be 6 digits")
+            .matches(/^[a-zA-Z0-9]{6}$/, "Postal Code must be 6 alphanumeric characters")
         ,
         address: yup.string().required("Address is required"),
     });
@@ -425,7 +425,7 @@ const VendorCreateBusinessPagination = () => {
             city: location?.city,
             state: location?.city,
             location: `POINT(${location?.lat} ${location?.lng})`,
-            postal_code: location?.pincode || prevData.postal_code,
+            postal_code: (location?.pincode || prevData.postal_code)?.replace(/\s+/g, ''),
             address: location?.address || prevData.address
         }));
     };

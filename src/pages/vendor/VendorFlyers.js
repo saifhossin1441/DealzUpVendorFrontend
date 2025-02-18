@@ -8,6 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 
 const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/flyers/`;
+// const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/business/1/flyers/`;
 // const wishEndpoint = `${process.env.REACT_APP_API_URL}deals/wishlist/`;
 const wishEndpoint = `http://127.0.0.1:8000/deals/wishlist/`;
 
@@ -27,24 +28,24 @@ const VendorFlyers = () => {
             });
     }, []);
 
-    const addToWishList = async (id) => {
-        let data = {
-            id: 1,
-            user: 0,
-            flyers: [id]
-        }
-        const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken, 'refresh token', refresherror)
+    // const addToWishList = async (id) => {
+    //     let data = {
+    //         id: 1,
+    //         user: 0,
+    //         flyers: [id]
+    //     }
+    //     const newAccessToken = await refreshAccessToken();
+    //     console.log(newAccessToken, 'refresh token', refresherror)
 
-        const response = await fetch(wishEndpoint, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
-            },
-            body: JSON.stringify(data),
-        });
+    //     const response = await fetch(wishEndpoint, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
+    //         },
+    //         body: JSON.stringify(data),
+    //     });
 
-    }
+    // }
 
     return (
         <>

@@ -1,14 +1,20 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import './../../assets/vendors/css/styles.css';
 import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
 import uploadGallery from './../../assets/images/uploadGallery.png';
 import * as yup from 'yup'
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
+import { Document, Page, pdfjs } from "react-pdf";
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString()
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
 
 const styles = {
 
@@ -95,6 +101,10 @@ const styles = {
 
 const VendorCreateFlyers = () => {
   const [image, setImage] = useState(null);
+  const [file, setFile] = useState(null);
+  const [numPages, setNumPages] = useState(null);
+  const [pageImages, setPageImages] = useState([]);
+  const canvasRef = useRef(null);
   const [error, setError] = useState({})
   const [business, setBusiness] = useState([])
   const [showcat, setShowcat] = useState('')
@@ -319,6 +329,109 @@ const VendorCreateFlyers = () => {
     }
   };
 
+
+  const onFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+  // Function to remove the white background and crop the image
+  const cropCanvas = (canvas) => {
+    const context = canvas.getContext('2d');
+    const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imgData.data;
+
+    let left = canvas.width;
+    let right = 0;
+    let top = canvas.height;
+    let bottom = 0;
+
+    // Define the threshold for white pixels (255, 255, 255)
+    const WHITE_THRESHOLD = 255;
+
+    // Iterate through the pixels to detect the non-white areas
+    for (let y = 0; y < canvas.height; y++) {
+      for (let x = 0; x < canvas.width; x++) {
+        const i = (y * canvas.width + x) * 4;
+        const r = pixels[i];
+        const g = pixels[i + 1];
+        const b = pixels[i + 2];
+        const a = pixels[i + 3];
+
+        // If the pixel is not white, mark the bounding box (left, right, top, bottom)
+        if (r < WHITE_THRESHOLD || g < WHITE_THRESHOLD || b < WHITE_THRESHOLD || a < WHITE_THRESHOLD) {
+          if (x < left) left = x;
+          if (x > right) right = x;
+          if (y < top) top = y;
+          if (y > bottom) bottom = y;
+        }
+      }
+    }
+
+    // Create a new canvas to crop out the white space
+    let croppedCanvas = document.createElement('canvas');
+    croppedCanvas.width = right - left;
+    croppedCanvas.height = bottom - top;
+    let croppedContext = croppedCanvas.getContext('2d');
+    croppedContext.fillStyle = '#f0f'
+    // Draw the cropped content (excluding white space) onto the new canvas
+    croppedContext.putImageData(imgData, -left, -top);
+
+    // Return the cropped image as a data URL (Base64 encoded image)
+    return croppedCanvas.toDataURL('image/png');
+  };
+  // const cropCanvas = (canvas) => {
+  //   const context = canvas.getContext('2d');
+  //   const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+  //   const pixels = imgData.data;
+  //   let top = 0;
+  //   let bottom = canvas.height;
+  //   let left = canvas.width;
+  //   let right = 0;
+
+  //   // Find the bounds of the content (non-white area)
+  //   for (let y = 0; y < canvas.height; y++) {
+  //     for (let x = 0; x < canvas.width; x++) {
+  //       const i = (y * canvas.width + x) * 4;
+  //       const r = pixels[i];
+  //       const g = pixels[i + 1];
+  //       const b = pixels[i + 2];
+  //       const a = pixels[i + 3];
+
+  //       // Check if the pixel is not white
+  //       if (r < 255 || g < 255 || b < 255 || a < 255) {
+  //         if (y < top) top = y;
+  //         if (y > bottom) bottom = y;
+  //         if (x < left) left = x;
+  //         if (x > right) right = x;
+  //       }
+  //     }
+  //   }
+
+  //   // Crop the image based on the detected bounds
+  //   const croppedCanvas = document.createElement('canvas');
+  //   croppedCanvas.width = right - left;
+  //   croppedCanvas.height = bottom - top;
+  //   const croppedContext = croppedCanvas.getContext('2d');
+
+  //   // Draw the cropped portion of the original canvas onto the new canvas
+  //   croppedContext.putImageData(imgData, -left, -top);
+  //   return croppedCanvas.toDataURL('image/png');
+  // };
+  // Extract page as an image
+  const onRenderSuccess = (pageNum) => {
+    const canvas = canvasRef.current;
+    console.log(canvas)
+    // const imgData = canvas.toDataURL('image/png');
+    const croppedImage = cropCanvas(canvas);
+    setPageImages((prev) => [...prev, croppedImage]);
+  };
+
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+  };
   return (
     <>
 
@@ -331,13 +444,40 @@ const VendorCreateFlyers = () => {
 
             <div className="content-box-o">
               <div>Choose Template</div>
+              <input type="file" accept="application/pdf" onChange={onFileChange} />
             </div>
 
 
             <div className="hr-container">
               <span>Or</span>
             </div>
-            <form onSubmit={handleSubmit}>
+
+            {file && (
+              <div>
+                <Document
+                  file={file}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                >
+                  {[...Array(numPages)].map((_, index) => (
+                    <Page
+                      key={index}
+                      pageNumber={index + 1}
+                      renderMode="canvas"
+                      onRenderSuccess={() => onRenderSuccess(index + 1)}
+                    />
+                  ))}
+                </Document>
+              </div>
+            )}
+
+            {/* Display extracted images */}
+            <div>
+              {pageImages.map((image, index) => (
+                <img key={index} src={image} alt={`Page ${index + 1}`} />
+              ))}
+            </div>
+
+            {/* <form onSubmit={handleSubmit}>
               <div className="uploadGallerySection">
 
                 {image ? (
@@ -468,20 +608,7 @@ const VendorCreateFlyers = () => {
               <div className="row" >
                 <div className="col-md-6">
                   <label htmlFor="startDate">Start Date</label>
-                  {/* <DatePicker name="end_date" selected={formData.end_date} onChange={onSDateChangeHandler} wrapperClassName="date-picker"
-                    showMonthYearPicker
-                    showFullMonthYearPicker
-                    showTwoColumnMonthYearPicker
-                    dropdownMode="selec" customInput={<input
-                      type="date"
-                      placeholder="Date"
-                      required
-                      style={styles.input}
-                      // onChange={handleChange} 
-                      value={formData.start_date}
-                      name="start_date"
-                      className="white-placeholder"
-                    />} /> */}
+
                   <input
                     type="date"
                     placeholder="Date"
@@ -497,20 +624,7 @@ const VendorCreateFlyers = () => {
 
                 <div className="col-md-6">
                   <label>End Date</label>
-                  {/* <DatePicker name="end_date" selected={formData.end_date} onChange={onEDateChangeHandler} wrapperClassName="date-picker" showFullMonthYearPicker
-                    showMonthYearPicker
-                    showTwoColumnMonthYearPicker
-                    dropdownMode="selec"
-                    customInput={<input
-                      type="date"
-                      name="end_date"
-                      placeholder="Date"
-                      required
-                      style={styles.input}
-                      // onChange={handleChange} 
-                      value={formData.end_date}
-                      className="white-placeholder"
-                    />} /> */}
+
 
                   <input
                     type="date"
@@ -529,7 +643,7 @@ const VendorCreateFlyers = () => {
 
               <button type="submit" style={styles.submitButton}> Submit</button>
 
-            </form>
+            </form> */}
             <ToastContainer />
           </div>
         </div>

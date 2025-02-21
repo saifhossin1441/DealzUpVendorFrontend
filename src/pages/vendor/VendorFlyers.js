@@ -6,6 +6,7 @@ import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { useRefreshToken } from '../../hooks/useRefreshToken';
+import jsPDF from 'jspdf';
 
 const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/flyers/`;
 // const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/business/1/flyers/`;
@@ -28,24 +29,34 @@ const VendorFlyers = () => {
             });
     }, []);
 
-    // const addToWishList = async (id) => {
-    //     let data = {
-    //         id: 1,
-    //         user: 0,
-    //         flyers: [id]
-    //     }
-    //     const newAccessToken = await refreshAccessToken();
-    //     console.log(newAccessToken, 'refresh token', refresherror)
 
-    //     const response = await fetch(wishEndpoint, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
-    //         },
-    //         body: JSON.stringify(data),
-    //     });
+    const generatePDF = () => {
 
-    // }
+        function getImgFromUrl(logo_url, callback) {
+            var img = new Image();
+            img.src = logo_url;
+            img.onload = function () {
+                callback(img);
+            };
+        }
+        function generatePDF(img) {
+            var options = { orientation: 'p', unit: 'mm', format: 'a3' };
+            var doc = new jsPDF(options);
+            doc.addImage(img, 'JPEG', 0, 0, 100, 50);
+            doc.save('flyers.pdf');
+        }
+
+        flyers.forEach((flyer, index) => {
+            console.log(flyer.image)
+            getImgFromUrl(flyer.image, function (img) {
+                generatePDF(img);
+            });
+        });
+
+        // Trigger the download
+
+    };
+
 
     return (
         <>
@@ -59,16 +70,13 @@ const VendorFlyers = () => {
                         </div>
                         <br />
                         <div class="flex_wrapper">
-
+                            <button onClick={generatePDF}>Download Flyers as PDF</button>
                             {flyers?.map((flyer) => (
                                 <div class="flyers_wrap" key={flyer.id}>
                                     <img src={flyer.image} alt="Food App" />
                                     <h3>{flyer.name}</h3>
                                     <p>Start Date : {flyer.start_date} <br /> End Date  &nbsp;: {flyer.end_date}</p>
                                     <p>{flyer.descripton}</p>
-                                    {/* <button className="heart-button" onClick={() => addToWishList(flyer.id)} >
-                                        ❤️
-                                    </button> */}
                                 </div>
                             ))}
                             {/* <div class="flyers_wrap">

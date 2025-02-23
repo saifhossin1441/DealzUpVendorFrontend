@@ -4,17 +4,18 @@ import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
 import uploadGallery from './../../assets/images/uploadGallery.png';
 import * as yup from 'yup'
+import Cropper from 'react-easy-crop'
 import { Document, Page, pdfjs } from "react-pdf";
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
+import ImageCropper from "../../components/ImageCropper";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url
 ).toString()
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
+
 
 const styles = {
 
@@ -125,6 +126,10 @@ const VendorCreateFlyers = () => {
     end_date: '',
     vendor: ''
   });
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+
+
 
   const navigate = useNavigate()
   const { refreshAccessToken, refresherror } = useRefreshToken();
@@ -210,11 +215,11 @@ const VendorCreateFlyers = () => {
     let vendorInfo = localStorage.getItem('vendorInfo');
     if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
 
-    vendorInfo = JSON.parse(vendorInfo); // Correct parsing
+    vendorInfo = JSON.parse(vendorInfo);
 
     if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
 
-    // Set vendor ID in formData
+
     const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id };
     console.log('Form Data:', updatedFormData);
 
@@ -240,12 +245,12 @@ const VendorCreateFlyers = () => {
   };
 
   const SendDataToDatabase = async (data) => {
-    // console.log(data)
+
     const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/flyers/`;
     let formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
-      if (value !== null) { // Only append non-null values
+      if (value !== null) {
         formData.append(key, value);
       }
     });
@@ -268,7 +273,7 @@ const VendorCreateFlyers = () => {
         const result = await response.json();
         console.log('Flyers Registration successful:', result);
         toast('Flyer Uploaded Successfully')
-        // Redirect to another page on successful login
+
         navigate('/VendorFlyers');
       }
       console.log(error, "Business Errror")
@@ -283,7 +288,7 @@ const VendorCreateFlyers = () => {
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file && file.size <= 1 * 1024 * 1024) { // 1MB limit
+    if (file && file.size <= 1 * 1024 * 1024) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result);
@@ -293,7 +298,7 @@ const VendorCreateFlyers = () => {
         });
       };
       reader.readAsDataURL(file);
-      // setFileName(file.name); // Set the file name
+
     } else {
       alert('File size should be less than 1MB');
     }
@@ -314,7 +319,7 @@ const VendorCreateFlyers = () => {
     console.log(selectedCategory, "thos ")
     setShowcat(selectedCategory.name)
     if (selectedCategory) {
-      // Filter subcategories based on the selected category id
+
       const subcategoriesForCategory = subcategories.filter(
         (subcategory) => subcategory.category === selectedCategory.id
       );
@@ -323,8 +328,8 @@ const VendorCreateFlyers = () => {
       // Update the form data
       setFormData((prevData) => ({
         ...prevData,
-        category: selectedCategory.id, // Store the category id
-        subcategory: '' // Reset subcategory when category changes
+        category: selectedCategory.id,
+        subcategory: ''
       }));
     }
   };
@@ -336,102 +341,26 @@ const VendorCreateFlyers = () => {
       setFile(selectedFile);
     }
   };
-  // Function to remove the white background and crop the image
-  const cropCanvas = (canvas) => {
-    const context = canvas.getContext('2d');
-    const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = imgData.data;
 
-    let left = canvas.width;
-    let right = 0;
-    let top = canvas.height;
-    let bottom = 0;
 
-    // Define the threshold for white pixels (255, 255, 255)
-    const WHITE_THRESHOLD = 255;
 
-    // Iterate through the pixels to detect the non-white areas
-    for (let y = 0; y < canvas.height; y++) {
-      for (let x = 0; x < canvas.width; x++) {
-        const i = (y * canvas.width + x) * 4;
-        const r = pixels[i];
-        const g = pixels[i + 1];
-        const b = pixels[i + 2];
-        const a = pixels[i + 3];
-
-        // If the pixel is not white, mark the bounding box (left, right, top, bottom)
-        if (r < WHITE_THRESHOLD || g < WHITE_THRESHOLD || b < WHITE_THRESHOLD || a < WHITE_THRESHOLD) {
-          if (x < left) left = x;
-          if (x > right) right = x;
-          if (y < top) top = y;
-          if (y > bottom) bottom = y;
-        }
-      }
-    }
-
-    // Create a new canvas to crop out the white space
-    let croppedCanvas = document.createElement('canvas');
-    croppedCanvas.width = right - left;
-    croppedCanvas.height = bottom - top;
-    let croppedContext = croppedCanvas.getContext('2d');
-    croppedContext.fillStyle = '#f0f'
-    // Draw the cropped content (excluding white space) onto the new canvas
-    croppedContext.putImageData(imgData, -left, -top);
-
-    // Return the cropped image as a data URL (Base64 encoded image)
-    return croppedCanvas.toDataURL('image/png');
-  };
-  // const cropCanvas = (canvas) => {
-  //   const context = canvas.getContext('2d');
-  //   const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-
-  //   const pixels = imgData.data;
-  //   let top = 0;
-  //   let bottom = canvas.height;
-  //   let left = canvas.width;
-  //   let right = 0;
-
-  //   // Find the bounds of the content (non-white area)
-  //   for (let y = 0; y < canvas.height; y++) {
-  //     for (let x = 0; x < canvas.width; x++) {
-  //       const i = (y * canvas.width + x) * 4;
-  //       const r = pixels[i];
-  //       const g = pixels[i + 1];
-  //       const b = pixels[i + 2];
-  //       const a = pixels[i + 3];
-
-  //       // Check if the pixel is not white
-  //       if (r < 255 || g < 255 || b < 255 || a < 255) {
-  //         if (y < top) top = y;
-  //         if (y > bottom) bottom = y;
-  //         if (x < left) left = x;
-  //         if (x > right) right = x;
-  //       }
-  //     }
-  //   }
-
-  //   // Crop the image based on the detected bounds
-  //   const croppedCanvas = document.createElement('canvas');
-  //   croppedCanvas.width = right - left;
-  //   croppedCanvas.height = bottom - top;
-  //   const croppedContext = croppedCanvas.getContext('2d');
-
-  //   // Draw the cropped portion of the original canvas onto the new canvas
-  //   croppedContext.putImageData(imgData, -left, -top);
-  //   return croppedCanvas.toDataURL('image/png');
-  // };
-  // Extract page as an image
   const onRenderSuccess = (pageNum) => {
     const canvas = canvasRef.current;
     console.log(canvas)
-    // const imgData = canvas.toDataURL('image/png');
-    const croppedImage = cropCanvas(canvas);
-    setPageImages((prev) => [...prev, croppedImage]);
+    const imgData = canvas.toDataURL('image/png');
+
+    setPageImages((prev) => [...prev, imgData]);
   };
 
   const onDocumentLoadSuccess = ({ numPages }) => {
+
     setNumPages(numPages);
   };
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    console.log(croppedArea, croppedAreaPixels)
+  }
+
   return (
     <>
 
@@ -460,6 +389,7 @@ const VendorCreateFlyers = () => {
                 >
                   {[...Array(numPages)].map((_, index) => (
                     <Page
+                      canvasBackground="black"
                       key={index}
                       pageNumber={index + 1}
                       renderMode="canvas"
@@ -471,12 +401,14 @@ const VendorCreateFlyers = () => {
             )}
 
             {/* Display extracted images */}
-            <div>
+            {/* <div>
               {pageImages.map((image, index) => (
                 <img key={index} src={image} alt={`Page ${index + 1}`} />
               ))}
-            </div>
+            </div> */}
 
+
+            {pageImages && <ImageCropper image={pageImages} height={400} width={600} />}
             {/* <form onSubmit={handleSubmit}>
               <div className="uploadGallerySection">
 

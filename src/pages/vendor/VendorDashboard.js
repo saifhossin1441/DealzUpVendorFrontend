@@ -14,6 +14,7 @@ const VendorDashboard = () => {
   const [banners, setBanners] = useState(null)
   const [deals, setDeals] = useState(null)
   const [offers, setOffer] = useState(null)
+  const [SubscriptionDetails, setSubscriptionDetails] = useState(null)
   let vendorInfo = localStorage.getItem('vendorInfo');
   if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
   vendorInfo = JSON.parse(vendorInfo);
@@ -28,10 +29,11 @@ const VendorDashboard = () => {
         console.log(newAccessToken, "refresh token", refresherror);
 
         const endpoints = {
-          flyers: "http://184.73.96.142/deals/flyers/",
-          banners: "http://184.73.96.142/deals/banners/",
-          deals: "http://184.73.96.142/deals/deals/",
-          offers: "http://184.73.96.142/deals/offers/",
+          flyers: `${process.env.REACT_APP_API_URL}deals/flyers/`,
+          banners: `${process.env.REACT_APP_API_URL}deals/banners/`,
+          deals: `${process.env.REACT_APP_API_URL}deals/deals/`,
+          offers: `${process.env.REACT_APP_API_URL}deals/offers/`,
+          subscriptiondetails: `${process.env.REACT_APP_API_URL}wallet/subscription/usage/all/`
         };
 
         const headers = {
@@ -40,18 +42,20 @@ const VendorDashboard = () => {
         };
 
         // Fetch all data in parallel
-        const [flyersRes, bannersRes, dealsRes, offersRes] = await Promise.all([
+        const [flyersRes, bannersRes, dealsRes, offersRes, SubscriptionDetails] = await Promise.all([
           fetch(endpoints.flyers, { headers }).then((res) => res.json()),
           fetch(endpoints.banners, { headers }).then((res) => res.json()),
           fetch(endpoints.deals, { headers }).then((res) => res.json()),
           fetch(endpoints.offers, { headers }).then((res) => res.json()),
+          fetch(endpoints.subscriptiondetails, { headers }).then((res) => res.json()),
         ]);
-        console.log(bannersRes, offersRes, "data")
+        console.log(SubscriptionDetails, "SubscriptionDetails")
         // Update state with the fetched data
         setFlyers(flyersRes);
         setBanners(bannersRes);
         setDeals(dealsRes);
         setOffer(offersRes);
+        setSubscriptionDetails(SubscriptionDetails)
       } catch (error) {
         console.error("Error fetching data:", error);
       }

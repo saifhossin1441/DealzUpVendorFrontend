@@ -1,11 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './../../assets/css/membership.css'
 import banner from '../../assets/images/banner.svg';
+import { useRefreshToken } from '../../hooks/useRefreshToken';
+import { ToastContainer, toast } from 'react-toastify';
 
 const MembershipPlan = () => {
-    const plans = [
+
+    const { refreshAccessToken, refresherror } = useRefreshToken();
+    const [selectedPlan, setSelectedPlan] = useState('bronze')
+    const [plans, setPlans] = useState([
         {
-            name: "Mobile",
+            plan: "bronze",
             price: "₹149",
             quality: "Fair",
             resolution: "480p",
@@ -14,7 +19,7 @@ const MembershipPlan = () => {
             downloads: 1,
         },
         {
-            name: "Basic",
+            plan: "gold",
             price: "₹199",
             quality: "Good",
             resolution: "720p (HD)",
@@ -23,7 +28,7 @@ const MembershipPlan = () => {
             downloads: 1,
         },
         {
-            name: "Standard",
+            plan: "silver",
             price: "₹499",
             quality: "Great",
             resolution: "1080p (Full HD)",
@@ -31,17 +36,29 @@ const MembershipPlan = () => {
             simultaneousDevices: 2,
             downloads: 2,
         },
-        {
-            name: "Premium",
-            price: "₹649",
-            quality: "Best",
-            resolution: "4K + HDR",
-            devices: "TV, computer, mobile phone, tablet",
-            simultaneousDevices: 4,
-            downloads: 6,
-        },
-    ];
+    ])
 
+
+
+    const UpgradeSubsription = async () => {
+        let apiEndPoint = `${process.env.REACT_APP_API_URL}wallet/upgrade-subscription/`
+        const newAccessToken = await refreshAccessToken();
+        console.log(newAccessToken, 'refresh token', refresherror)
+        let formData = { plan: selectedPlan }
+        try {
+            const response = await fetch(apiEndPoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${newAccessToken}`,
+                },
+                body: formData,
+            });
+            console.log(response)
+        } catch (error) {
+            toast(error)
+        }
+
+    }
     return (
         <div className="plans-container" style={{
             backgroundImage: `url(${banner})`,
@@ -57,7 +74,7 @@ const MembershipPlan = () => {
                 {plans.map((plan, index) => (
                     <div
                         key={index}
-                        className={`plan-card ${plan.name === "Basic" ? "most-popular" : ""
+                        className={`plan-card ${plan.plan === "bronze" ? "most-popular" : ""
                             }`}
                     >
                         <h2>{plan.name}</h2>
@@ -75,7 +92,8 @@ const MembershipPlan = () => {
                     </div>
                 ))}
             </div>
-            <button className="next-button">Next</button>
+            <ToastContainer />
+            <button className="next-button" onClick={UpgradeSubsription}>Submit</button>
         </div>
     )
 }

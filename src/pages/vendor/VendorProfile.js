@@ -21,10 +21,7 @@ const VendorCreateBusinessPagination = () => {
             <Header />
             <div className="container-fluid content-section align">
                 <div className="row">
-
                     <Sidebar />
-
-
                     <div className="col-md-8 main_content" >
                         {/* Profile Pic and Name */}
                         <div className="col-md-12">
@@ -43,7 +40,7 @@ const VendorCreateBusinessPagination = () => {
                         <div className="col-md-12"><br /></div>
 
                         {/* 2nd Div*/}
-                        <div className="col-md-12">
+                        <div className="col-md-12 ">
                             <div className="row" style={{ justifyContent: 'center' }}>
                                 <div className="content-box col-md-5">
                                     <div>Address</div>
@@ -62,7 +59,7 @@ const VendorCreateBusinessPagination = () => {
                         </div>
 
                         {/* Third Div*/}
-                        <div className="col-md-12">
+                        <div className="col-md-12 ">
                             <div className="row" style={{ justifyContent: 'center' }}>
                                 <div className="content-box col-md-12">
                                     <div>Gender: <font className='profileFont'>Male</font></div>

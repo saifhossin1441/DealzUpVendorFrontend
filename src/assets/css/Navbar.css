@@ -36,8 +36,9 @@
 }
 
 .navbar .nav-link {
+    padding: 20px;
     color: #fff; /* Customize link color */
-    font-size: 22px; /* Customize link font size */
+    font-size: 18px; /* Customize link font size */
     font-family: 'Apercu Pro', sans-serif;
     font-weight: 500;
 }

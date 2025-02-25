@@ -14,17 +14,18 @@ const Header = (props) => {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0" style={{padding:'15px 6px 6px 8px'}}>
+              <form className="d-flex me-3" role="search">
+                <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                <button className="btn btn-outline-success" style={{ borderColor: '#fff', color: '#fff' }} type="submit">Search</button>
+
+              </form>
+            {/* <li className="nav-item">
               <a className="nav-link active" aria-current="page" href="/">Home</a>
-            </li>
+            </li> */}
 
           </ul>
-          <form className="d-flex me-3" role="search">
-            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-            <button className="btn btn-outline-success" style={{ borderColor: '#fff', color: '#fff' }} type="submit">Search</button>
-
-          </form>
+          
 
           <ul className="navbar-nav">
             <li className="nav-item dropdown">
@@ -34,10 +35,24 @@ const Header = (props) => {
               <ul className="dropdown-menu dropdown-menu-end">
                 <li><Link className="dropdown-item" to="/VendorProfile">Profile</Link></li>
                 <li><Link className="dropdown-item" to="/VendorDashboard">Dashboard</Link></li>
+                <li><Link className="dropdown-item " to="/VendorFlyers">Flyers</Link></li>
+                <li><Link className="dropdown-item" to="/VendorDeals">Deals</Link></li>
+                <li><Link className="dropdown-item" to="/VendorBanners">Banners</Link></li>
+                <li><Link className="dropdown-item" to="/VendorWallets">Wallet</Link></li>
+                <li><Link className="dropdown-item" to="/VendorCreateBanners">CreateBanners</Link></li>
+                <li><Link className="dropdown-item" to="/VendorDashboard">Dashboard</Link></li>
+                
+        
+        
                 <li><hr className="dropdown-divider" /></li>
+<<<<<<< HEAD
                 <li><a className="dropdown-item" href="/" onClick={() => {
                   localStorage.removeItem("vendorInfo");
                 }}>Logout</a></li>
+=======
+
+                <li><a className="dropdown-item" href="/">Logout</a></li>
+>>>>>>> 49feb09 (Your commit message)
               </ul>
             </li>
           </ul>

@@ -25,9 +25,16 @@ const VendorBanners = () => {
         <>
             <Header />
             <div class="container-fluid content-section align">
+            <div className="col-md-12" >
                 <div class="row">
                     <Sidebar />
-                    <div className="col-md-8" >
+                    <div className="col-md-8"  tyle={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center', // Centers content horizontally
+                        flexDirection: 'column',
+                        marginTop:'10px'
+                    }}  >
                         <div className="content-box ">
                             <div>Current Banners</div>
                         </div>
@@ -73,7 +80,8 @@ const VendorBanners = () => {
                             <div><u><Link to="/VendorCreateBanners" style={{ color: "White" }}>Add a new Banner</Link></u></div>
                         </div>
                     </div>
-
+                    <div className="col-md-2"></div>
+                </div>
                 </div>
             </div>
         </>

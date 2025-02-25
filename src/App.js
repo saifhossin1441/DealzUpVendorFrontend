@@ -30,6 +30,8 @@ import VendorWishes from './pages/vendor/VendorWishes';
 import MembershipPlan from './pages/vendor/MembershipPlan';
 import ProtectedRoute from './pages/Protectedroute';
 import GoogleMaps from './pages/vendor/Maps';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
 
 function App() {
   const [mode, setMode] = useState('light'); // default appearance
@@ -61,6 +63,8 @@ function App() {
           <Route path="/VendorVerification" element={<><VendorVerification /></>} />
           <Route path="/VendorResetPassword" element={<><VendorResetPassword /></>} />
           <Route path="/VendorRegistration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorRegistration /><Footer /></>} />
+          <Route path="/PrivacyPolicy" element={<><PrivacyPolicy /><Footer /></>} />
+          <Route path="/TermsAndConditions" element={<><TermsAndConditions /><Footer /></>} />
           {/* Vendors */}
           <Route path="/VendorForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorForgotPassword /><Footer /></>} />
 

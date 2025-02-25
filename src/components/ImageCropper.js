@@ -1,29 +1,86 @@
-import React from 'react'
-import { useState, useCallback } from 'react'
-import Cropper from 'react-easy-crop'
+import React, { useState, useRef } from "react";
+import Cropper, { ReactCropperElement } from "react-cropper";
+import "cropperjs/dist/cropper.css";
+import "./../assets/css/crop.css";
+
+
+const defaultSrc =
+    "https://raw.githubusercontent.com/roadmanfong/react-cropper/master/example/img/child.jpg";
 
 const ImageCropper = (props) => {
-    console.log(props.image, "thieeffafaf")
-    const [crop, setCrop] = useState({ x: 0, y: 0 })
-    const [zoom, setZoom] = useState(1)
+    console.log(props, "this i spross")
+    const [image, setImage] = useState(defaultSrc);
+    const [cropData, setCropData] = useState("#");
+    const cropperRef = useRef()
+    const onChange = (e) => {
+        e.preventDefault();
+        let files;
+        if (e.dataTransfer) {
+            files = e.dataTransfer.files;
+        } else if (e.target) {
+            files = e.target.files;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            setImage(reader.result);
+        };
+        reader.readAsDataURL(files[0]);
+    };
 
-    const onCropComplete = (croppedArea, croppedAreaPixels) => {
-        console.log(croppedArea, croppedAreaPixels)
-    }
+    const getCropData = () => {
+        if (typeof cropperRef.current?.cropper !== "undefined") {
+            setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
+        }
+    };
 
     return (
-        <div style={{ height: props.height, width: props.width, position: 'relative' }}>
-            <Cropper
-                image={props.image}
-                crop={crop}
-                zoom={zoom}
-                aspect={4 / 3}
-                onCropChange={setCrop}
-                onCropComplete={onCropComplete}
-                onZoomChange={setZoom}
-            />
+        <div>
+            <div style={{ width: "100%" }}>
+                <input type="file" onChange={onChange} />
+                <button>Use default img</button>
+                <br />
+                <br />
+                <Cropper
+                    ref={cropperRef}
+                    style={{ height: 400, width: "100%" }}
+                    zoomTo={0.5}
+                    initialAspectRatio={1}
+                    preview=".img-preview"
+                    src={props?.image ? props?.image : image}
+                    viewMode={1}
+                    minCropBoxHeight={10}
+                    minCropBoxWidth={10}
+                    background={false}
+                    responsive={true}
+                    autoCropArea={1}
+                    checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
+                    guides={true}
+                />
+            </div>
+            <div>
+                <div className="box" style={{ width: "50%", float: "right" }}>
+                    <h1>Preview</h1>
+                    <div
+                        className="img-preview"
+                        style={{ width: "100%", float: "left", height: "300px" }}
+                    />
+                </div>
+                <div
+                    className="box"
+                    style={{ width: "50%", float: "right", height: "300px" }}
+                >
+                    <h1>
+                        <span>Crop</span>
+                        <button style={{ float: "right" }} onClick={getCropData}>
+                            Crop Image
+                        </button>
+                    </h1>
+                    <img style={{ width: "100%" }} src={cropData} alt="cropped" />
+                </div>
+            </div>
+            <br style={{ clear: "both" }} />
         </div>
-    )
+    );
 }
 
 export default ImageCropper

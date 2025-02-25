@@ -4,7 +4,7 @@ import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
 import uploadGallery from './../../assets/images/uploadGallery.png';
 import * as yup from 'yup'
-import Cropper from 'react-easy-crop'
+
 import { Document, Page, pdfjs } from "react-pdf";
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { useNavigate } from "react-router-dom";
@@ -101,6 +101,7 @@ const styles = {
 
 
 const VendorCreateFlyers = () => {
+
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null);
   const [numPages, setNumPages] = useState(null);
@@ -291,7 +292,7 @@ const VendorCreateFlyers = () => {
     if (file && file.size <= 1 * 1024 * 1024) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result);
+        // setImage(reader.result);
         setFormData({
           ...formData,
           image: file
@@ -345,15 +346,34 @@ const VendorCreateFlyers = () => {
 
 
   const onRenderSuccess = (pageNum) => {
-    const canvas = canvasRef.current;
-    console.log(canvas)
+
+    console.log(pageNum, "whta asdsdis this")
+    let canvas = canvasRef.current;
+
+    const importPDFCanvas = document.querySelector('.import-pdf-page');
+    const pdfAsImageSrc = importPDFCanvas.toDataURL();
+    // Get image data from the canvas
     const imgData = canvas.toDataURL('image/png');
 
+    // Convert canvas to image object
+    const image = convertCanvasToImage(imgData);
+
+    console.log(imgData, "image Data", image);
+
+    // Set the image and store the image data
+    setImage(pdfAsImageSrc);
     setPageImages((prev) => [...prev, imgData]);
   };
 
+  const convertCanvasToImage = (imgData) => {
+    var image = new Image();
+    image.src = imgData;
+    return image;
+  }
+
   const onDocumentLoadSuccess = ({ numPages }) => {
 
+    console.log(numPages, "ehys s s")
     setNumPages(numPages);
   };
 
@@ -390,6 +410,7 @@ const VendorCreateFlyers = () => {
                   {[...Array(numPages)].map((_, index) => (
                     <Page
                       canvasBackground="black"
+                      className="import-pdf-page"
                       key={index}
                       pageNumber={index + 1}
                       renderMode="canvas"
@@ -403,12 +424,13 @@ const VendorCreateFlyers = () => {
             {/* Display extracted images */}
             {/* <div>
               {pageImages.map((image, index) => (
+
                 <img key={index} src={image} alt={`Page ${index + 1}`} />
               ))}
             </div> */}
 
 
-            {pageImages && <ImageCropper image={pageImages} height={400} width={600} />}
+            {pageImages && <ImageCropper image={image} height={400} width={600} />}
             {/* <form onSubmit={handleSubmit}>
               <div className="uploadGallerySection">
 

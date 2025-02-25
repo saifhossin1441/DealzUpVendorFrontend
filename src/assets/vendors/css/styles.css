@@ -387,7 +387,6 @@ background: #EE5C74 !important;
   transform: scale(0.95);
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
 }
-<<<<<<< HEAD
 .date-picker {
   margin-top: 10px;
   width: 100%;
@@ -401,7 +400,6 @@ background: #EE5C74 !important;
 .custom-datepicker::placeholder {
   color: white;
 }
-=======
 
 
 
@@ -425,7 +423,7 @@ background: #EE5C74 !important;
     flex-wrap: wrap;
     width: 100%;
   }
-  
+}
   /* .flyers_wrap {
     background-color: #f8f9fa;
     padding: 15px;
@@ -441,5 +439,3 @@ background: #EE5C74 !important;
   /* .flyers_wrap {
       width: 90%; 
   } */
-}
->>>>>>> 49feb09 (Your commit message)

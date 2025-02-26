@@ -8,13 +8,14 @@ body {
 
 .plans-container {
   text-align: center;
-  padding: 40px 20px;
+  padding: 40px 10px;
 }
 
 h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 10px;
+  font-size: 3rem !important;
+  font-weight: 900;
+  padding:15px;
+  text-align: center;
 }
 
 .subtitle {
@@ -36,10 +37,11 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 15px;
   padding: 50px;
-  width: 250px;
+  width: 350px;
   text-align: left;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 999;
 }
 
 .plan-card:hover {
@@ -69,15 +71,16 @@ h1 {
 
 .plan-card h2 {
   margin: 0 0 10px 0;
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: #fff;
+  font-weight: 800;
 }
 
 .plan-card .price {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.2rem;
+  font-weight: 900;
   color: #f9b208;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
 .plan-card ul {
@@ -87,8 +90,9 @@ h1 {
 
 .plan-card li {
   margin: 8px 0;
-  font-size: 0.9rem;
+  font-size:1rem;
   color: #ddd;
+  font-weight: 600;
 }
 
 /* Button styles */
@@ -98,7 +102,7 @@ h1 {
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  background-color: #e50914;
+  background-color: #000;
   border: none;
   border-radius: 25px;
   cursor: pointer;

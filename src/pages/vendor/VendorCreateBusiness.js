@@ -1,51 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './../../assets/vendors/css/styles.css';
 import './../../components/vendors/Header';
 import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { Link } from 'react-router-dom';
-
+import MyContext from '../../hooks/contextApi';
 
 
 const VendorCreateBusiness = () => {
-  const [data, setData] = useState()
+  const { businessData } = useContext(MyContext);
+  const [data, setData] = useState(businessData)
   const { refreshAccessToken, refresherror } = useRefreshToken();
-
-
-  useEffect(() => {
-    const GetApi = async () => {
-      const newAccessToken = await refreshAccessToken();
-      console.log(newAccessToken, 'refresh token', refresherror)
-      let vendorInfo = localStorage.getItem('vendorInfo');
-      if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
-      vendorInfo = JSON.parse(vendorInfo);
-      if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
-
-      const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/vendor/${vendorInfo?.vendor?.id}`;
-      fetch(apiEndpoint, {
-        method: 'GET',
-        // mode: 'no-cors',
-
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${newAccessToken}`,
-        },
-      }).then((response) => response.json())
-        .then((data) => {
-
-          console.log(data, "isthis array i need")
-          setData(data);
-        })
-        .catch((error) => {
-          console.error('Error fetching the bussiness:', error);
-        });
-    }
-    GetApi()
-
-  }, [refreshAccessToken, refresherror])
-
-
 
   return (
     <>

@@ -5,16 +5,20 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { LoadScript } from "@react-google-maps/api";
+import { MyProvider } from './hooks/contextApi';
 
 const googleMapsApiKey = "AIzaSyDsc0jaxFvFYsc1b3Tblah0n1LV3RfZZDQ";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+
     <LoadScript
       googleMapsApiKey={googleMapsApiKey}
       libraries={["drawing", "places"]}
     >
-      <App />
+      <MyProvider>
+        <App />
+      </MyProvider>
     </LoadScript>
   </React.StrictMode>
 );

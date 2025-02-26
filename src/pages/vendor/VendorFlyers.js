@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './../../assets/vendors/css/styles.css';
 import Header from './../../components/vendors/Header';
 // import flyerImg1 from './../../assets/vendors/images/flyers/1.png';
 import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
+import MyContext from '../../hooks/contextApi';
 import { ToastContainer } from 'react-toastify';
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import jsPDF from 'jspdf';
@@ -15,8 +16,10 @@ const wishEndpoint = `http://127.0.0.1:8000/deals/wishlist/`;
 
 const VendorFlyers = () => {
     const [flyers, setFlyers] = useState([]);
+    const { businessData } = useContext(MyContext);
     const { refreshAccessToken, refresherror } = useRefreshToken();
 
+    console.log(businessData)
     useEffect(() => {
         fetch(apiEndpoint)
             .then((response) => response.json())

@@ -6,6 +6,8 @@ import uploadGallery from './../../assets/images/uploadGallery.png';
 import * as yup from 'yup'
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import { useRefreshToken } from "../../hooks/useRefreshToken";
 
 const styles = {
@@ -182,6 +184,12 @@ const VendorCreateOffers = () => {
 
     fetchData();
   }, []);
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -193,7 +201,10 @@ const VendorCreateOffers = () => {
     if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
 
     // Set vendor ID in formData
-    const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id };
+
+    const formattedStartDate = formatDate(formData.start_date);
+    const formattedEndDate = formatDate(formData.end_date);
+    const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id, start_date: formattedStartDate, end_date: formattedEndDate };
     console.log('Form Data:', updatedFormData);
 
     schema.validate(updatedFormData)
@@ -219,6 +230,7 @@ const VendorCreateOffers = () => {
 
   const SendDataToDatabase = async (data) => {
     // console.log(data)
+
     const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/offers/`;
     let formData = new FormData();
 
@@ -452,33 +464,44 @@ const VendorCreateOffers = () => {
 
               <div className="row" >
                 <div className="col-md-6">
-                  <label for="startDate">Start Date</label>
-                  <input
-                    type="date"
-                    placeholder="Date"
-                    required
-                    style={styles.input}
-                    onChange={handleChange} value={formData.start_date}
-                    name="start_date"
-                    className="white-placeholder"
+                  <DatePicker
+                    selected={formData.start_date}
+                    onChange={(date) => setFormData({
+                      ...formData,
+                      start_date: date
+                    })}
+                    selectsStart
+                    startDate={formData.start_date}
+                    endDate={formData.end_date}
+                    id="from"
+                    className="form-control "
+                    dateFormat="yyyy-MM-dd"
+                    placeholderText="Select a start date"
+                    style={{ width: '100%' }}
                   />
                 </div>
                 {error.start_date && <div id="Error" className="form-text2">{error.start_date}</div>}
 
                 <div className="col-md-6">
-                  <label>End Date</label>
-                  <input
-                    type="date"
-                    name="end_date"
-                    placeholder="Date"
-                    required
-                    style={styles.input}
-                    onChange={handleChange} value={formData.end_date}
-                    className="white-placeholder"
+                  <DatePicker
+                    selected={formData.end_date}
+                    onChange={(date) => setFormData({
+                      ...formData,
+                      end_date: date
+                    })}
+                    selectsEnd
+                    startDate={formData.start_date}
+                    endDate={formData.end_date}
+                    minDate={formData.start_date} // Prevents selecting a "to" date before "from" date
+                    id="to"
+                    className="form-control"
+                    dateFormat="yyyy-MM-dd"
+                    placeholderText="Select an end date"
                   />
                 </div>
                 {error.end_date && <div id="Error" className="form-text2">{error.end_date}</div>}
               </div>
+
 
               <button type="submit" style={styles.submitButton}> Submit</button>
 

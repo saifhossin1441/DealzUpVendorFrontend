@@ -6,6 +6,8 @@ import images from './../../assets/images/uploadGallery.png';
 import * as yup from 'yup'
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import { useRefreshToken } from "../../hooks/useRefreshToken";
 
 const styles = {
@@ -439,29 +441,41 @@ const VendorCreateDeals = () => {
                             {error.descripton && <div id="Error" className="form-text2">{error.descripton}</div>}
 
 
-                            <div className="row">
+                            <div className="row" >
                                 <div className="col-md-6">
-                                    <label htmlFor="startDate">Start Date</label>
-                                    <input
-                                        type="date"
-                                        id="startDate"
-                                        name="start_date"
-                                        required
-                                        style={styles.input}
-                                        onChange={handleChange} value={formData.start_date}
+                                    <DatePicker
+                                        selected={formData.start_date}
+                                        onChange={(date) => setFormData({
+                                            ...formData,
+                                            start_date: date
+                                        })}
+                                        selectsStart
+                                        startDate={formData.start_date}
+                                        endDate={formData.end_date}
+                                        id="from"
+                                        className="form-control "
+                                        dateFormat="yyyy-MM-dd"
+                                        placeholderText="Select a start date"
+                                        style={{ width: '100%' }}
                                     />
                                 </div>
                                 {error.start_date && <div id="Error" className="form-text2">{error.start_date}</div>}
 
                                 <div className="col-md-6">
-                                    <label htmlFor="endDate">End Date</label>
-                                    <input
-                                        type="date"
-                                        id="endDate"
-                                        name="end_date"
-                                        required
-                                        style={styles.input}
-                                        onChange={handleChange} value={formData.end_date}
+                                    <DatePicker
+                                        selected={formData.end_date}
+                                        onChange={(date) => setFormData({
+                                            ...formData,
+                                            end_date: date
+                                        })}
+                                        selectsEnd
+                                        startDate={formData.start_date}
+                                        endDate={formData.end_date}
+                                        minDate={formData.start_date} // Prevents selecting a "to" date before "from" date
+                                        id="to"
+                                        className="form-control"
+                                        dateFormat="yyyy-MM-dd"
+                                        placeholderText="Select an end date"
                                     />
                                 </div>
                                 {error.end_date && <div id="Error" className="form-text2">{error.end_date}</div>}

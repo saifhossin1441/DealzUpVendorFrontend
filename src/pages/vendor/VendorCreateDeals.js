@@ -17,36 +17,44 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         gap: '15px',
-        color: 'white',
+        color: 'white'
+    },
+    imagePrevieww: {
+        width: '30%',
+        height: '50%',
+        objectFit: 'cover'
     },
     uploadContainer: {
         width: '200px',
         height: '200px',
+        border: '4px dashed #EE5635',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
         cursor: 'pointer',
         borderRadius: '20px',
+        marginBottom: '20px'
     },
     uploadLabel: {
         width: '100%',
         height: '100%',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     uploadIcon: {
         fontSize: '50px',
-        color: '#EE5635',
+        color: '#EE5635'
     },
+
     fileInput: {
-        display: 'none',
+        display: 'none'
     },
     imagePreview: {
-        width: '50%',
-        height: '50%',
-        objectFit: 'cover',
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover'
     },
     input: {
         marginTop: '10px',
@@ -54,8 +62,13 @@ const styles = {
         padding: '20px',
         border: '1px solid #F9F9F9',
         background: 'transparent',
-        color: 'white',
+        color: 'white !important',
         borderRadius: '8px',
+        placeholder: 'white'
+    },
+
+    '::placeholder': {
+        color: 'white', // Change this to your desired color
     },
     select: {
         width: '100%',
@@ -74,14 +87,8 @@ const styles = {
         width: '100%',
         marginTop: '20px',
         padding: '20px',
-        borderRadius: '8px',
-    },
-    fileName: {
-        marginTop: '10px',
-        color: 'white',
-        fontSize: '14px',
-        textAlign: 'center',
-    },
+        borderRadius: '8px'
+    }
 };
 
 const VendorCreateDeals = () => {
@@ -175,6 +182,13 @@ const VendorCreateDeals = () => {
 
         fetchData();
     }, []);
+    const formatDate = (date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`; // Change the order to YYYY-MM-DD
+    };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -186,7 +200,10 @@ const VendorCreateDeals = () => {
         if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
 
         // Set vendor ID in formData
-        const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id };
+
+        const formattedStartDate = formatDate(formData.start_date);
+        const formattedEndDate = formatDate(formData.end_date);
+        const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id, start_date: formattedStartDate, end_date: formattedEndDate };
         console.log('Form Data:', updatedFormData);
 
         schema.validate(updatedFormData)

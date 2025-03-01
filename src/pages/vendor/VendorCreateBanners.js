@@ -186,19 +186,27 @@ const VendorCreateBanners = () => {
 
     fetchData();
   }, []);
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`; // Change the order to YYYY-MM-DD
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     let vendorInfo = localStorage.getItem('vendorInfo');
-    if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
+    if (!vendorInfo) return
 
     vendorInfo = JSON.parse(vendorInfo); // Correct parsing
 
-    if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
+    if (!vendorInfo?.vendor?.id) return
 
     // Set vendor ID in formData
-    const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id };
+    const formattedStartDate = formatDate(formData.start_date);
+    const formattedEndDate = formatDate(formData.end_date);
+    const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id, start_date: formattedStartDate, end_date: formattedEndDate };
     console.log('Form Data:', updatedFormData);
 
     schema.validate(updatedFormData)

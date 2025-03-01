@@ -188,8 +188,9 @@ const VendorCreateOffers = () => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
     const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    return `${year}-${month}-${day}`; // Change the order to YYYY-MM-DD
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -1,3 +1,10 @@
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CustomNavbar from './components/CustomNavbar';
@@ -33,6 +40,7 @@ import GoogleMaps from './pages/vendor/Maps';
 
 function App() {
   const [mode, setMode] = useState('light'); // default appearance
+  const queryClient = new QueryClient()
 
   const toggleMode = () => {
     if (mode === 'light') {
@@ -50,41 +58,43 @@ function App() {
 
   return (
     <>
-      <Router>
-        <ToastContainer />
-        <Routes>
-          <Route path="/" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><LandingPage /><Footer /></>} />
-          <Route path="/login" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><UserLogin /><Footer /></>} />
-          <Route path="/registration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><UserRegistration /><Footer /></>} />
-          <Route path="/ForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><ForgotPassword /><Footer /></>} />
-          <Route path="/VendorLogin" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorLogin /><Footer /></>} />
-          <Route path="/VendorVerification" element={<><VendorVerification /></>} />
-          <Route path="/VendorResetPassword" element={<><VendorResetPassword /></>} />
-          <Route path="/VendorRegistration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorRegistration /><Footer /></>} />
-          {/* Vendors */}
-          <Route path="/VendorForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorForgotPassword /><Footer /></>} />
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <ToastContainer />
+          <Routes>
+            <Route path="/" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><LandingPage /><Footer /></>} />
+            <Route path="/login" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><UserLogin /><Footer /></>} />
+            <Route path="/registration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><UserRegistration /><Footer /></>} />
+            <Route path="/ForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><ForgotPassword /><Footer /></>} />
+            <Route path="/VendorLogin" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorLogin /><Footer /></>} />
+            <Route path="/VendorVerification" element={<><VendorVerification /></>} />
+            <Route path="/VendorResetPassword" element={<><VendorResetPassword /></>} />
+            <Route path="/VendorRegistration" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorRegistration /><Footer /></>} />
+            {/* Vendors */}
+            <Route path="/VendorForgotPassword" element={<><CustomNavbar mode={mode} toggleMode={toggleMode} /><VendorForgotPassword /><Footer /></>} />
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/VendorDashboard" element={<VendorDashboard />} />
-            <Route path="/VendorWallets" element={<VendorWallets />} />
-            <Route path="/VendorAddToWallet" element={<VendorAddToWallet />} />
-            <Route path="/VendorProfile" element={<VendorProfile />} />
-            <Route path="/VendorCreateBusiness" element={<VendorCreateBusiness />} />
-            <Route path="/VendorCreateBusinessPagination" element={<VendorCreateBusinessPagination />} />
-            <Route path="/VendorFlyers" element={<VendorFlyers />} />
-            <Route path="/VendorCreateFlyers" element={<VendorCreateFlyers />} />
-            <Route path="/VendorDeals" element={<VendorDeals />} />
-            <Route path="/VendorCreateDeals" element={<VendorCreateDeals />} />
-            <Route path="/VendorOffers" element={<VendorOffers />} />
-            <Route path="/VendorCreateOffers" element={<VendorCreateOffers />} />
-            <Route path="/VendorBanners" element={<VendorBanners />} />
-            <Route path="/VendorCreateBanners" element={<VendorCreateBanners />} />
-            <Route path="/VendorWishes" element={<VendorWishes />} />
-            <Route path="/VendorMembershipPlan" element={<MembershipPlan />} />
-            <Route path="/GoogleMaps" element={<GoogleMaps />} />
-          </Route>
-        </Routes>
-      </Router>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/VendorDashboard" element={<VendorDashboard />} />
+              <Route path="/VendorWallets" element={<VendorWallets />} />
+              <Route path="/VendorAddToWallet" element={<VendorAddToWallet />} />
+              <Route path="/VendorProfile" element={<VendorProfile />} />
+              <Route path="/VendorCreateBusiness" element={<VendorCreateBusiness />} />
+              <Route path="/VendorCreateBusinessPagination" element={<VendorCreateBusinessPagination />} />
+              <Route path="/VendorFlyers" element={<VendorFlyers />} />
+              <Route path="/VendorCreateFlyers" element={<VendorCreateFlyers />} />
+              <Route path="/VendorDeals" element={<VendorDeals />} />
+              <Route path="/VendorCreateDeals" element={<VendorCreateDeals />} />
+              <Route path="/VendorOffers" element={<VendorOffers />} />
+              <Route path="/VendorCreateOffers" element={<VendorCreateOffers />} />
+              <Route path="/VendorBanners" element={<VendorBanners />} />
+              <Route path="/VendorCreateBanners" element={<VendorCreateBanners />} />
+              <Route path="/VendorWishes" element={<VendorWishes />} />
+              <Route path="/VendorMembershipPlan" element={<MembershipPlan />} />
+              <Route path="/GoogleMaps" element={<GoogleMaps />} />
+            </Route>
+          </Routes>
+        </Router>
+      </QueryClientProvider>
     </>
   );
 }

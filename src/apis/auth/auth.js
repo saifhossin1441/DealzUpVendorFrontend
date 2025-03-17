@@ -1,9 +1,27 @@
 import axios from 'axios'
-export const login = () =>{
+import { endpoints } from '../../endpoints'
+
+const URL = process.env.REACT_APP_API_URL;
+
+export const login = async (data) => {
     try {
-        const response = axios.post(`${process.env.REACT_APP_API_URL + endpoints?.auth.login_vendor}`)
-        return response
+        const response = await axios.post(`${URL + endpoints?.auth.login_vendor}`, data)
+        if (response.status !== 200) {
+            throw new Error(`Unexpected status code: ${response.status}`);
+        }
+        return response.data;
     } catch (error) {
-        return error
+        console.log(error)
+        throw new Error(error);
+    }
+}
+
+export const register = async (data) => {
+    try {
+        const response = await axios.post(`${URL + endpoints?.auth.register}`, data)
+        return response;
+    } catch (error) {
+        console.log(error)
+        throw new Error(error);
     }
 }

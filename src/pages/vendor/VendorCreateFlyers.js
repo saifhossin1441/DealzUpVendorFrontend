@@ -7,11 +7,12 @@ import * as yup from 'yup'
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { Document, Page, pdfjs } from "react-pdf";
-import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { useNavigate } from "react-router-dom";
 import * as pdfjsLib from "pdfjs-dist";
 import { ToastContainer, toast } from 'react-toastify';
 import ImageCropper from "../../components/ImageCropper";
+import { fetchData } from "../../apis/vendor/Common/common";
+import { useQuery } from '@tanstack/react-query';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -136,7 +137,6 @@ const VendorCreateFlyers = () => {
 
 
   const navigate = useNavigate()
-  const { refreshAccessToken, refresherror } = useRefreshToken();
 
   const schema = yup.object().shape({
     category: yup.string().required("Category is required"),
@@ -171,37 +171,18 @@ const VendorCreateFlyers = () => {
       )
   });
 
+  const query = useQuery({ queryKey: ['dealsData'], queryFn: fetchData })
+  console.log(query.data, "create Deals")
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const newAccessToken = await refreshAccessToken();
+    if (query.data) {
+      // Assuming query.data has business, categories, subcategories
+      const { business, categories, subcategories } = query.data;
 
-        const fetchWithAuth = async (url, setter) => {
-          const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${newAccessToken}`,
-            },
-          });
-          const data = await response.json();
-          setter(data);
-        };
-        let vendorInfo = localStorage.getItem('vendorInfo');
-        if (!vendorInfo) return
-        vendorInfo = JSON.parse(vendorInfo);
-        if (!vendorInfo?.vendor?.id) return
-
-        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/businesses/vendor/${vendorInfo?.vendor?.id}`, setBusiness);
-        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/categories/`, (data) => setCategories(data.data));
-        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/subcategories/`, setSubcategories);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+      setBusiness(business);
+      setCategories(categories.data);
+      setSubcategories(subcategories);
+    }
+  }, [query.data]);
 
   const formatDate = (date) => {
     const day = String(date.getDate()).padStart(2, '0');

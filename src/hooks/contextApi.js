@@ -31,7 +31,7 @@ export const MyProvider = ({ children }) => {
         }).then((response) => response.json())
             .then((data) => {
 
-                console.log(data, "isthis array i need")
+                // console.log(data, "isthis array i need")
                 setBusinessData(data)
             })
             .catch((error) => {

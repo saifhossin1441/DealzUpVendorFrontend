@@ -16,7 +16,7 @@ const VendorCreateBusinessPagination = () => {
     let vendorInfo = localStorage.getItem('vendorInfo');
     if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
     vendorInfo = JSON.parse(vendorInfo);
-    console.log(vendorInfo?.vendor?.full_name)
+
     useEffect(() => {
         GetSubscriptionDetails()
     }, [])

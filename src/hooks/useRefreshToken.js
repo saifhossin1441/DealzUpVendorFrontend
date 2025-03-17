@@ -26,7 +26,7 @@ export const useRefreshToken = () => {
             }
 
             const data = await response.json();
-            console.log(data, "find it here")
+            // console.log(data, "find it here")
             // Update localStorage with new tokens if provided
             if (data.access) {
                 vendorInfo.access_token = data.access;
@@ -45,4 +45,43 @@ export const useRefreshToken = () => {
     }, []);
 
     return { refreshAccessToken, refresherror };
+};
+
+
+export const refreshAccessToken = async () => {
+    try {
+        // Get vendor info from localStorage
+        let vendorInfo = localStorage.getItem('vendorInfo');
+        if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
+        vendorInfo = JSON.parse(vendorInfo);
+
+        // Make API call to refresh token
+        const response = await fetch(refreshEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ refresh: vendorInfo.refresh_token }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Update localStorage with new tokens if provided
+        if (data.access) {
+            vendorInfo.access_token = data.access;
+            if (data.refresh_token) {
+                vendorInfo.refresh_token = data.refresh_token;
+            }
+            localStorage.setItem('vendorInfo', JSON.stringify(vendorInfo));
+        }
+
+        return data.access; // Return the new access token
+    } catch (err) {
+        console.error('Error refreshing token:', err);
+        return null; // Return null if there's an error
+    }
 };

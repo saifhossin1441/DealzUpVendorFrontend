@@ -1,13 +1,18 @@
 export const endpoints = {
-    auth : {
+    auth: {
         login_vendor: 'auth/vendor-login/',
         register: 'auth/vendors-registration/'
     },
-    business: {},
+    business: {
+        get_vendor_business: 'deals/businesses/vendor/'
+    },
     deals: {
         get_deals: '',
-        add_deals: '',
+        add_deals: 'deals/deals/',
         update_deals: ''
+    },
+    categories: {
+        get_categories: 'deals/categories/',
+        get_subcategories: 'deals/subcategories/'
     }
-    
 }

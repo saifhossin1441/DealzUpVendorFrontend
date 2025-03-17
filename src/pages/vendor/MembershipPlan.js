@@ -10,7 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 const MembershipPlan = () => {
 
     const { refreshAccessToken, refresherror } = useRefreshToken();
-    const [selectedPlan, setSelectedPlan] = useState('bronze')
+    const [selectedPlan, setSelectedPlan] = useState('gold')
     const [plans, setPlans] = useState([
         {
             plan: "bronze",

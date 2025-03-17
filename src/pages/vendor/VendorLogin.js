@@ -27,35 +27,43 @@ const VendorLogin = () => {
         setPassword(event.target.value);
     };
 
+    const vendor_login = useMutation({ mutationKey: ['login'], mutation: login,
+onSucess: () =>{
+    navigate('/VendorCreateBusiness'); 
+},
+onError: () =>{
+    console.log("error at login")
+}
 
-    const ApiCall = async (data) => {
-        // API endpoint for login
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/vendor-login/`;
+     })
+    // const ApiCall = async (data) => {
+    //     // API endpoint for login
+    //     const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/vendor-login/`;
 
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
+    //     try {
+    //         const response = await fetch(apiEndpoint, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(data),
+    //         });
 
-            if (!response.ok) {
-                throw new Error('Login failed');
-            }
-            const result = await response.json();
-            console.log('Login successful:', result);
+    //         if (!response.ok) {
+    //             throw new Error('Login failed');
+    //         }
+    //         const result = await response.json();
+    //         console.log('Login successful:', result);
 
-            localStorage.setItem('vendorInfo', JSON.stringify(result))
-            // Redirect to another page on successful login
-            navigate('/VendorCreateBusiness'); // 
-        }
-        catch (error) {
-            console.error('Error:', error);
-            setError('Invalid credentials. Please try again.');
-        }
-    }
+    //         localStorage.setItem('vendorInfo', JSON.stringify(result))
+    //         // Redirect to another page on successful login
+    //         navigate('/VendorCreateBusiness'); // 
+    //     }
+    //     catch (error) {
+    //         console.error('Error:', error);
+    //         setError('Invalid credentials. Please try again.');
+    //     }
+    // }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -81,7 +89,7 @@ const VendorLogin = () => {
                         term1: null,
                         term2: null,
                     }));
-                    ApiCall(data)
+                    vendor_login(data)
                 }
             })
             .catch(error => {

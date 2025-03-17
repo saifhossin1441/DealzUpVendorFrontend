@@ -152,8 +152,8 @@ const VendorRegistration = () => {
 
 
     const SendDataToDatabase = async (data) => {
-        console.log(data)
         const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/vendors-registration/`;
+        console.log(data, apiEndpoint)
 
         try {
             const response = await fetch(apiEndpoint, {

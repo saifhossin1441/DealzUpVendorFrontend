@@ -26,3 +26,16 @@ export const AddDeals = async (data) => {
         throw new Error(error);
     }
 }
+
+export const GetDeals = async () => {
+    try {
+        const response = await axios.get(`${URL + endpoints?.deals?.get_deals}`)
+        if (response.status !== 200) {
+            throw new Error(`Unexpected status code: ${response.status}`);
+        }
+        return response;
+    } catch (error) {
+        console.log(error)
+        throw new Error(error);
+    }
+}

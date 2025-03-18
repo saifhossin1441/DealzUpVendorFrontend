@@ -6,7 +6,7 @@ import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
 
-const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/deals/`;
+const apiEndpoint = `${process.env.REACT_APP_API_URL}vendor/deals/`;
 const VendorDeals = () => {
     const [deals, setDeals] = useState([]);
 

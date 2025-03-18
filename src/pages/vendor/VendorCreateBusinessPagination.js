@@ -346,7 +346,7 @@ const VendorCreateBusinessPagination = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         let vendorInfo = localStorage.getItem('vendorInfo');
         if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');

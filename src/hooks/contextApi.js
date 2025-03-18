@@ -19,7 +19,7 @@ export const MyProvider = ({ children }) => {
         vendorInfo = JSON.parse(vendorInfo);
         if (!vendorInfo?.vendor?.id) return
 
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/vendor/${vendorInfo?.vendor?.id}`;
+        const apiEndpoint = `${process.env.REACT_APP_API_URL}vendor/businesses/vendor/${vendorInfo?.vendor?.id}`;
         fetch(apiEndpoint, {
             method: 'GET',
             // mode: 'no-cors',
@@ -40,7 +40,6 @@ export const MyProvider = ({ children }) => {
     }
     useEffect(() => {
         GetApi()
-
     }, [refreshAccessToken, refresherror])
 
 

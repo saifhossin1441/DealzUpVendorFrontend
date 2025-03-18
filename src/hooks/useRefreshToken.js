@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import axios from 'axios';
 
 const refreshEndpoint = `${process.env.REACT_APP_API_URL}auth/refresh/`;
 
@@ -12,21 +13,21 @@ export const useRefreshToken = () => {
             if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
             vendorInfo = JSON.parse(vendorInfo);
 
-            // Make API call to refresh token
-            const response = await fetch(refreshEndpoint, {
-                method: 'POST',
+            const response = await axios.post(refreshEndpoint, {
+                refresh: vendorInfo.refresh_token,
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ refresh: vendorInfo.refresh_token }),
+                }
             });
 
-            if (!response.ok) {
+
+
+            if (response.status !== 200) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            const data = await response.json();
-            // console.log(data, "find it here")
+            const data = response.data;
             // Update localStorage with new tokens if provided
             if (data.access) {
                 vendorInfo.access_token = data.access;
@@ -56,20 +57,22 @@ export const refreshAccessToken = async () => {
         vendorInfo = JSON.parse(vendorInfo);
 
         // Make API call to refresh token
-        const response = await fetch(refreshEndpoint, {
-            method: 'POST',
+
+        const response = await axios.post(refreshEndpoint, {
+            refresh: vendorInfo.refresh_token,
+        }, {
             headers: {
                 'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ refresh: vendorInfo.refresh_token }),
+            }
         });
 
-        if (!response.ok) {
+
+        if (response.status !== 200) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const data = await response.json();
-
+        const data = response.data;
+        // console.log(response, "find it here")
         // Update localStorage with new tokens if provided
         if (data.access) {
             vendorInfo.access_token = data.access;

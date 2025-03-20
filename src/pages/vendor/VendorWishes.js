@@ -10,17 +10,7 @@ const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/flyers/`;
 const VendorWishes = () => {
     const [wishes, setWishes] = useState([]);
 
-    useEffect(() => {
-        fetch(apiEndpoint)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
-                setWishes(data.data); // Set the flyers data from API
-            })
-            .catch((error) => {
-                console.error('Error fetching the flyers:', error);
-            });
-    }, []);
+
 
     return (
         <>

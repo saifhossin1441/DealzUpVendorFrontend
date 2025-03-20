@@ -5,7 +5,7 @@ const Header = (props) => {
   let vendorInfo = localStorage.getItem('vendorInfo');
   if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
   vendorInfo = JSON.parse(vendorInfo);
-  console.log(vendorInfo?.vendor?.full_name)
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-body-dark fixed-top" style={{ width: '100%', backgroundColor: '#784BF6' }}>
       <div className="container-fluid">

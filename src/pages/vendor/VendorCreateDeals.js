@@ -9,7 +9,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useRefreshToken } from "../../hooks/useRefreshToken";
-
+import { fetchData } from "../../apis/vendor/Common/common";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { AddDeals } from "../../apis/vendor/Deals/Deals";
 const styles = {
     form: {
         width: '100%',
@@ -17,36 +19,44 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         gap: '15px',
-        color: 'white',
+        color: 'white'
+    },
+    imagePrevieww: {
+        width: '30%',
+        height: '50%',
+        objectFit: 'cover'
     },
     uploadContainer: {
         width: '200px',
         height: '200px',
+        border: '4px dashed #EE5635',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
         cursor: 'pointer',
         borderRadius: '20px',
+        marginBottom: '20px'
     },
     uploadLabel: {
         width: '100%',
         height: '100%',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     uploadIcon: {
         fontSize: '50px',
-        color: '#EE5635',
+        color: '#EE5635'
     },
+
     fileInput: {
-        display: 'none',
+        display: 'none'
     },
     imagePreview: {
-        width: '50%',
-        height: '50%',
-        objectFit: 'cover',
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover'
     },
     input: {
         marginTop: '10px',
@@ -54,8 +64,13 @@ const styles = {
         padding: '20px',
         border: '1px solid #F9F9F9',
         background: 'transparent',
-        color: 'white',
+        color: 'white !important',
         borderRadius: '8px',
+        placeholder: 'white'
+    },
+
+    '::placeholder': {
+        color: 'white', // Change this to your desired color
     },
     select: {
         width: '100%',
@@ -74,14 +89,8 @@ const styles = {
         width: '100%',
         marginTop: '20px',
         padding: '20px',
-        borderRadius: '8px',
-    },
-    fileName: {
-        marginTop: '10px',
-        color: 'white',
-        fontSize: '14px',
-        textAlign: 'center',
-    },
+        borderRadius: '8px'
+    }
 };
 
 const VendorCreateDeals = () => {
@@ -108,7 +117,6 @@ const VendorCreateDeals = () => {
     });
 
     const navigate = useNavigate()
-    const { refreshAccessToken, refresherror } = useRefreshToken();
 
     const schema = yup.object().shape({
         category: yup.string().required("Category is required"),
@@ -143,38 +151,42 @@ const VendorCreateDeals = () => {
                 )
             )
     });
+    // const data = useQuery(['dealsData'], fetchData);\
+    const query = useQuery({ queryKey: ['dealsData'], queryFn: fetchData })
+
+    const mutation = useMutation({
+        mutationFn: AddDeals,
+        onSuccess: (response) => {
+            toast('Deal Uploaded Successfully')
+            navigate('/VendorDeals');
+        },
+        onError: (error) => {
+            console.log(error, "error")
+            setError('Server Down. Please contact Administrator');
+        }
+    })
+
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const newAccessToken = await refreshAccessToken();
+        if (query?.data) {
+            // Assuming query.data has business, categories, subcategories
+            const { business, categories, subcategories } = query?.data;
+            console.log(business, categories, subcategories, "dataaadada")
+            setBusiness(business);
+            setCategories(categories.data);
+            setSubcategories(subcategories);
+        }
+    }, [query?.data]);
 
-                const fetchWithAuth = async (url, setter) => {
-                    const response = await fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${newAccessToken}`,
-                        },
-                    });
-                    const data = await response.json();
-                    setter(data);
-                };
-                let vendorInfo = localStorage.getItem('vendorInfo');
-                if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
-                vendorInfo = JSON.parse(vendorInfo);
-                if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
 
-                await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/businesses/vendor/${vendorInfo?.vendor?.id}`, setBusiness);
-                await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/categories/`, (data) => setCategories(data.data));
-                await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/subcategories/`, setSubcategories);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
 
-        fetchData();
-    }, []);
+    const formatDate = (date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`; // Change the order to YYYY-MM-DD
+    };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -186,14 +198,18 @@ const VendorCreateDeals = () => {
         if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
 
         // Set vendor ID in formData
-        const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id };
+
+        const formattedStartDate = formatDate(formData.start_date);
+        const formattedEndDate = formatDate(formData.end_date);
+        const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id, start_date: formattedStartDate, end_date: formattedEndDate };
         console.log('Form Data:', updatedFormData);
 
         schema.validate(updatedFormData)
             .then(valid => {
                 console.log(valid, error)
                 setError({});
-                SendDataToDatabase(updatedFormData)
+                mutation.mutate(updatedFormData)
+                // SendDataToDatabase(updatedFormData)
             })
             .catch(error => {
 
@@ -209,50 +225,6 @@ const VendorCreateDeals = () => {
             });
 
     };
-
-    const SendDataToDatabase = async (data) => {
-        // console.log(data)
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/deals/`;
-        let formData = new FormData();
-
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== null) { // Only append non-null values
-                formData.append(key, value);
-            }
-        });
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-
-
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                const result = await response.json()
-                console.log(result, "error result")
-                setError(result)
-            } else {
-                const result = await response.json();
-                console.log('Business Registration successful:', result);
-                // Redirect to another page on successful login
-                toast('Deal Uploaded Successfully')
-                // Redirect to another page on successful login
-                navigate('/VendorDeals');
-                // navigate('/VendorLogin'); 
-            }
-            console.log(error, "Business Errror")
-
-        }
-        catch (error) {
-
-            console.error('Error:', error);
-            setError('Server Down. Please contact Administrator');
-        }
-    }
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];

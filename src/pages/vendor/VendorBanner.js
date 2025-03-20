@@ -4,22 +4,23 @@ import Header from './../../components/vendors/Header';
 // import flyerImg1 from './../../assets/vendors/images/flyers/1.png';
 import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
+import { useQuery } from "@tanstack/react-query";
+import { GetBanners } from "../../apis/vendor/Banners/Banners";
 
 const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/banners/`;
 const VendorBanners = () => {
     const [banners, setBanners] = useState([]);
 
+
+    const query = useQuery({ queryKey: ['bannerData'], queryFn: GetBanners })
+
     useEffect(() => {
-        fetch(apiEndpoint)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
-                setBanners(data); // Set the flyers data from API
-            })
-            .catch((error) => {
-                console.error('Error fetching the banners:', error);
-            });
-    }, []);
+        console.log(query?.data?.data)
+        if (query) {
+            setBanners(query?.data?.data)
+        }
+
+    }, [query?.data])
 
     return (
         <>

@@ -12,6 +12,8 @@ import { Autocomplete } from "@react-google-maps/api";
 import { geocode, RequestType } from "react-geocode";
 import { useGeolocated } from "react-geolocated";
 import Maps from './Maps';
+import { useMutation } from '@tanstack/react-query';
+import { AddVendorBusiness } from '../../apis/vendor/Business/Business';
 
 
 const styles = {
@@ -155,6 +157,34 @@ const VendorCreateBusinessPagination = () => {
     ];
     const navigate = useNavigate()
     const { refreshAccessToken, refresherror } = useRefreshToken();
+
+    const mutation = useMutation({
+        mutationFn: AddVendorBusiness,
+        onSuccess: (response) => {
+
+            if (!response) {
+
+                console.log(response.error.fields)
+                if (response.error.fields) {
+                    setError({ api: "Email or Phone is already Registered. " })
+                } else {
+                    setError(response)
+                }
+
+            } else {
+
+                console.log('Business Registration successful:', response);
+                // Redirect to another page on successful login
+                setCurrentStep(currentStep + 1);
+            }
+            console.log(error, "Business Errror")
+
+        },
+        onError: (error) => {
+            console.log(error, "error")
+            setError('Server Down. Please contact Administrator');
+        }
+    })
 
     const schema = yup.object().shape({
         country: yup.string().required("Country is required"),
@@ -346,7 +376,7 @@ const VendorCreateBusinessPagination = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         let vendorInfo = localStorage.getItem('vendorInfo');
         if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
@@ -358,62 +388,15 @@ const VendorCreateBusinessPagination = () => {
         // Set vendor ID in formData
         const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id };
         console.log('Form Data:', updatedFormData);
-
-        SendDataToDatabase(updatedFormData)
+        mutation.mutate(updatedFormData)
+        // SendDataToDatabase(updatedFormData)
 
         if (!verified) {
             setVerified(true)
         }
     };
 
-    const SendDataToDatabase = async (data) => {
-        // console.log(data)
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/businesses/create/`;
-        let formData = new FormData();
 
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== null) { // Only append non-null values
-                formData.append(key, value);
-            }
-        });
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-        const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken, 'refresh token', refresherror)
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
-                },
-                body: formData,
-            });
-
-            if (!response.ok) {
-                const result = await response.json()
-                console.log(result.error.fields)
-                if (result.error.fields) {
-                    setError({ api: "Email or Phone is already Registered. " })
-                } else {
-                    setError(result)
-                }
-
-            } else {
-                const result = await response.json();
-                console.log('Business Registration successful:', result);
-                // Redirect to another page on successful login
-                setCurrentStep(currentStep + 1);
-            }
-            console.log(error, "Business Errror")
-
-        }
-        catch (error) {
-
-            console.error('Error:', error);
-            setError('Server Down. Please contact Administrator');
-        }
-    }
     // console.log(searchQuery)
     const handleLocationSelect = (location) => {
         console.log("Selected Location:", location);

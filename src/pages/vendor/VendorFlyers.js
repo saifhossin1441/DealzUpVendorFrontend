@@ -8,30 +8,23 @@ import MyContext from '../../hooks/contextApi';
 import { ToastContainer } from 'react-toastify';
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import jsPDF from 'jspdf';
+import { useQuery } from '@tanstack/react-query';
+import { GetFlyers } from '../../apis/vendor/Flyers/Flyers';
 
 const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/flyers/`;
-// const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/business/1/flyers/`;
-// const wishEndpoint = `${process.env.REACT_APP_API_URL}deals/wishlist/`;
-const wishEndpoint = `http://127.0.0.1:8000/deals/wishlist/`;
+
 
 const VendorFlyers = () => {
     const [flyers, setFlyers] = useState([]);
     const { businessData } = useContext(MyContext);
-    const { refreshAccessToken, refresherror } = useRefreshToken();
 
-    console.log(businessData)
+    const query = useQuery({ queryKey: ['flyerData'], queryFn: GetFlyers })
     useEffect(() => {
-        fetch(apiEndpoint)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
-                setFlyers(data.data); // Set the flyers data from API
-            })
-            .catch((error) => {
-                console.error('Error fetching the flyers:', error);
-            });
-    }, []);
+        if (query?.data) {
+            setFlyers(query?.data?.data?.data)
+        }
 
+    }, [query?.data])
 
     const generatePDF = () => {
 
@@ -73,7 +66,7 @@ const VendorFlyers = () => {
                         </div>
                         <br />
                         <div class="flex_wrapper">
-                            <button onClick={generatePDF}>Download Flyers as PDF</button>
+                            {/* <button onClick={generatePDF}>Download Flyers as PDF</button> */}
                             {flyers?.map((flyer) => (
                                 <div class="flyers_wrap" key={flyer.id}>
                                     <img src={flyer.image} alt="Food App" />

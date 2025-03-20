@@ -4,12 +4,17 @@ import Header from './../../components/vendors/Header';
 import Sidebar from './../../components/vendors/Sidebar';
 import uploadGallery from './../../assets/images/uploadGallery.png';
 import * as yup from 'yup'
-
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import { Document, Page, pdfjs } from "react-pdf";
-import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { useNavigate } from "react-router-dom";
+import * as pdfjsLib from "pdfjs-dist";
 import { ToastContainer, toast } from 'react-toastify';
 import ImageCropper from "../../components/ImageCropper";
+import { fetchData } from "../../apis/vendor/Common/common";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { AddFlyers } from "../../apis/vendor/Flyers/Flyers";
+import axios from "axios";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -76,7 +81,7 @@ const styles = {
   },
 
   '::placeholder': {
-    color: 'white', // Change this to your desired color
+    color: 'white',
   },
   select: {
     width: '100%',
@@ -107,6 +112,7 @@ const VendorCreateFlyers = () => {
   const [numPages, setNumPages] = useState(null);
   const [pageImages, setPageImages] = useState([]);
   const canvasRef = useRef(null);
+  const pageRefs = useRef([]);
   const [error, setError] = useState({})
   const [business, setBusiness] = useState([])
   const [showcat, setShowcat] = useState('')
@@ -133,7 +139,6 @@ const VendorCreateFlyers = () => {
 
 
   const navigate = useNavigate()
-  const { refreshAccessToken, refresherror } = useRefreshToken();
 
   const schema = yup.object().shape({
     category: yup.string().required("Category is required"),
@@ -168,67 +173,57 @@ const VendorCreateFlyers = () => {
       )
   });
 
+  const query = useQuery({ queryKey: ['dealsData'], queryFn: fetchData })
+  const mutation = useMutation({
+    mutationFn: AddFlyers,
+    onSuccess: (response) => {
+      console.log(response, "resdsdsds")
+      toast('Flyer Uploaded Successfully')
+      navigate('/VendorFlyers');
+    },
+    onError: (error) => {
+      console.log(error, "error")
+      setError('Server Down. Please contact Administrator');
+    }
+  })
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const newAccessToken = await refreshAccessToken();
+    if (query.data) {
+      // Assuming query.data has business, categories, subcategories
+      const { business, categories, subcategories } = query.data;
 
-        const fetchWithAuth = async (url, setter) => {
-          const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${newAccessToken}`,
-            },
-          });
-          const data = await response.json();
-          setter(data);
-        };
-        let vendorInfo = localStorage.getItem('vendorInfo');
-        if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
-        vendorInfo = JSON.parse(vendorInfo);
-        if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
+      setBusiness(business);
+      setCategories(categories.data);
+      setSubcategories(subcategories);
+    }
+  }, [query.data]);
 
-        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/businesses/vendor/${vendorInfo?.vendor?.id}`, setBusiness);
-        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/categories/`, (data) => setCategories(data.data));
-        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/subcategories/`, setSubcategories);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const onSDateChangeHandler = useCallback(date => setFormData({
-    ...formData,
-    'start_date': date
-  }), [formData]);
-
-  const onEDateChangeHandler = useCallback(date => setFormData({
-    ...formData,
-    'end_date': date
-  }), [formData]);
-
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`; // Change the order to YYYY-MM-DD
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
 
     let vendorInfo = localStorage.getItem('vendorInfo');
-    if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
+    if (!vendorInfo) return
 
     vendorInfo = JSON.parse(vendorInfo);
 
-    if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
+    if (!vendorInfo?.vendor?.id) return
 
-
-    const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id };
+    const formattedStartDate = formatDate(formData.start_date);
+    const formattedEndDate = formatDate(formData.end_date);
+    const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id, start_date: formattedStartDate, end_date: formattedEndDate };
     console.log('Form Data:', updatedFormData);
 
     schema.validate(updatedFormData)
       .then(valid => {
         console.log(valid, error)
         setError({});
-        SendDataToDatabase(updatedFormData)
+        mutation.mutate(updatedFormData)
       })
       .catch(error => {
 
@@ -245,54 +240,14 @@ const VendorCreateFlyers = () => {
 
   };
 
-  const SendDataToDatabase = async (data) => {
 
-    const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/flyers/`;
-    let formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null) {
-        formData.append(key, value);
-      }
-    });
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
-
-
-    try {
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const result = await response.json()
-        console.log(result, "error result")
-        setError(result)
-      } else {
-        const result = await response.json();
-        console.log('Flyers Registration successful:', result);
-        toast('Flyer Uploaded Successfully')
-
-        navigate('/VendorFlyers');
-      }
-      console.log(error, "Business Errror")
-
-    }
-    catch (error) {
-
-      console.error('Error:', error);
-      setError('Server Down. Please contact Administrator');
-    }
-  }
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file && file.size <= 1 * 1024 * 1024) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        // setImage(reader.result);
+        setImage(reader.result);
         setFormData({
           ...formData,
           image: file
@@ -339,47 +294,41 @@ const VendorCreateFlyers = () => {
   const onFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
+      console.log(selectedFile)
       setFile(selectedFile);
     }
   };
 
 
+  const handleUpload = async () => {
+    if (!file) {
+      alert("Please select a file to upload.");
+      return;
+    }
 
-  const onRenderSuccess = (pageNum) => {
+    const formData = new FormData();
+    formData.append('file', file);
 
-    console.log(pageNum, "whta asdsdis this")
-    let canvas = canvasRef.current;
+    try {
+      const response = await axios.post('https://pdf-to-pngs.onrender.com/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Ensure this header is set for file uploads
+        },
+      });
 
-    const importPDFCanvas = document.querySelector('.import-pdf-page');
-    const pdfAsImageSrc = importPDFCanvas.toDataURL();
-    // Get image data from the canvas
-    const imgData = canvas.toDataURL('image/png');
-
-    // Convert canvas to image object
-    const image = convertCanvasToImage(imgData);
-
-    console.log(imgData, "image Data", image);
-
-    // Set the image and store the image data
-    setImage(pdfAsImageSrc);
-    setPageImages((prev) => [...prev, imgData]);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Upload successful', data.extracted_images);
+        setImage(data.extracted_images)
+      } else {
+        console.error('Error uploading file', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
-  const convertCanvasToImage = (imgData) => {
-    var image = new Image();
-    image.src = imgData;
-    return image;
-  }
 
-  const onDocumentLoadSuccess = ({ numPages }) => {
-
-    console.log(numPages, "ehys s s")
-    setNumPages(numPages);
-  };
-
-  const onCropComplete = (croppedArea, croppedAreaPixels) => {
-    console.log(croppedArea, croppedAreaPixels)
-  }
 
   return (
     <>
@@ -393,14 +342,14 @@ const VendorCreateFlyers = () => {
 
             <div className="content-box-o">
               <div>Choose Template</div>
-              <input type="file" accept="application/pdf" onChange={onFileChange} />
+              {/* <input type="file" accept="application/pdf" onChange={onFileChange} /> */}
             </div>
 
 
             <div className="hr-container">
               <span>Or</span>
             </div>
-
+            {/* 
             {file && (
               <div>
                 <Document
@@ -419,19 +368,24 @@ const VendorCreateFlyers = () => {
                   ))}
                 </Document>
               </div>
-            )}
-
-            {/* Display extracted images */}
-            {/* <div>
-              {pageImages.map((image, index) => (
-
-                <img key={index} src={image} alt={`Page ${index + 1}`} />
+            )} */}
+            {/* <button onClick={handleUpload}>Extract Images</button>
+     
+            <div className="image-grid">
+              {image?.map((image, index) => (
+                <div key={index} className="image-container">
+                  <img
+                    src={image}
+                    alt={`Page ${index + 1}`}
+                    className="image"
+                  />
+                </div>
               ))}
             </div> */}
 
 
-            {pageImages && <ImageCropper image={image} height={400} width={600} />}
-            {/* <form onSubmit={handleSubmit}>
+            {/* {pageImages && <ImageCropper image={image} height={400} width={600} />} */}
+            <form onSubmit={handleSubmit}>
               <div className="uploadGallerySection">
 
                 {image ? (
@@ -486,7 +440,7 @@ const VendorCreateFlyers = () => {
                   if (selectedCategory) {
                     setFormData((prevData) => ({
                       ...prevData,
-                      subcategory: selectedCategory.id, // Store data.id
+                      subcategory: selectedCategory.id,
                     }));
                     setshowSub(selectedCategory.name)
                   }
@@ -517,7 +471,7 @@ const VendorCreateFlyers = () => {
                   if (selectedBusiness) {
                     setFormData((prevData) => ({
                       ...prevData,
-                      business: selectedBusiness.id, // Store data.id
+                      business: selectedBusiness.id,
                     }));
                   }
                 }}
@@ -561,43 +515,47 @@ const VendorCreateFlyers = () => {
 
               <div className="row" >
                 <div className="col-md-6">
-                  <label htmlFor="startDate">Start Date</label>
-
-                  <input
-                    type="date"
-                    placeholder="Date"
-                    required
-                    style={styles.input}
-                    onChange={handleChange}
-                    value={formData.start_date}
-                    name="start_date"
-                    className="white-placeholder"
+                  <DatePicker
+                    selected={formData.start_date}
+                    onChange={(date) => setFormData({
+                      ...formData,
+                      start_date: date
+                    })}
+                    selectsStart
+                    startDate={formData.start_date}
+                    endDate={formData.end_date}
+                    id="from"
+                    className="form-control "
+                    dateFormat="yyyy-MM-dd"
+                    placeholderText="Select a start date"
+                    style={{ width: '100%' }}
                   />
                 </div>
                 {error.start_date && <div id="Error" className="form-text2">{error.start_date}</div>}
 
                 <div className="col-md-6">
-                  <label>End Date</label>
-
-
-                  <input
-                    type="date"
-                    name="end_date"
-                    placeholder="Date"
-                    required
-                    style={styles.input}
-                    onChange={handleChange}
-                    value={formData.end_date}
-                    className="white-placeholder"
+                  <DatePicker
+                    selected={formData.end_date}
+                    onChange={(date) => setFormData({
+                      ...formData,
+                      end_date: date
+                    })}
+                    selectsEnd
+                    startDate={formData.start_date}
+                    endDate={formData.end_date}
+                    minDate={formData.start_date}
+                    id="to"
+                    className="form-control"
+                    dateFormat="yyyy-MM-dd"
+                    placeholderText="Select an end date"
                   />
-
                 </div>
                 {error.end_date && <div id="Error" className="form-text2">{error.end_date}</div>}
               </div>
 
               <button type="submit" style={styles.submitButton}> Submit</button>
 
-            </form> */}
+            </form>
             <ToastContainer />
           </div>
         </div>

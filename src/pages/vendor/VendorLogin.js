@@ -5,6 +5,8 @@ import loginImage from './../../assets/images/login-image-vendor.jpg'
 import './../../assets/css/login.css';
 import './../../assets/css/styles.css';
 import * as yup from 'yup'
+import { login } from '../../apis/auth/auth';
+import { useMutation } from '@tanstack/react-query';
 
 const VendorLogin = () => {
     const [email, setEmail] = useState("");
@@ -13,6 +15,19 @@ const VendorLogin = () => {
     const [error, setError] = useState("");
     const [termerror, setTermError] = useState("");
     const navigate = useNavigate();
+
+
+    const mutation = useMutation({
+        mutationFn: login,
+        onSuccess: (response) => {
+            localStorage.setItem('vendorInfo', JSON.stringify(response))
+            navigate('/VendorCreateBusiness');
+        },
+        onError: (error) => {
+            console.log(error, "error")
+            setError('Invalid credentials. Please try again.');
+        }
+    })
 
     const schema = yup.object().shape({
         password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
@@ -28,34 +43,7 @@ const VendorLogin = () => {
     };
 
 
-    const ApiCall = async (data) => {
-        // API endpoint for login
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/vendor-login/`;
 
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                throw new Error('Login failed');
-            }
-            const result = await response.json();
-            console.log('Login successful:', result);
-
-            localStorage.setItem('vendorInfo', JSON.stringify(result))
-            // Redirect to another page on successful login
-            navigate('/VendorCreateBusiness'); // 
-        }
-        catch (error) {
-            console.error('Error:', error);
-            setError('Invalid credentials. Please try again.');
-        }
-    }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -81,7 +69,7 @@ const VendorLogin = () => {
                         term1: null,
                         term2: null,
                     }));
-                    ApiCall(data)
+                    mutation.mutate(data)
                 }
             })
             .catch(error => {

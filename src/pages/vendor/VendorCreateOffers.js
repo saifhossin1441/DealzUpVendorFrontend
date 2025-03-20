@@ -8,10 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import { useRefreshToken } from "../../hooks/useRefreshToken";
-
+import { fetchData } from "../../apis/vendor/Common/common";
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { AddOffers } from "../../apis/vendor/Offers/Offers";
 const styles = {
-
   form: {
     width: '100%',
     display: 'flex',
@@ -117,7 +117,6 @@ const VendorCreateOffers = () => {
   });
 
   const navigate = useNavigate()
-  const { refreshAccessToken, refresherror } = useRefreshToken();
 
   const schema = yup.object().shape({
     category: yup.string().required("Category is required"),
@@ -152,44 +151,40 @@ const VendorCreateOffers = () => {
         )
       )
   });
+  const mutation = useMutation({
+    mutationFn: AddOffers,
+    onSuccess: (response) => {
+      console.log(response, "dafasfasdfas")
+      toast('Offer Uploaded Successfully')
+      // Redirect to another page on successful login
+      navigate('/VendorOffers');
+    },
+    onError: (error) => {
+      console.log(error, "error")
+      setError('Server Down. Please contact Administrator');
+    }
+  })
+
+  const query = useQuery({ queryKey: ['dealsData'], queryFn: fetchData })
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const newAccessToken = await refreshAccessToken();
+    if (query.data) {
+      // Assuming query.data has business, categories, subcategories
+      const { business, categories, subcategories } = query.data;
 
-        const fetchWithAuth = async (url, setter) => {
-          const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${newAccessToken}`,
-            },
-          });
-          const data = await response.json();
-          setter(data);
-        };
-        let vendorInfo = localStorage.getItem('vendorInfo');
-        if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
-        vendorInfo = JSON.parse(vendorInfo);
-        if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
+      setBusiness(business);
+      setCategories(categories.data);
+      setSubcategories(subcategories);
+    }
+  }, [query.data]);
 
-        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/businesses/vendor/${vendorInfo?.vendor?.id}`, setBusiness);
-        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/categories/`, (data) => setCategories(data.data));
-        await fetchWithAuth(`${process.env.REACT_APP_API_URL}deals/subcategories/`, setSubcategories);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
   const formatDate = (date) => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
     const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    return `${year}-${month}-${day}`; // Change the order to YYYY-MM-DD
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -211,7 +206,8 @@ const VendorCreateOffers = () => {
       .then(valid => {
         console.log(valid, error)
         setError({});
-        SendDataToDatabase(updatedFormData)
+        mutation.mutate(updatedFormData)
+        // SendDataToDatabase(updatedFormData)
       })
       .catch(error => {
 
@@ -228,48 +224,6 @@ const VendorCreateOffers = () => {
 
   };
 
-  const SendDataToDatabase = async (data) => {
-    // console.log(data)
-
-    const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/offers/`;
-    let formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null) { // Only append non-null values
-        formData.append(key, value);
-      }
-    });
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
-
-
-    try {
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const result = await response.json()
-        console.log(result, "error result")
-        setError(result)
-      } else {
-        const result = await response.json();
-        console.log('Business Registration successful:', result);
-        toast('Offer Uploaded Successfully')
-        // Redirect to another page on successful login
-        navigate('/VendorOffers');
-      }
-      console.log(error, "Business Errror")
-
-    }
-    catch (error) {
-
-      console.error('Error:', error);
-      setError('Server Down. Please contact Administrator');
-    }
-  }
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import * as yup from 'yup'
+import { register } from '../../apis/auth/auth';
+import { useMutation } from '@tanstack/react-query';
 
 const VendorRegistration = () => {
     const [name, setName] = useState("");
@@ -18,6 +20,18 @@ const VendorRegistration = () => {
     const [isChecked, setIsChecked] = useState({ term1: false, term2: false });
     const [error, setError] = useState({});
     const navigate = useNavigate();
+
+    const mutation = useMutation({
+        mutationFn: register,
+        onSuccess: (response) => {
+            console.log(response, "responee")
+            navigate('/VendorLogin');
+        },
+        onError: (error) => {
+            console.log(error, "error")
+            toast('Server Down. Please contact Administrator');
+        }
+    })
 
     const schema = yup.object().shape({
         confirm_password: yup
@@ -130,7 +144,8 @@ const VendorRegistration = () => {
                         term1: null,
                         term2: null,
                     }));
-                    SendDataToDatabase(data)
+                    mutation.mutate(data)
+                    // SendDataToDatabase(data)
                 }
             })
             .catch(error => {
@@ -150,38 +165,6 @@ const VendorRegistration = () => {
 
     };
 
-
-    const SendDataToDatabase = async (data) => {
-        console.log(data)
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/vendors-registration/`;
-
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                const result = await response.json()
-                setError(result)
-            } else {
-                const result = await response.json();
-                console.log('Registration successful:', result);
-                // Redirect to another page on successful login
-                navigate('/VendorLogin'); // 
-            }
-            console.log(error)
-
-        }
-        catch (error) {
-
-            console.error('Error:', error);
-            toast('Server Down. Please contact Administrator');
-        }
-    }
     const handleCheckboxChange = (e, term) => {
         console.log('t', term, e.target.checked);
         setIsChecked(prevState => ({

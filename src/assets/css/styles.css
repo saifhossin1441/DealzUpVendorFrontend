@@ -1321,3 +1321,22 @@ background: #EE5C74 !important;
       width: 90%; 
   } */
 }
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two images per row */
+  gap: 30px; /* Space between images */
+  margin: 0 auto;
+  max-width: 90%; /* Optional, to limit the grid's width */
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image {
+  width: 100%; /* Adjust based on your design */
+  max-width: 100%; /* Prevent images from overflowing */
+}

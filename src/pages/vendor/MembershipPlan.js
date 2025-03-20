@@ -6,6 +6,8 @@ import Header from './../../components/vendors/Header';
 import Footer from './../../components/Footer';
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { ToastContainer, toast } from 'react-toastify';
+import { useMutation } from '@tanstack/react-query';
+import { UpgradeSubscription } from '../../apis/vendor/Subscriptions/Subscription';
 
 const MembershipPlan = () => {
 
@@ -42,25 +44,20 @@ const MembershipPlan = () => {
     ])
 
 
+    const mutation = useMutation({
+        mutationFn: UpgradeSubscription,
+        onSuccess: (response) => {
+            toast('Subscription Upgraded Successfully')
+        },
+        onError: (error) => {
+            console.log(error, "error")
+        }
+    })
+
 
     const UpgradeSubsription = async () => {
-        let apiEndPoint = `${process.env.REACT_APP_API_URL}wallet/upgrade-subscription/`
-        const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken, 'refresh token', refresherror)
         let formData = { plan: selectedPlan }
-        try {
-            const response = await fetch(apiEndPoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${newAccessToken}`,
-                },
-                body: formData,
-            });
-            console.log(response)
-        } catch (error) {
-            toast(error)
-        }
-
+        mutation.mutate(formData)
     }
     return (
         <>

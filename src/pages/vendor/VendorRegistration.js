@@ -165,38 +165,6 @@ const VendorRegistration = () => {
 
     };
 
-
-    const SendDataToDatabase = async (data) => {
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/vendors-registration/`;
-        console.log(data, apiEndpoint)
-
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                const result = await response.json()
-                setError(result)
-            } else {
-                const result = await response.json();
-                console.log('Registration successful:', result);
-                // Redirect to another page on successful login
-                navigate('/VendorLogin'); // 
-            }
-            console.log(error)
-
-        }
-        catch (error) {
-
-            console.error('Error:', error);
-            toast('Server Down. Please contact Administrator');
-        }
-    }
     const handleCheckboxChange = (e, term) => {
         console.log('t', term, e.target.checked);
         setIsChecked(prevState => ({

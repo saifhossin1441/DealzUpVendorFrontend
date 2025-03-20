@@ -17,9 +17,7 @@ export const AddFlyers = async (data) => {
         }
 
         const response = await axios.post(`${URL + endpoints?.flyers?.add_flyers}`, formData)
-        if (response.status !== 200) {
-            throw new Error(`Unexpected status code: ${response.status}`);
-        }
+
         return response;
     } catch (error) {
         console.log(error)

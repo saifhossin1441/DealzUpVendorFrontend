@@ -12,7 +12,8 @@ import * as pdfjsLib from "pdfjs-dist";
 import { ToastContainer, toast } from 'react-toastify';
 import ImageCropper from "../../components/ImageCropper";
 import { fetchData } from "../../apis/vendor/Common/common";
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { AddFlyers } from "../../apis/vendor/Flyers/Flyers";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -79,7 +80,7 @@ const styles = {
   },
 
   '::placeholder': {
-    color: 'white', // Change this to your desired color
+    color: 'white',
   },
   select: {
     width: '100%',
@@ -172,7 +173,19 @@ const VendorCreateFlyers = () => {
   });
 
   const query = useQuery({ queryKey: ['dealsData'], queryFn: fetchData })
-  console.log(query.data, "create Deals")
+  const mutation = useMutation({
+    mutationFn: AddFlyers,
+    onSuccess: (response) => {
+      console.log(response, "resdsdsds")
+      toast('Flyer Uploaded Successfully')
+      navigate('/VendorFlyers');
+    },
+    onError: (error) => {
+      console.log(error, "error")
+      setError('Server Down. Please contact Administrator');
+    }
+  })
+
   useEffect(() => {
     if (query.data) {
       // Assuming query.data has business, categories, subcategories
@@ -209,7 +222,7 @@ const VendorCreateFlyers = () => {
       .then(valid => {
         console.log(valid, error)
         setError({});
-        SendDataToDatabase(updatedFormData)
+        mutation.mutate(updatedFormData)
       })
       .catch(error => {
 
@@ -226,47 +239,7 @@ const VendorCreateFlyers = () => {
 
   };
 
-  const SendDataToDatabase = async (data) => {
 
-    const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/flyers/`;
-    let formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null) {
-        formData.append(key, value);
-      }
-    });
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
-
-
-    try {
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const result = await response.json()
-        console.log(result, "error result")
-        setError(result)
-      } else {
-        const result = await response.json();
-        console.log('Flyers Registration successful:', result);
-        toast('Flyer Uploaded Successfully')
-
-        navigate('/VendorFlyers');
-      }
-      console.log(error, "Business Errror")
-
-    }
-    catch (error) {
-
-      console.error('Error:', error);
-      setError('Server Down. Please contact Administrator');
-    }
-  }
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -367,7 +340,7 @@ const VendorCreateFlyers = () => {
 
             <div className="content-box-o">
               <div>Choose Template</div>
-              <input type="file" accept="application/pdf" onChange={onFileChange} />
+              {/* <input type="file" accept="application/pdf" onChange={onFileChange} /> */}
             </div>
 
 
@@ -394,8 +367,8 @@ const VendorCreateFlyers = () => {
                 </Document>
               </div>
             )} */}
-            <button onClick={handleUpload}>Extract Images</button>
-            {/* Display extracted images */}
+            {/* <button onClick={handleUpload}>Extract Images</button>
+     
             <div className="image-grid">
               {image?.map((image, index) => (
                 <div key={index} className="image-container">
@@ -406,11 +379,11 @@ const VendorCreateFlyers = () => {
                   />
                 </div>
               ))}
-            </div>
+            </div> */}
 
 
             {/* {pageImages && <ImageCropper image={image} height={400} width={600} />} */}
-            {/* <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div className="uploadGallerySection">
 
                 {image ? (
@@ -465,7 +438,7 @@ const VendorCreateFlyers = () => {
                   if (selectedCategory) {
                     setFormData((prevData) => ({
                       ...prevData,
-                      subcategory: selectedCategory.id, // Store data.id
+                      subcategory: selectedCategory.id,
                     }));
                     setshowSub(selectedCategory.name)
                   }
@@ -496,7 +469,7 @@ const VendorCreateFlyers = () => {
                   if (selectedBusiness) {
                     setFormData((prevData) => ({
                       ...prevData,
-                      business: selectedBusiness.id, // Store data.id
+                      business: selectedBusiness.id,
                     }));
                   }
                 }}
@@ -568,7 +541,7 @@ const VendorCreateFlyers = () => {
                     selectsEnd
                     startDate={formData.start_date}
                     endDate={formData.end_date}
-                    minDate={formData.start_date} // Prevents selecting a "to" date before "from" date
+                    minDate={formData.start_date}
                     id="to"
                     className="form-control"
                     dateFormat="yyyy-MM-dd"
@@ -580,7 +553,7 @@ const VendorCreateFlyers = () => {
 
               <button type="submit" style={styles.submitButton}> Submit</button>
 
-            </form> */}
+            </form>
             <ToastContainer />
           </div>
         </div>

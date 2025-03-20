@@ -9,7 +9,8 @@ import { toast } from 'react-toastify';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { fetchData } from "../../apis/vendor/Common/common";
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { AddBanners } from "../../apis/vendor/Banners/Banners";
 
 const styles = {
 
@@ -157,6 +158,18 @@ const VendorCreateBanners = () => {
 
   const query = useQuery({ queryKey: ['dealsData'], queryFn: fetchData })
 
+  const mutation = useMutation({
+    mutationFn: AddBanners,
+    onSuccess: (response) => {
+      toast('Banner Uploaded Successfully')
+      navigate('/VendorBanners');
+    },
+    onError: (error) => {
+      console.log(error, "error")
+      setError('Server Down. Please contact Administrator');
+    }
+  })
+
   useEffect(() => {
     if (query.data) {
       // Assuming query.data has business, categories, subcategories
@@ -195,7 +208,8 @@ const VendorCreateBanners = () => {
       .then(valid => {
         console.log(valid, error)
         setError({});
-        SendDataToDatabase(updatedFormData)
+        mutation.mutate(updatedFormData)
+        // SendDataToDatabase(updatedFormData)
       })
       .catch(error => {
 
@@ -212,47 +226,7 @@ const VendorCreateBanners = () => {
 
   };
 
-  const SendDataToDatabase = async (data) => {
-    // console.log(data)
-    const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/banners/`;
-    let formData = new FormData();
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null) { // Only append non-null values
-        formData.append(key, value);
-      }
-    });
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
-
-
-    try {
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const result = await response.json()
-        console.log(result, "error result")
-        setError(result)
-      } else {
-        const result = await response.json();
-        console.log('Business Registration successful:', result);
-        toast('Banner Uploaded Successfully')
-        // Redirect to another page on successful login
-        navigate('/VendorBanners');
-      }
-      console.log(error, "Business Errror")
-
-    }
-    catch (error) {
-
-      console.error('Error:', error);
-      setError('Server Down. Please contact Administrator');
-    }
-  }
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];

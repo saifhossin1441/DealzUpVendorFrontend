@@ -5,7 +5,7 @@ import RightSidebar from './../../components/vendors/RightSidebar';
 import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
 import { useRefreshToken } from '../../hooks/useRefreshToken';
-
+import { useQuery } from "@tanstack/react-query";
 
 
 const VendorDashboard = () => {
@@ -21,6 +21,7 @@ const VendorDashboard = () => {
   console.log(vendorInfo?.vendor?.full_name)
 
   const { refreshAccessToken, refresherror } = useRefreshToken();
+
 
   useEffect(() => {
     const fetchData = async () => {

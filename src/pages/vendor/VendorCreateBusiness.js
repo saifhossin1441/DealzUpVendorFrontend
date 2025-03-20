@@ -11,7 +11,6 @@ import MyContext from '../../hooks/contextApi';
 const VendorCreateBusiness = () => {
   const { businessData } = useContext(MyContext);
   const [data, setData] = useState(businessData)
-  const { refreshAccessToken, refresherror } = useRefreshToken();
 
   return (
     <>

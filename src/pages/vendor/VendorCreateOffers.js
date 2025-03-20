@@ -9,8 +9,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { fetchData } from "../../apis/vendor/Common/common";
-import { useQuery } from '@tanstack/react-query';
-
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { AddOffers } from "../../apis/vendor/Offers/Offers";
 const styles = {
   form: {
     width: '100%',
@@ -151,9 +151,22 @@ const VendorCreateOffers = () => {
         )
       )
   });
+  const mutation = useMutation({
+    mutationFn: AddOffers,
+    onSuccess: (response) => {
+      console.log(response, "dafasfasdfas")
+      toast('Offer Uploaded Successfully')
+      // Redirect to another page on successful login
+      navigate('/VendorOffers');
+    },
+    onError: (error) => {
+      console.log(error, "error")
+      setError('Server Down. Please contact Administrator');
+    }
+  })
 
   const query = useQuery({ queryKey: ['dealsData'], queryFn: fetchData })
-  console.log(query.data, "create Offers")
+
   useEffect(() => {
     if (query.data) {
       // Assuming query.data has business, categories, subcategories
@@ -193,7 +206,8 @@ const VendorCreateOffers = () => {
       .then(valid => {
         console.log(valid, error)
         setError({});
-        SendDataToDatabase(updatedFormData)
+        mutation.mutate(updatedFormData)
+        // SendDataToDatabase(updatedFormData)
       })
       .catch(error => {
 
@@ -210,48 +224,6 @@ const VendorCreateOffers = () => {
 
   };
 
-  const SendDataToDatabase = async (data) => {
-    // console.log(data)
-
-    const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/offers/`;
-    let formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null) { // Only append non-null values
-        formData.append(key, value);
-      }
-    });
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
-
-
-    try {
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const result = await response.json()
-        console.log(result, "error result")
-        setError(result)
-      } else {
-        const result = await response.json();
-        console.log('Business Registration successful:', result);
-        toast('Offer Uploaded Successfully')
-        // Redirect to another page on successful login
-        navigate('/VendorOffers');
-      }
-      console.log(error, "Business Errror")
-
-    }
-    catch (error) {
-
-      console.error('Error:', error);
-      setError('Server Down. Please contact Administrator');
-    }
-  }
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];

@@ -5,23 +5,22 @@ import Header from './../../components/vendors/Header';
 // import DealsImg2 from './../../assets/vendors/images/deals/2.jpg';
 import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
+import { useQuery } from "@tanstack/react-query";
+import { GetOffers } from "../../apis/vendor/Offers/Offers";
 
 
 const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/offers/`;
 const VendorOffers = () => {
     const [offers, setOffers] = useState([]);
 
+    const query = useQuery({ queryKey: ['offerData'], queryFn: GetOffers })
     useEffect(() => {
-        fetch(apiEndpoint)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
-                setOffers(data); // Set the flyers data from API
-            })
-            .catch((error) => {
-                console.error('Error fetching the flyers:', error);
-            });
-    }, []);
+        console.log(query?.data?.data)
+        if (query) {
+            setOffers(query?.data?.data)
+        }
+
+    }, [query?.data])
 
     return (
         <>

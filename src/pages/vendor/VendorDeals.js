@@ -5,22 +5,24 @@ import Header from './../../components/vendors/Header';
 // import DealsImg2 from './../../assets/vendors/images/deals/2.jpg';
 import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
+import { GetDeals } from "../../apis/vendor/Deals/Deals";
+import { useQuery } from "@tanstack/react-query";
 
 const apiEndpoint = `${process.env.REACT_APP_API_URL}vendor/deals/`;
 const VendorDeals = () => {
     const [deals, setDeals] = useState([]);
 
+
+    const query = useQuery({ queryKey: ['dealsData'], queryFn: GetDeals })
+
     useEffect(() => {
-        fetch(apiEndpoint)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
-                setDeals(data.data); // Set the flyers data from API
-            })
-            .catch((error) => {
-                console.error('Error fetching the flyers:', error);
-            });
-    }, []);
+        console.log(query?.data?.data)
+        if (query) {
+            setDeals(query?.data?.data?.data)
+        }
+
+    }, [query?.data])
+
 
     return (
         <>
@@ -35,11 +37,11 @@ const VendorDeals = () => {
                         <br />
                         <div class="flex_wrapper">
                             {deals?.map((deals) => (
-                                <div class="flyers_wrap" key={deals.id}>
-                                    <img src={deals.image} alt="Food App" />
-                                    <h3>{deals.name}</h3>
-                                    <p>Start Date : {deals.start_date} <br /> End Date  &nbsp;: {deals.end_date}</p>
-                                    <p>{deals.descripton}</p>
+                                <div class="flyers_wrap" key={deals?.id}>
+                                    <img src={deals?.image} alt="Food App" />
+                                    <h3>{deals?.name}</h3>
+                                    <p>Start Date : {deals?.start_date} <br /> End Date  &nbsp;: {deals.end_date}</p>
+                                    <p>{deals?.descripton}</p>
                                     {/* <button className="heart-button" >
                                         ❤️
                                     </button> */}

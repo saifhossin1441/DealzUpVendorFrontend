@@ -162,21 +162,21 @@ const VendorCreateDeals = () => {
         },
         onError: (error) => {
             console.log(error, "error")
-            setError('Invalid credentials. Please try again.');
+            setError('Server Down. Please contact Administrator');
         }
     })
 
 
     useEffect(() => {
-        if (query.data) {
+        if (query?.data) {
             // Assuming query.data has business, categories, subcategories
-            const { business, categories, subcategories } = query.data;
-
+            const { business, categories, subcategories } = query?.data;
+            console.log(business, categories, subcategories, "dataaadada")
             setBusiness(business);
             setCategories(categories.data);
             setSubcategories(subcategories);
         }
-    }, [query.data]);
+    }, [query?.data]);
 
 
 
@@ -225,48 +225,6 @@ const VendorCreateDeals = () => {
             });
 
     };
-
-    const SendDataToDatabase = async (data) => {
-        // console.log(data)
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}deals/deals/`;
-        let formData = new FormData();
-
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== null) { // Only append non-null values
-                formData.append(key, value);
-            }
-        });
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-
-
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                const result = await response.json()
-                console.log(result, "error result")
-                setError(result)
-            } else {
-                const result = await response.json();
-                toast('Deal Uploaded Successfully')
-                // Redirect to another page on successful login
-                navigate('/VendorDeals');
-                // navigate('/VendorLogin'); 
-            }
-            console.log(error, "Business Errror")
-
-        }
-        catch (error) {
-
-            console.error('Error:', error);
-            setError('Server Down. Please contact Administrator');
-        }
-    }
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];

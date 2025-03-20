@@ -17,9 +17,9 @@ export const AddBanners = async (data) => {
         }
 
         const response = await axios.post(`${URL + endpoints?.banners?.add_banners}`, formData)
-        if (response.status !== 200) {
-            throw new Error(`Unexpected status code: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected status code: ${response.status}`);
+        // }
         return response;
     } catch (error) {
         console.log(error)

@@ -24,3 +24,28 @@ export const GetVendorBusiness = async () => {
         throw new Error(error);
     }
 }
+
+export const AddVendorBusiness = async (data) => {
+    try {
+        let formData = new FormData();
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== null) { // Only append non-null values
+                formData.append(key, value);
+            }
+        });
+        for (let pair of formData.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
+        }
+        const newAccessToken = await refreshAccessToken();
+        const response = await axios.post(`${URL + endpoints?.business?.add_vendor_business}`, formData, {
+            headers: {
+                'Authorization': `Bearer ${newAccessToken}`,
+            }
+        });
+        return response
+    } catch (error) {
+        console.log(error)
+        throw new Error(error);
+    }
+}

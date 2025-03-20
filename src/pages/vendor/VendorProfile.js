@@ -7,6 +7,8 @@ import RightSidebar from './../../components/vendors/RightSidebar';
 import Sidebar from './../../components/vendors/Sidebar';
 import profilePic from './../../assets/vendors/images/profile.png';
 import { useRefreshToken } from '../../hooks/useRefreshToken';
+import { GetSubscriptionDetails } from '../../apis/vendor/Subscriptions/Subscription';
+import { useQuery } from '@tanstack/react-query';
 
 
 
@@ -17,31 +19,13 @@ const VendorCreateBusinessPagination = () => {
     if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
     vendorInfo = JSON.parse(vendorInfo);
 
-    useEffect(() => {
-        GetSubscriptionDetails()
-    }, [])
 
+    const { data, error, isLoading } = useQuery({ queryKey: ['bannerData'], queryFn: GetSubscriptionDetails })
 
-    const GetSubscriptionDetails = async () => {
-        const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken, "refresh token", refresherror);
-        let apiEndpoint = `${process.env.REACT_APP_API_URL}wallet/subscription/details/`
-        fetch(apiEndpoint, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${newAccessToken}`,
-            },
-        }).then((response) => response.json())
-            .then((data) => {
-
-                console.log(data, "isthis setSubscriptionData i need")
-                setSubscriptionData(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching the bussiness:', error);
-            });
+    if (data) {
+        setSubscriptionData(data)
     }
+
 
     return (
         <>

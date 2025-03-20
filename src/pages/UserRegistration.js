@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import * as yup from 'yup'
 import { ToastContainer, toast } from 'react-toastify';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 
 
 const UserRegistration = () => {
@@ -16,10 +17,19 @@ const UserRegistration = () => {
     const [graduationyear, setGraduationYear] = useState("");
     const [isChecked, setIsChecked] = useState({ term1: false, term2: false });
     const [error, setError] = useState({});
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
-    // const [selectedValue, setSelectedValue] = useState('Are you a Student?');
-
+    const mutation = useMutation({
+        mutationFn: UserRegistration,
+        onSuccess: (response) => {
+            console.log('Registration successful:', response);
+            navigate('/login'); // 
+        },
+        onError: (error) => {
+            console.log(error, "error")
+            toast('Server Down. Please contact Administrator');
+        }
+    })
     const schema = yup.object().shape({
         username: yup.string().required("User name is required"),
         email: yup.string().required("Email is required").email("Invalid email address"),
@@ -119,7 +129,7 @@ const UserRegistration = () => {
                         term1: null,
                         term2: null,
                     }));
-                    SendDataToDatabase(data)
+                    mutation.mutate(data)
                 }
             })
             .catch(error => {
@@ -141,55 +151,7 @@ const UserRegistration = () => {
 
     };
 
-    const SendDataToDatabase = async (data) => {
 
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/register/`;
-
-
-        // Data to be sent
-
-
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                const result = await response.json();
-                // console.log(, "tiinids")
-                const newErrors = {};
-                result.error.fields.forEach(field => {
-
-                    if (field.field) {
-                        console.log(field)
-                        newErrors[field.field] = field.message[0];
-                    } else {
-                        setError(result)
-                    }
-                })
-
-                setError(newErrors);
-
-                // throw new Error('Registration failed');
-            } else {
-
-                const result = await response.json();
-                console.log('Registration successful:', result);
-            }
-
-            // Redirect to another page on successful login
-            // navigate('/VendorDashboard'); // 
-        }
-        catch (error) {
-
-            console.error('Error:', error);
-            toast('Server Down. Please contact Administrator');
-        }
-    }
 
 
     const handleCheckboxChange = (e, term) => {

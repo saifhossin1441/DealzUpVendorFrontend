@@ -3,6 +3,10 @@ export const endpoints = {
         login_vendor: 'auth/vendor-login/',
         register: 'auth/vendors-registration/'
     },
+    userauth: {
+        login: 'auth/user/login/',
+        register: 'auth/register/'
+    },
     business: {
         get_vendor_business: 'vendor/businesses/vendor/',
         add_vendor_business: 'vendor/businesses/create/'
@@ -30,6 +34,7 @@ export const endpoints = {
     },
     subscription: {
         get_subscription_usage: 'wallet/subscription/usage/all/',
-        get_subscription_details: 'wallet/subscription/details/'
+        get_subscription_details: 'wallet/subscription/details/',
+        upgrade_subsription: 'wallet/upgrade-subscription/'
     }
 }

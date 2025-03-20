@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { useRefreshToken } from './useRefreshToken';
+import axios from 'axios';
 
 // Create a Context
 const MyContext = createContext();
@@ -13,30 +14,28 @@ export const MyProvider = ({ children }) => {
 
     const GetApi = async () => {
         const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken, 'refresh token', refresherror)
+        console.log(newAccessToken, 'refresh token', refresherror);
+
         let vendorInfo = localStorage.getItem('vendorInfo');
-        if (!vendorInfo) return
+        if (!vendorInfo) return;
         vendorInfo = JSON.parse(vendorInfo);
-        if (!vendorInfo?.vendor?.id) return
+        if (!vendorInfo?.vendor?.id) return;
 
         const apiEndpoint = `${process.env.REACT_APP_API_URL}vendor/businesses/vendor/${vendorInfo?.vendor?.id}`;
-        fetch(apiEndpoint, {
-            method: 'GET',
-            // mode: 'no-cors',
 
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${newAccessToken}`,
-            },
-        }).then((response) => response.json())
-            .then((data) => {
-
-                // console.log(data, "isthis array i need")
-                setBusinessData(data)
-            })
-            .catch((error) => {
-                console.error('Error fetching the bussiness:', error);
+        try {
+            const response = await axios.get(apiEndpoint, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${newAccessToken}`,
+                },
             });
+            console.log(response)
+            // Assuming the response data is in response.data
+            setBusinessData(response.data);
+        } catch (error) {
+            console.error('Error fetching the business:', error);
+        }
     }
     useEffect(() => {
         GetApi()

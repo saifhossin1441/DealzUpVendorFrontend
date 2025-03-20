@@ -6,6 +6,11 @@ import Sidebar from './../../components/vendors/Sidebar';
 import { Link } from 'react-router-dom';
 import { useRefreshToken } from '../../hooks/useRefreshToken';
 import { useQuery } from "@tanstack/react-query";
+import { GetBanners } from '../../apis/vendor/Banners/Banners';
+import { GetDeals } from '../../apis/vendor/Deals/Deals';
+import { GetFlyers } from '../../apis/vendor/Flyers/Flyers';
+import { GetOffers } from '../../apis/vendor/Offers/Offers';
+import { GetUsage } from '../../apis/vendor/Subscriptions/Subscription';
 
 
 const VendorDashboard = () => {
@@ -20,50 +25,31 @@ const VendorDashboard = () => {
   vendorInfo = JSON.parse(vendorInfo);
   console.log(vendorInfo?.vendor?.full_name)
 
-  const { refreshAccessToken, refresherror } = useRefreshToken();
 
+  const query = useQuery({ queryKey: ['bannerData'], queryFn: GetBanners })
+  const query2 = useQuery({ queryKey: ['dealsData'], queryFn: GetDeals })
+  const query3 = useQuery({ queryKey: ['flyerData'], queryFn: GetFlyers })
+  const query4 = useQuery({ queryKey: ['offerData'], queryFn: GetOffers })
+  const query5 = useQuery({ queryKey: ['subscription'], queryFn: GetUsage })
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken, "refresh token", refresherror);
 
-        const endpoints = {
-          flyers: `${process.env.REACT_APP_API_URL}deals/flyers/`,
-          banners: `${process.env.REACT_APP_API_URL}deals/banners/`,
-          deals: `${process.env.REACT_APP_API_URL}deals/deals/`,
-          offers: `${process.env.REACT_APP_API_URL}deals/offers/`,
-          subscriptiondetails: `${process.env.REACT_APP_API_URL}wallet/subscription/usage/all/`
-        };
 
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${newAccessToken}`,
-        };
-
-        // Fetch all data in parallel
-        const [flyersRes, bannersRes, dealsRes, offersRes, SubscriptionDetails] = await Promise.all([
-          fetch(endpoints.flyers, { headers }).then((res) => res.json()),
-          fetch(endpoints.banners, { headers }).then((res) => res.json()),
-          fetch(endpoints.deals, { headers }).then((res) => res.json()),
-          fetch(endpoints.offers, { headers }).then((res) => res.json()),
-          fetch(endpoints.subscriptiondetails, { headers }).then((res) => res.json()),
-        ]);
-        console.log(SubscriptionDetails, "SubscriptionDetails")
-        // Update state with the fetched data
-        setFlyers(flyersRes);
-        setBanners(bannersRes);
-        setDeals(dealsRes);
-        setOffer(offersRes);
-        setSubscriptionDetails(SubscriptionDetails)
+        console.log(query5.data.data)
+        setFlyers(query.data.data);
+        setBanners(query2.data.data);
+        setDeals(query3.data.data);
+        setOffer(query4.data.data);
+        setSubscriptionDetails(query5.data.data)
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [query.data, query2.data, query3.data, query4.data, query5.data]);
 
   return (
     <>
@@ -83,12 +69,12 @@ const VendorDashboard = () => {
               <div className="row" style={{ justifyContent: 'center' }}>
                 <div className="content-box col-md-5" style={{ backgroundColor: '#FAD6AD' }}>
                   <div style={{ color: '#000' }}><Link style={{ color: "black" }} to="/VendorFlyers"> Flyers</Link></div>
-                  <div className="circle" style={{ backgroundColor: '#000' }}>{`${flyers?.count}`}</div>
+                  <div className="circle" style={{ backgroundColor: '#000' }}>{`${flyers?.length}`}</div>
                   <div style={{ color: '#000' }}><Link style={{ color: "black" }} to="/VendorFlyers"> View More</Link></div>
                 </div>
                 <div className="content-box col-md-5">
                   <div><Link style={{ color: "White" }} to="/VendorBanners">Banners</Link></div>
-                  <div className="circle">{`${banners?.length}`}</div>
+                  <div className="circle">{`${banners?.count}`}</div>
                   <div><Link style={{ color: "White" }} to="/VendorBanners">View More</Link></div>
                 </div>
               </div>
@@ -102,7 +88,7 @@ const VendorDashboard = () => {
                 </div>
                 <div className="content-box col-md-5">
                   <div><Link style={{ color: "White" }} to="/VendorOffers">Offer</Link></div>
-                  <div className="circle">{offers?.length}</div>
+                  <div className="circle">  {offers?.length}</div>
                   <div><Link style={{ color: "White" }} to="/VendorOffers">View More</Link></div>
                 </div>
               </div>

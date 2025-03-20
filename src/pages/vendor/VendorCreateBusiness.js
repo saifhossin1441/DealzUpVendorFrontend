@@ -10,7 +10,7 @@ import MyContext from '../../hooks/contextApi';
 
 const VendorCreateBusiness = () => {
   const { businessData } = useContext(MyContext);
-  const [data, setData] = useState(businessData)
+
 
   return (
     <>
@@ -19,13 +19,13 @@ const VendorCreateBusiness = () => {
         <div className="row">
           <Sidebar />
           <div className="col-md-8 main_content" >
-            {data && data.length > 0 && <h2 style={{ textAlign: "center", color: "#007BFF" }}>
+            {businessData && businessData.length > 0 && <h2 style={{ textAlign: "center", color: "#007BFF" }}>
               <Link to="/VendorCreateBusinessPagination" style={{ textDecoration: "none", color: "#007BFF" }}>
                 + Create Business
               </Link>
             </h2>}
             <div className="container" style={{ backgroundColor: "#000000", padding: "20px", minHeight: "100vh" }}>
-              {data && data.length > 0 ? (
+              {businessData && businessData.length > 0 ? (
                 <div
                   className="business-list"
                   style={{
@@ -34,7 +34,7 @@ const VendorCreateBusiness = () => {
                     gap: "20px",
                   }}
                 >
-                  {data?.map((business, index) => (
+                  {businessData?.map((business, index) => (
                     <div
                       key={index}
                       style={{
@@ -72,6 +72,7 @@ const VendorCreateBusiness = () => {
                       />
                       {/* Business Details */}
                       <div style={{ flexGrow: 1 }}>
+                        {console.log(business.name, "thsida")}
                         <h2 style={{ margin: "0 0 10px", color: "#f4f4f4" }}>{business.name}</h2>
                         <p style={{ color: "#bbb", margin: "4px 0" }}>
                           <strong>Phone:</strong> {business.phone}

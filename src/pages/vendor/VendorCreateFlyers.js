@@ -14,6 +14,7 @@ import ImageCropper from "../../components/ImageCropper";
 import { fetchData } from "../../apis/vendor/Common/common";
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AddFlyers } from "../../apis/vendor/Flyers/Flyers";
+import axios from "axios";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -309,9 +310,10 @@ const VendorCreateFlyers = () => {
     formData.append('file', file);
 
     try {
-      const response = await fetch('https://pdf-to-pngs.onrender.com/upload', {
-        method: 'POST',
-        body: formData,
+      const response = await axios.post('https://pdf-to-pngs.onrender.com/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Ensure this header is set for file uploads
+        },
       });
 
       if (response.ok) {

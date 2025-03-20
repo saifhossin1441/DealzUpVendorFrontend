@@ -396,54 +396,7 @@ const VendorCreateBusinessPagination = () => {
         }
     };
 
-    const SendDataToDatabase = async (data) => {
-        // console.log(data)
-        const apiEndpoint = `${process.env.REACT_APP_API_URL}vendor/businesses/create/`;
-        let formData = new FormData();
 
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== null) { // Only append non-null values
-                formData.append(key, value);
-            }
-        });
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-        const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken, 'refresh token', refresherror)
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${newAccessToken}`, // Replace authToken with your actual token
-                },
-                body: formData,
-            });
-
-            if (!response.ok) {
-                const result = await response.json()
-                console.log(result.error.fields)
-                if (result.error.fields) {
-                    setError({ api: "Email or Phone is already Registered. " })
-                } else {
-                    setError(result)
-                }
-
-            } else {
-                const result = await response.json();
-                console.log('Business Registration successful:', result);
-                // Redirect to another page on successful login
-                setCurrentStep(currentStep + 1);
-            }
-            console.log(error, "Business Errror")
-
-        }
-        catch (error) {
-
-            console.error('Error:', error);
-            setError('Server Down. Please contact Administrator');
-        }
-    }
     // console.log(searchQuery)
     const handleLocationSelect = (location) => {
         console.log("Selected Location:", location);

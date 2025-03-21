@@ -4,315 +4,297 @@ import { ToastContainer, toast } from 'react-toastify';
 import * as yup from 'yup'
 import { register } from '../../apis/auth/auth';
 import { useMutation } from '@tanstack/react-query';
+import { useFormik } from 'formik';
+
 
 const VendorRegistration = () => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [country, setCountry] = useState("");
-    const [city, setCity] = useState("");
-    const [province, setProvince] = useState("");
-    const [address, setAddress] = useState("");
-    const [phone, setPhone] = useState("");
-    const [postalcode, setPostalCode] = useState("");
-    const [password, setPassword] = useState("");
-    const [apartment, setApartment] = useState("");
-    const [confirmpassword, setConfirmPassword] = useState("");
     const [isChecked, setIsChecked] = useState({ term1: false, term2: false });
-    const [error, setError] = useState({});
+    const [termerror, setTermError] = useState({ term1: null, term2: null });
     const navigate = useNavigate();
 
     const mutation = useMutation({
         mutationFn: register,
         onSuccess: (response) => {
-            console.log(response, "responee")
-            navigate('/VendorLogin');
+            if (response.response.data.email) {
+                toast(`${response.response.data.email[0]}`);
+            } else {
+
+                navigate('/VendorLogin');
+            }
         },
         onError: (error) => {
-            console.log(error, "error")
-            toast('Server Down. Please contact Administrator');
+
+            if (error.response.data.email) {
+                toast(`${error.response.data.email[0]}`);
+            } else {
+                toast(`Server Down. Please contact Administrator`);
+            }
         }
-    })
+    });
 
     const schema = yup.object().shape({
-        confirm_password: yup
-            .string()
-            .required("Confirm password is required")
-            .oneOf([yup.ref('password'), null], "Passwords must match")
-        ,
-        password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
-        pin: yup
-            .string()
-            .required("Postal Code is required")
-            .matches(/^\d{6}$/, "Postal Code must be 6 digits")
-        ,
-        apartment: yup.string().required(), // Optional field; allow null or empty
-        address: yup.string().required("Address is required"),
-        state: yup.string().required("Province is required"),
-        city: yup.string().required("City is required"),
-        country: yup.string().required("Country is required"),
+        full_name: yup.string().required("Full name is required"),
+        email: yup.string().required("Email is required").email("Invalid email address"),
         phone: yup
             .string()
             .required("Phone number is required")
-            .matches(/^\d{10}$/, "Phone number must be 10 digits")
-        ,
-        email: yup.string().required("Email is required").email("Invalid email address"),
-        full_name: yup.string().required("Full name is required"),
+            .matches(/^\d{10}$/, "Phone number must be 10 digits"),
+        country: yup.string().required("Country is required"),
+        city: yup.string().required("City is required"),
+        state: yup.string().required("Province is required"),
+        address: yup.string().required("Address is required"),
+        apartment: yup.string().optional(),
+        pin: yup
+            .string()
+            .required("Postal Code is required")
+            .matches(/^\d{6}$/, "Postal Code must be 6 digits"),
+        password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
+        confirm_password: yup
+            .string()
+            .required("Confirm password is required")
+            .oneOf([yup.ref('password'), null], "Passwords must match"),
     });
 
-
-
-
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-    };
-
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-    };
-
-    const handleCountryChange = (event) => {
-        setCountry(event.target.value);
-    };
-
-    const handleCityChange = (event) => {
-        setCity(event.target.value);
-    };
-
-    const handleProvinceChange = (event) => {
-        setProvince(event.target.value);
-    };
-
-    const handleAddressChange = (event) => {
-        setAddress(event.target.value);
-    };
-
-    const handlePhoneChange = (event) => {
-        setPhone(event.target.value);
-    };
-
-    const handleApartmentChange = (event) => {
-        setApartment(event.target.value);
-    };
-
-    const handlePostalCodeChange = (event) => {
-        setPostalCode(event.target.value);
-    };
-
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-    };
-
-    const handleConfirmPasswordChange = (event) => {
-        setConfirmPassword(event.target.value);
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        // Here you can perform authentication logic with the username and password
-        setError({})
-
-        // Data to be sent
-        const data = {
-            full_name: name,
-            email: email,
-            address,
-            phone,
-            state: province,
-            pin: postalcode,
-            apartment,
-            password,
-            confirm_password: confirmpassword,
-            city,
-            country,
-        };
-
-
-        schema.validate(data)
-            .then(valid => {
-                console.log(valid, error)
-                console.log(isChecked.term1, isChecked.term2)
-                if (!isChecked.term1 || !isChecked.term2) {
-                    setError(prevErrors => ({
-                        ...prevErrors,
-                        term1: !isChecked.term1 ? "You must agree to the Terms & Conditions" : null,
-                        term2: !isChecked.term2 ? "You must agree to the Privacy Policy" : null,
-                    }));
-                } else {
-                    // Clear checkbox-related errors if checkboxes are valid
-                    setError(prevErrors => ({
-                        ...prevErrors,
-                        term1: null,
-                        term2: null,
-                    }));
-                    mutation.mutate(data)
-                    // SendDataToDatabase(data)
-                }
-            })
-            .catch(error => {
-
-                const newErrors = {};
-                console.log(error)
-                Object.keys(error.value).forEach(field => {
-                    if (error.params.path) {
-                        console.log("first")
-                        newErrors[error.params.path] = error.errors
-                    }
+    const formik = useFormik({
+        initialValues: {
+            full_name: '',
+            email: '',
+            phone: '',
+            country: '',
+            city: '',
+            state: '',
+            address: '',
+            apartment: '',
+            pin: '',
+            password: '',
+            confirm_password: '',
+        },
+        validationSchema: schema,
+        onSubmit: (values) => {
+            // Data to be sent to the backend
+            const data = { ...values };
+            if (isChecked.term1 && isChecked.term2) {
+                mutation.mutate(data);
+            } else {
+                setTermError({
+                    term1: !isChecked.term1 ? "You must agree to the Terms & Conditions" : null,
+                    term2: !isChecked.term2 ? "You must agree to the Privacy Policy" : null,
                 });
-                setError(newErrors);
-            });
-
-
-
-    };
+                toast.error("You must agree to the Terms & Conditions and Privacy Policy.");
+            }
+        },
+    });
 
     const handleCheckboxChange = (e, term) => {
-        console.log('t', term, e.target.checked);
         setIsChecked(prevState => ({
             ...prevState,
             [term]: e.target.checked,
         }));
-
-        // Clear the error when the checkbox is checked
-        if (e.target.checked) {
-            setError(prevErrors => ({
-                ...prevErrors,
-                [term]: false,
-            }));
-        }
-    }
+    };
 
     return (
         <>
             <div id="background-wrap">
-                <div className="bubble1 x1"></div>
-                <div className="bubble2 x2"></div>
-                <div className="bubble3 x3"></div>
-                <div className="bubble4 x4"></div>
-                <div className="bubble5 x5"></div>
-                <div className="bubble1 x6"></div>
-                <div className="bubble2 x7"></div>
-                <div className="bubble3 x8"></div>
-                <div className="bubble4 x9"></div>
-                <div className="bubble5 x10"></div>
-                <div className="bubble1 x11"></div>
-                <div className="bubble2 x12"></div>
-                <div className="bubble3 x13"></div>
-                <div className="bubble4 x14"></div>
-                <div className="bubble5 x15"></div>
-                <div className="bubble1 x16"></div>
-                <div className="bubble2 x17"></div>
-                <div className="bubble3 x18"></div>
-                <div className="bubble4 x19"></div>
-                <div className="bubble5 x20"></div>
+                <div id="background-wrap">
+                    <div className="bubble1 x1"></div>
+                    <div className="bubble2 x2"></div>
+                    <div className="bubble3 x3"></div>
+                    <div className="bubble4 x4"></div>
+                    <div className="bubble5 x5"></div>
+                    <div className="bubble1 x6"></div>
+                    <div className="bubble2 x7"></div>
+                    <div className="bubble3 x8"></div>
+                    <div className="bubble4 x9"></div>
+                    <div className="bubble5 x10"></div>
+                    <div className="bubble1 x11"></div>
+                    <div className="bubble2 x12"></div>
+                    <div className="bubble3 x13"></div>
+                    <div className="bubble4 x14"></div>
+                    <div className="bubble5 x15"></div>
+                    <div className="bubble1 x16"></div>
+                    <div className="bubble2 x17"></div>
+                    <div className="bubble3 x18"></div>
+                    <div className="bubble4 x19"></div>
+                    <div className="bubble5 x20"></div>
+                </div>
             </div>
-            <div className="container element-registration" style={{ width: '50%', MarginTop: '50px !important' }}>
+            <div className="container element-registration" style={{ width: '50%', marginTop: '50px !important' }}>
                 <div className="row justify-content-center">
-                    <div className="custom_form_box column  form_border_radius_reg">
-                        <form className="" onSubmit={handleSubmit}>
-                            <div className="mb-3 ">
-                                <h1 style={{ textAlign: 'center' }}> Vendor Sign Up</h1>
-                            </div>
+                    <div className="custom_form_box column form_border_radius_reg">
+                        <form onSubmit={formik.handleSubmit}>
+                            <h1 style={{ textAlign: 'center' }}>Vendor Sign Up</h1>
+
                             <div className="mb-3">
-                                <input type="text" placeholder='Full Name' autoComplete="name" onChange={handleNameChange} value={name} id="exampleInputName" />
-                                {error.full_name && <div id="Name" className="form-text2">{error.full_name}</div>}
+                                <input
+                                    type="text"
+                                    placeholder="Full Name"
+                                    autoComplete="name"
+                                    {...formik.getFieldProps('full_name')}
+                                />
+                                {formik.touched.full_name && formik.errors.full_name && (
+                                    <div className="form-text2">{formik.errors.full_name}</div>
+                                )}
                             </div>
+
                             <div className="mb-3">
-                                <input type="email" placeholder='Email' autoComplete="email" onChange={handleEmailChange} value={email} aria-describedby="emailHelp" />
-                                {error.email && <div id="emailHelp" className="form-text2">{error.email}</div>}
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    autoComplete="email"
+                                    {...formik.getFieldProps('email')}
+                                />
+                                {formik.touched.email && formik.errors.email && (
+                                    <div className="form-text2">{formik.errors.email}</div>
+                                )}
                             </div>
+
                             <div className="mb-3">
-                                <input type="text" placeholder='Phone Number' onChange={handlePhoneChange} value={phone} />
-                                {error.phone && <div id="Phone" className="form-text2">{error.phone}</div>}
+                                <input
+                                    type="text"
+                                    placeholder="Phone Number"
+                                    {...formik.getFieldProps('phone')}
+                                />
+                                {formik.touched.phone && formik.errors.phone && (
+                                    <div className="form-text2">{formik.errors.phone}</div>
+                                )}
                             </div>
+
                             <div className="mb-3">
-                                {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
-                                <label htmlFor="select-container" className="form-label">Country</label>
-                                <select id="select-container" value={country} onChange={handleCountryChange} >
+                                <label htmlFor="country" className="form-label">Country</label>
+                                <select
+                                    id="country"
+                                    {...formik.getFieldProps('country')}
+                                >
                                     <option value="">Choose Country</option>
                                     <option value="Canada">Canada</option>
                                     <option value="India">India</option>
                                 </select>
-                                {error.country && <div id="Phone" className="form-text2">{error.country}</div>}
+                                {formik.touched.country && formik.errors.country && (
+                                    <div className="form-text2">{formik.errors.country}</div>
+                                )}
                             </div>
+
                             <div className="mb-3">
-                                {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
-                                <label htmlFor="select-container" className="form-label">City</label>
-                                <select id="select-container" value={city} onChange={handleCityChange} >
+                                <label htmlFor="city" className="form-label">City</label>
+                                <select
+                                    id="city"
+                                    {...formik.getFieldProps('city')}
+                                >
                                     <option value="">Choose City</option>
                                     <option value="Toronto">Toronto</option>
                                     <option value="Kitchener">Kitchener</option>
                                 </select>
-                                {error.city && <div id="Phone" className="form-text2">{error.city}</div>}
+                                {formik.touched.city && formik.errors.city && (
+                                    <div className="form-text2">{formik.errors.city}</div>
+                                )}
                             </div>
+
                             <div className="mb-3">
-                                {/* value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)} */}
-                                <label htmlFor="select-container" className="form-label">Province</label>
-                                <select id="select-container" value={province} onChange={handleProvinceChange} >
+                                <label htmlFor="state" className="form-label">Province</label>
+                                <select
+                                    id="state"
+                                    {...formik.getFieldProps('state')}
+                                >
                                     <option value="">Choose Province</option>
                                     <option value="Ontario">Ontario</option>
                                     <option value="Alberta">Alberta</option>
                                 </select>
-                                {error.state && <div id="Phone" className="form-text2">{error.state}</div>}
-                            </div>
-                            <div className="mb-3">
-                                <input type="text" placeholder='Address' onChange={handleAddressChange} value={address} />
-                                {error.address && <div id="Address" className="form-text2">{error.address}</div>}
+                                {formik.touched.state && formik.errors.state && (
+                                    <div className="form-text2">{formik.errors.state}</div>
+                                )}
                             </div>
 
                             <div className="mb-3">
-                                <input type="text" placeholder='Apartment' onChange={handleApartmentChange} value={apartment} />
-                                {error.apartment && <div id="Apartment" className="form-text2">{error.apartment}</div>}
-                            </div>
-                            <div className="mb-3">
-                                <input type="text" placeholder='Postalcode' onChange={handlePostalCodeChange} value={postalcode} />
-                                {error.pin && <div id="Postalcode" className="form-text2">{error.pin}</div>}
-                            </div>
-                            <div className="mb-3">
-                                <input autoComplete="current-password" placeholder="Password" onChange={handlePasswordChange} type="password" value={password} />
-                                {error.password && <div id="Password" className="form-text2">{error.password}</div>}
-                            </div>
-                            <div className="mb-3">
-                                <input autoComplete="current-password" placeholder="Confirm Password" onChange={handleConfirmPasswordChange} type="password" value={confirmpassword} />
-                                {error.confirm_password && <div id="ConfirmPassword" className="form-text2">{error.confirm_password}</div>}
+                                <input
+                                    type="text"
+                                    placeholder="Address"
+                                    {...formik.getFieldProps('address')}
+                                />
+                                {formik.touched.address && formik.errors.address && (
+                                    <div className="form-text2">{formik.errors.address}</div>
+                                )}
                             </div>
 
-
-
-                            <div className={"form-check"}>
-                                <input type="checkbox" className={`form-check-input ${error.term1 ? 'is-invalid' : ''}`} id="exampleCheck1" onChange={(e) => handleCheckboxChange(e, 'term1')} checked={isChecked.term1} />
-                                <label className="form-check-label form-text" htmlFor="exampleCheck1"> I agree to the <b>Terms & Condition</b> </label>
+                            <div className="mb-3">
+                                <input
+                                    type="text"
+                                    placeholder="Apartment"
+                                    {...formik.getFieldProps('apartment')}
+                                />
+                                {formik.touched.apartment && formik.errors.apartment && (
+                                    <div className="form-text2">{formik.errors.apartment}</div>
+                                )}
                             </div>
+
+                            <div className="mb-3">
+                                <input
+                                    type="text"
+                                    placeholder="Postal Code"
+                                    {...formik.getFieldProps('pin')}
+                                />
+                                {formik.touched.pin && formik.errors.pin && (
+                                    <div className="form-text2">{formik.errors.pin}</div>
+                                )}
+                            </div>
+
+                            <div className="mb-3">
+                                <input
+                                    type="password"
+                                    placeholder="Password"
+                                    {...formik.getFieldProps('password')}
+                                />
+                                {formik.touched.password && formik.errors.password && (
+                                    <div className="form-text2">{formik.errors.password}</div>
+                                )}
+                            </div>
+
+                            <div className="mb-3">
+                                <input
+                                    type="password"
+                                    placeholder="Confirm Password"
+                                    {...formik.getFieldProps('confirm_password')}
+                                />
+                                {formik.touched.confirm_password && formik.errors.confirm_password && (
+                                    <div className="form-text2">{formik.errors.confirm_password}</div>
+                                )}
+                            </div>
+
+                            <div className="form-check">
+                                <input
+                                    type="checkbox"
+                                    className={`form-check-input ${termerror.term1 ? 'is-invalid' : ''}`}
+                                    id="exampleCheck1"
+                                    onChange={(e) => handleCheckboxChange(e, 'term1')}
+                                    checked={isChecked.term1}
+                                />
+                                <label className="form-check-label form-text" htmlFor="exampleCheck1">
+                                    I agree to the <b>Terms & Condition</b>
+                                </label>
+                            </div>
+
                             <div className="mb-3 form-check">
-                                <input type="checkbox" className={`form-check-input ${error.term2 ? 'is-invalid' : ''}`} id="exampleCheck2" onChange={(e) => handleCheckboxChange(e, 'term2')} checked={isChecked.term2} />
-                                <label className="form-check-label form-text" htmlFor="exampleCheck2"> I agree to the   <b> Privacy Policy</b></label>
-
+                                <input
+                                    type="checkbox"
+                                    className={`form-check-input ${termerror.term2 ? 'is-invalid' : ''}`}
+                                    id="exampleCheck2"
+                                    onChange={(e) => handleCheckboxChange(e, 'term2')}
+                                    checked={isChecked.term2}
+                                />
+                                <label className="form-check-label form-text" htmlFor="exampleCheck2">
+                                    I agree to the <b>Privacy Policy</b>
+                                </label>
                             </div>
-
 
                             <button type="submit" className="btn btn-dark mb-3">Submit</button>
-
-                            <div id="g_id_onload"
-                                data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                                data-login_uri="https://your.domain/your_login_endpoint"
-                                data-auto_prompt="false">
-                            </div>
-                            <div className="g_id_signin mb-3"
-                                data-type="standard"
-                                data-size="large"
-                                data-theme="outline"
-                                data-text="sign_in_with"
-                                data-shape="rectangular"
-                                data-logo_alignment="left">
-                            </div>
 
                             <div className="form-text1 mb-3">Already have an account?</div>
                             <div className="form-text3 mb-3"><a href="/login"><b>Sign in</b></a></div>
                         </form>
                     </div>
                     <ToastContainer />
-                </div >
-            </div >
+                </div>
+            </div>
         </>
-    )
-}
+    );
+};
 export default VendorRegistration;

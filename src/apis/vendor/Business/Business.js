@@ -46,6 +46,8 @@ export const AddVendorBusiness = async (data) => {
         return response
     } catch (error) {
         console.log(error)
-        throw new Error(error);
+        return error
+        // throw new Error(error);
+
     }
 }

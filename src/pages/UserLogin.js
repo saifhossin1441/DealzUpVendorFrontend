@@ -5,6 +5,7 @@ import loginImage from './../assets/images/login-side-image.jpg'
 import './../assets/css/login.css';
 import './../assets/css/styles.css';
 import * as yup from 'yup'
+import axios from 'axios';
 
 const UserLogin = () => {
     const [email, setEmail] = useState("");
@@ -30,7 +31,7 @@ const UserLogin = () => {
     const ApiCall = async (data) => {
         const apiEndpoint = `${process.env.REACT_APP_API_URL}auth/user/login/`;
         try {
-            const response = await fetch(apiEndpoint, {
+            const response = await axios(apiEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

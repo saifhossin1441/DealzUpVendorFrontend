@@ -12,6 +12,7 @@ import { useRefreshToken } from "../../hooks/useRefreshToken";
 import { fetchData } from "../../apis/vendor/Common/common";
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AddDeals } from "../../apis/vendor/Deals/Deals";
+import { useFormik } from "formik";
 const styles = {
     form: {
         width: '100%',
@@ -93,31 +94,37 @@ const styles = {
     }
 };
 
+
 const VendorCreateDeals = () => {
-    const [image, setImage] = useState(null);
-    const [error, setError] = useState({})
-    const [business, setBusiness] = useState([])
-    const [showcat, setShowcat] = useState('')
-    const [showSub, setshowSub] = useState('')
+    const navigate = useNavigate();
     const [categories, setCategories] = useState([])
     const [subcategories, setSubcategories] = useState([])
+    const [business, setBusiness] = useState([])
     const [filteredSubcategories, setFilteredSubcategories] = useState([])
-    const [formData, setFormData] = useState({
-        category: '',
-        subcategory: '',
-        name: '',
-        descripton: '',
-        on_click: '',
-        active: true,
-        image: null,
-        business: '',
-        start_date: '',
-        end_date: '',
-        vendor: ''
+
+    const query = useQuery({ queryKey: ['dealsData'], queryFn: fetchData });
+
+    const mutation = useMutation({
+        mutationFn: AddDeals,
+        onSuccess: (response) => {
+            toast('Deal Uploaded Successfully');
+            navigate('/VendorDeals');
+        },
+        onError: (error) => {
+            console.log(error, "error");
+            toast('Server Down. Please contact Administrator');
+        }
     });
+    useEffect(() => {
+        if (query?.data) {
 
-    const navigate = useNavigate()
-
+            const { business, categories, subcategories } = query?.data;
+            console.log(business, categories, subcategories, "dataaadada")
+            setBusiness(business);
+            setCategories(categories?.data);
+            setSubcategories(subcategories);
+        }
+    }, [query?.data]);
     const schema = yup.object().shape({
         category: yup.string().required("Category is required"),
         subcategory: yup.string().required("SubCategory is required"),
@@ -151,34 +158,6 @@ const VendorCreateDeals = () => {
                 )
             )
     });
-    // const data = useQuery(['dealsData'], fetchData);\
-    const query = useQuery({ queryKey: ['dealsData'], queryFn: fetchData })
-
-    const mutation = useMutation({
-        mutationFn: AddDeals,
-        onSuccess: (response) => {
-            toast('Deal Uploaded Successfully')
-            navigate('/VendorDeals');
-        },
-        onError: (error) => {
-            console.log(error, "error")
-            setError('Server Down. Please contact Administrator');
-        }
-    })
-
-
-    useEffect(() => {
-        if (query?.data) {
-            // Assuming query.data has business, categories, subcategories
-            const { business, categories, subcategories } = query?.data;
-            console.log(business, categories, subcategories, "dataaadada")
-            setBusiness(business);
-            setCategories(categories.data);
-            setSubcategories(subcategories);
-        }
-    }, [query?.data]);
-
-
 
     const formatDate = (date) => {
         const day = String(date.getDate()).padStart(2, '0');
@@ -187,90 +166,63 @@ const VendorCreateDeals = () => {
         return `${year}-${month}-${day}`; // Change the order to YYYY-MM-DD
     };
 
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        let vendorInfo = localStorage.getItem('vendorInfo');
-        if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
-
-        vendorInfo = JSON.parse(vendorInfo); // Correct parsing
-
-        if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
-
-        // Set vendor ID in formData
-
-        const formattedStartDate = formatDate(formData.start_date);
-        const formattedEndDate = formatDate(formData.end_date);
-        const updatedFormData = { ...formData, vendor: vendorInfo.vendor.id, start_date: formattedStartDate, end_date: formattedEndDate };
-        console.log('Form Data:', updatedFormData);
-
-        schema.validate(updatedFormData)
-            .then(valid => {
-                console.log(valid, error)
-                setError({});
-                mutation.mutate(updatedFormData)
-                // SendDataToDatabase(updatedFormData)
-            })
-            .catch(error => {
-
-                const newErrors = {};
-                console.log(error)
-                Object.keys(error.value).forEach(field => {
-                    if (error.params.path) {
-                        console.log("first")
-                        newErrors[error.params.path] = error.errors
-                    }
-                });
-                setError(newErrors);
-            });
-
-    };
-
-    const handleImageUpload = (e) => {
+    const handleImageUpload = (e, setFieldValue) => {
         const file = e.target.files[0];
         if (file && file.size <= 1 * 1024 * 1024) { // 1MB limit
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImage(reader.result);
-                setFormData({
-                    ...formData,
-                    image: file
-                });
+                setFieldValue("image", file);
+                setFieldValue('simage', reader.result)
             };
             reader.readAsDataURL(file);
-            // setFileName(file.name); // Set the file name
         } else {
             alert('File size should be less than 1MB');
         }
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const formik = useFormik({
+        initialValues: {
+            category: '',
+            subcategory: '',
+            name: '',
+            descripton: '',
+            on_click: '',
+            active: true,
+            image: '',
+            simage: '',
+            business: '',
+            start_date: '',
+            end_date: '',
+            vendor: ''
+        },
+        validationSchema: schema,
+        onSubmit: (values) => {
+            let vendorInfo = localStorage.getItem('vendorInfo');
+            if (!vendorInfo) throw new Error('No vendorInfo found in localStorage');
+            vendorInfo = JSON.parse(vendorInfo); // Correct parsing
+            if (!vendorInfo?.vendor?.id) throw new Error('Vendor ID not found in vendorInfo');
 
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+            const formattedStartDate = formatDate(values.start_date);
+            const formattedEndDate = formatDate(values.end_date);
+            const updatedFormData = { ...values, vendor: vendorInfo.vendor.id, start_date: formattedStartDate, end_date: formattedEndDate };
 
-    };
+            mutation.mutate(updatedFormData);
+        }
+    });
 
     const handleCategoryChange = (e) => {
         const selectedCategory = categories?.find((item) => item.name === e.target.value);
-        console.log(selectedCategory, "thos ")
-        setShowcat(selectedCategory.name)
+
         if (selectedCategory) {
-            // Filter subcategories based on the selected category id
+
+            formik.setFieldValue("category", selectedCategory.id); // Update category field
+
             const subcategoriesForCategory = subcategories.filter(
                 (subcategory) => subcategory.category === selectedCategory.id
             );
             setFilteredSubcategories(subcategoriesForCategory);
 
-            // Update the form data
-            setFormData((prevData) => ({
-                ...prevData,
-                category: selectedCategory.id, // Store the category id
-                subcategory: '' // Reset subcategory when category changes
-            }));
+            formik.setFieldValue("subcategory", ''); // Reset the subcategory value
         }
     };
 
@@ -284,21 +236,18 @@ const VendorCreateDeals = () => {
                         <div className="content-box-o">
                             <div>Choose Template</div>
                         </div>
-
                         <div className="hr-container">
                             <span>Or</span>
                         </div>
 
                         <div className="uploadGallerySection">
                             <div style={styles.uploadContainer}>
-                                {image ? (
-                                    <img src={image} alt="Business Logo" style={styles.imagePreview} />
+                                {formik.values.image ? (
+                                    <img src={formik.values.simage} alt="Business Logo" style={styles.imagePreview} />
                                 ) : (
-                                    <>
-                                        <label htmlFor="fileUpload" style={styles.uploadLabel}>
-                                            <img src={images} alt="Upload Icon" style={styles.imagePreview} />
-                                        </label>
-                                    </>
+                                    <label htmlFor="fileUpload" style={styles.uploadLabel}>
+                                        <img src={images} alt="Upload Icon" style={styles.imagePreview} />
+                                    </label>
                                 )}
                                 <input
                                     id="fileUpload"
@@ -306,163 +255,137 @@ const VendorCreateDeals = () => {
                                     accept="image/*"
                                     style={styles.fileInput}
                                     name="fileUpload"
-                                    onChange={handleImageUpload}
+                                    onChange={(e) => handleImageUpload(e, formik.setFieldValue)}
                                 />
                             </div>
-                            {/* {fileName && <p style={styles.fileName}>{fileName}</p>} Display file name */}
-                            <p>Maximum Size: 1MB</p>
-                            <p>Size Dimension: 1920 x 1080</p>
-                            {error.image && <div id="Error" className="form-text2">{error.image}</div>}
+                            {formik.errors.image && formik.touched.image && <div className="form-text2">{formik.errors.image}</div>}
+
+                            <form onSubmit={formik.handleSubmit}>
+                                <select
+                                    name="category"
+                                    value={formik.values.category}
+                                    onChange={(e) => {
+                                        handleCategoryChange(e);
+                                    }}
+
+                                    onBlur={formik.handleBlur}
+                                    style={styles.select}
+                                >
+                                    <option value="" disabled>Select Category</option>
+                                    {categories?.map((data, index) => (
+                                        <option key={index} value={data?.name}>{data?.name}</option>
+                                    ))}
+                                </select>
+                                {formik.errors.category && formik.touched.category && <div className="form-text2">{formik.errors.category}</div>}
+
+                                <select
+                                    name="subcategory"
+                                    value={formik.values.subcategory}
+                                    onChange={(e) => {
+                                        const selectedSubcategory = filteredSubcategories?.find(
+                                            (item) => item.name === e.target.value
+                                        );
+                                        if (selectedSubcategory) {
+                                            formik.setFieldValue("subcategory", selectedSubcategory.id); // Save subcategory ID in form state
+                                        }
+                                    }}
+                                    onBlur={formik.handleBlur}
+                                    style={styles.select}
+                                >
+                                    <option value="" disabled>Select Sub Category</option>
+                                    {filteredSubcategories?.map((data, index) => (
+                                        <option key={index} value={data?.name}>{data?.name}</option>
+                                    ))}
+                                </select>
+                                {formik.errors.subcategory && formik.touched.subcategory && <div className="form-text2">{formik.errors.subcategory}</div>}
+
+                                <select
+                                    name="business"
+                                    value={formik.values.business}
+                                    onChange={(e) => {
+                                        // Find the selected business object by its name
+                                        const selectedBusiness = business?.find(
+                                            (item) => item.name === e.target.value
+                                        );
+
+                                        // If a business is selected, set the ID in Formik's state
+                                        if (selectedBusiness) {
+                                            formik.setFieldValue("business", selectedBusiness.id); // Save business ID in form state
+                                        }
+                                    }}
+                                    onBlur={formik.handleBlur}
+                                    style={styles.select}
+                                >
+                                    <option value="" disabled>Select Business</option>
+                                    {business?.map((data, index) => (
+                                        <option key={index} value={data?.name}>{data?.name}</option>
+                                    ))}
+                                </select>
+                                {formik.errors.business && formik.touched.business && <div className="form-text2">{formik.errors.business}</div>}
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    placeholder="Title"
+                                    value={formik.values.name}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    style={styles.input}
+                                />
+                                {formik.errors.name && formik.touched.name && <div className="form-text2">{formik.errors.name}</div>}
+
+                                <input
+                                    type="text"
+                                    name="descripton"
+                                    placeholder="Description"
+                                    value={formik.values.descripton}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    style={styles.input}
+                                />
+                                {formik.errors.descripton && formik.touched.descripton && <div className="form-text2">{formik.errors.descripton}</div>}
+
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <DatePicker
+                                            selected={formik.values.start_date}
+                                            onChange={(date) => formik.setFieldValue('start_date', date)}
+                                            selectsStart
+                                            startDate={formik.values.start_date}
+                                            endDate={formik.values.end_date}
+                                            className="form-control"
+                                            dateFormat="yyyy-MM-dd"
+                                            placeholderText="Select a start date"
+                                        />
+                                    </div>
+                                    {formik.errors.start_date && formik.touched.start_date && <div className="form-text2">{formik.errors.start_date}</div>}
+
+                                    <div className="col-md-6">
+                                        <DatePicker
+                                            selected={formik.values.end_date}
+                                            onChange={(date) => formik.setFieldValue('end_date', date)}
+                                            selectsEnd
+                                            startDate={formik.values.start_date}
+                                            endDate={formik.values.end_date}
+                                            minDate={formik.values.start_date}
+                                            className="form-control"
+                                            dateFormat="yyyy-MM-dd"
+                                            placeholderText="Select an end date"
+                                        />
+                                    </div>
+                                    {formik.errors.end_date && formik.touched.end_date && <div className="form-text2">{formik.errors.end_date}</div>}
+                                </div>
+
+                                <button type="submit" style={styles.submitButton}>
+                                    Submit
+                                </button>
+                            </form>
                         </div>
-
-                        <form onSubmit={handleSubmit} style={styles.form}>
-                            <select
-                                name="category"
-                                required
-                                style={styles.select}
-                                value={showcat}
-                                onChange={handleCategoryChange}
-                            >
-                                <option value="" disabled>
-                                    Select Category
-                                </option>
-                                {categories?.map((data, index) => (
-                                    <option key={index} value={data?.name}>
-                                        {`${data?.name}`}
-                                    </option>
-                                ))}
-
-                            </select>
-                            {error.category && <div id="Error" className="form-text2">{error.category}</div>}
-
-                            <select
-                                name="subcategory"
-                                required
-                                style={styles.select}
-                                className="white-placeholder"
-                                value={showSub}
-                                onChange={(e) => {
-                                    const selectedCategory = subcategories?.find((item) => item.name === e.target.value);
-                                    if (selectedCategory) {
-                                        setFormData((prevData) => ({
-                                            ...prevData,
-                                            subcategory: selectedCategory.id, // Store data.id
-                                        }));
-                                        setshowSub(selectedCategory.name)
-                                    }
-                                }}
-                            >
-                                <option value="" disabled>
-                                    Select Sub Category
-                                </option>
-                                {filteredSubcategories?.map((data, index) => (
-                                    <option key={index} value={data?.name}>
-                                        {`${data?.name}`}
-                                    </option>
-                                ))}
-
-                            </select>
-                            {error.subcategory && <div id="Error" className="form-text2">{error.subcategory}</div>}
-
-                            <select
-                                name="business"
-                                required
-                                style={styles.select}
-                                className="white-placeholder"
-                                value={formData.business}
-                                onChange={(e) => {
-                                    const selectedBusiness = business?.find((item) => item.name === e.target.value);
-                                    if (selectedBusiness) {
-                                        setFormData((prevData) => ({
-                                            ...prevData,
-                                            business: selectedBusiness.id, // Store data.id
-                                        }));
-                                    }
-                                }}
-                            >
-                                <option value="" disabled>
-                                    Select Business
-                                </option>
-                                {business?.map((data, index) => (
-                                    <option key={index} value={data?.name}>
-                                        {`${data?.name}`}
-                                    </option>
-                                ))}
-                            </select>
-                            {error.business && <div id="Error" className="form-text2">{error.business}</div>}
-
-                            <input
-                                type="text"
-                                name="name"
-                                placeholder="Title"
-                                required
-                                style={styles.input}
-                                onChange={handleChange} value={formData.name}
-                            />
-                            {error.name && <div id="Error" className="form-text2">{error.name}</div>}
-
-
-                            <input
-                                type="text"
-                                name="descripton"
-                                placeholder="Description"
-                                required
-                                style={styles.input}
-                                onChange={handleChange} value={formData.descripton}
-                            />
-                            {error.descripton && <div id="Error" className="form-text2">{error.descripton}</div>}
-
-
-                            <div className="row" >
-                                <div className="col-md-6">
-                                    <DatePicker
-                                        selected={formData.start_date}
-                                        onChange={(date) => setFormData({
-                                            ...formData,
-                                            start_date: date
-                                        })}
-                                        selectsStart
-                                        startDate={formData.start_date}
-                                        endDate={formData.end_date}
-                                        id="from"
-                                        className="form-control "
-                                        dateFormat="yyyy-MM-dd"
-                                        placeholderText="Select a start date"
-                                        style={{ width: '100%' }}
-                                    />
-                                </div>
-                                {error.start_date && <div id="Error" className="form-text2">{error.start_date}</div>}
-
-                                <div className="col-md-6">
-                                    <DatePicker
-                                        selected={formData.end_date}
-                                        onChange={(date) => setFormData({
-                                            ...formData,
-                                            end_date: date
-                                        })}
-                                        selectsEnd
-                                        startDate={formData.start_date}
-                                        endDate={formData.end_date}
-                                        minDate={formData.start_date} // Prevents selecting a "to" date before "from" date
-                                        id="to"
-                                        className="form-control"
-                                        dateFormat="yyyy-MM-dd"
-                                        placeholderText="Select an end date"
-                                    />
-                                </div>
-                                {error.end_date && <div id="Error" className="form-text2">{error.end_date}</div>}
-                            </div>
-
-                            <button type="submit" style={styles.submitButton}>
-                                Submit
-                            </button>
-                        </form>
-                        <ToastContainer />
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </>
     );
-}
-
+};
 export default VendorCreateDeals;

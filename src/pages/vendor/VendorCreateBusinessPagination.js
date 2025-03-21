@@ -121,7 +121,6 @@ const VendorCreateBusinessPagination = () => {
     const [currentStep, setCurrentStep] = useState(1);
     const [verified, setVerified] = useState(true);
     const [image, setImage] = useState(null);
-    const [autoComplete, setAutoComplete] = useState("");
     const autocompleteRef = useRef(null);
     const [OpenMaps, setOpenMaps] = useState(false);
     const [formData, setFormData] = useState({
@@ -156,28 +155,21 @@ const VendorCreateBusinessPagination = () => {
         { number: 5, label: 'Status' },
     ];
     const navigate = useNavigate()
-    const { refreshAccessToken, refresherror } = useRefreshToken();
 
     const mutation = useMutation({
         mutationFn: AddVendorBusiness,
         onSuccess: (response) => {
 
-            if (!response) {
-
-                console.log(response.error.fields)
-                if (response.error.fields) {
-                    setError({ api: "Email or Phone is already Registered. " })
-                } else {
-                    setError(response)
-                }
-
-            } else {
-
-                console.log('Business Registration successful:', response);
-                // Redirect to another page on successful login
+            if (response.status == 201) {
                 setCurrentStep(currentStep + 1);
+            } else {
+                if (response.response.data.error.fields) {
+                    const errorMessage = response.response.data.error.fields
+                        .map((res) => `${res.field} ${res.message[0]}`)
+                        .join(' ')
+                    setError({ api: errorMessage })
+                }
             }
-            console.log(error, "Business Errror")
 
         },
         onError: (error) => {
@@ -198,8 +190,8 @@ const VendorCreateBusinessPagination = () => {
     });
 
     const schema2 = yup.object().shape({
-        // city: yup.string().required("City is required"),
-        // state: yup.string().required("Province is required"),
+        city: yup.string().required("City is required"),
+        state: yup.string().required("State is required"),
         postal_code: yup
             .string()
             .required("Postal Code is required")
@@ -424,75 +416,6 @@ const VendorCreateBusinessPagination = () => {
                         <div className="pagination-container" style={{ width: '100%' }}>
                             <style>
                                 {`
-                                    .pagination-container {
-                                        display: flex;
-                                        flex-direction: column;
-                                        align-items: center;
-                                        overflow-x: hidden; /* Prevent horizontal scrolling */
-                                    }
-                                    .steps {
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        margin-bottom: 20px;
-                                    }
-                                    .step {
-                                        display: flex;
-                                        flex-direction: column;
-                                        align-items: center;
-                                        position: relative;
-                                    }
-                                    .circle {
-                                        width: 40px;
-                                        height: 40px;
-                                        border-radius: 50%;
-                                        border: 2px solid #EE5635;
-                                        display: flex;
-                                        justify-content: center;
-                                        align-items: center;
-                                        background-color: transparent;
-                                        color: #EE5635;
-                                        font-size: 18px;
-                                        font-weight: bold;
-                                    }  
-                                    .completed .circle {
-                                        background-color: #EE5635;
-                                        color: white;
-                                    }
-                                    .label {
-                                        margin-top: 8px;
-                                        font-size: 14px;
-                                        color: #EE5635;
-                                    }
-                                    .line {
-                                        width: 50px;
-                                        height: 2px;
-                                        background-color: #EE5635;
-                                        margin: 0 10px;
-                                    }
-                                    .content {
-                                        margin-top: 20px;
-                                        width: 80%;
-                                        text-align: center;
-                                    }
-                                    .container {
-                                        margin-top: 20px;
-                                        display: flex;
-                                        flex-direction: column;
-                                        align-items: center;
-                                    }
-                                    label {
-                                        margin: 10px 0 5px;
-                                        color: #EE5635;
-                                    }
-                                    input[type="text"],
-                                    input[type="file"] {
-                                        padding: 8px;
-                                        border: 1px solid #EE5635;
-                                        border-radius: 5px;
-                                        margin-bottom: 10px;
-                                        width: 100%;
-                                    }
                                     button {
                                         margin: 10px 5px;
                                         padding: 10px 20px;
@@ -521,26 +444,6 @@ const VendorCreateBusinessPagination = () => {
                                     <div className="container">
                                         <h1>Basic</h1>
                                         <form style={styles.form}>
-
-                                            {/* <div style={styles.uploadContainer}>
-                                                {image ? (
-                                                    <img src={image} alt="Business Logo" style={styles.imagePreview} />
-                                                ) : (
-                                                    <>
-                                                        <label htmlFor="fileUpload" style={styles.uploadLabel}>
-                                                            <span style={styles.uploadIcon}>📷</span>
-                                                        </label>
-                                                    </>
-                                                )}
-                                                <input
-                                                    id="fileUpload"
-                                                    type="file"
-                                                    accept="image/*"
-                                                    style={styles.fileInput}
-                                                    onChange={handleImageUpload}
-                                                    className="white-placeholder"
-                                                />
-                                            </div> */}
 
                                             <div className="uploadGallerySection2">
 
@@ -617,10 +520,6 @@ const VendorCreateBusinessPagination = () => {
                                                 <option value="UK">UK</option>
                                             </select>
                                             {error.country && <div id="Country" className="form-text2">{error.country}</div>}
-
-                                            {/* <button type="submit" style={styles.submitButton}>
-                                                Submit
-                                            </button> */}
                                         </form>
                                     </div>
                                 )}
@@ -698,6 +597,8 @@ const VendorCreateBusinessPagination = () => {
                                                 onChange={handleChange}
                                                 className="white-placeholder" />
                                             {error.postal_code && <div id="Country" className="form-text2">{error.postal_code}</div>}
+                                            {error.state && <div id="Country" className="form-text2">{error.state}</div>}
+                                            {error.city && <div id="Country" className="form-text2">{error.city}</div>}
 
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                             </div>
@@ -737,41 +638,7 @@ const VendorCreateBusinessPagination = () => {
                                         </div>
                                     </div>
                                 )}
-                                {/* <div style={{ paddingTop: '0% !important', width: "100%" }}>
-                                        <h2>Confirm</h2>
-                                        <p>Review and confirm your business details and documents before submitting.</p>
 
-                                        <div style={{ marginTop: "20px", padding: "10px", border: "1px solid #ccc", borderRadius: "8px", backgroundColor: "#0000", }}>
-                                            <ul style={{ listStyleType: "none", paddingLeft: "0", alignItems: 'center' }}>
-                                                {formData.business_logo ? (
-                                                    <div>
-                                                        <img
-                                                            src={URL.createObjectURL(formData.business_logo)}
-                                                            alt="Business Logo Preview"
-                                                            style={{ width: "10%", height: "10%", marginTop: "10px" }}
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    <p><strong>Not Uploaded</strong></p>
-                                                )}
-                                                <li><strong>Business Name:</strong> {formData.name || "N/A"}</li>
-                                                <li><strong>Phone:</strong> {formData.phone || "N/A"}</li>
-                                                <li><strong>Email:</strong> {formData.email || "N/A"}</li>
-                                                <li><strong>Country:</strong> {formData.country || "N/A"}</li>
-                                                <li><strong>Address:</strong> {formData.address || "N/A"}</li>
-                                                <li><strong>Postal Code:</strong> {formData.postal_code || "N/A"}</li>
-                                                <li><strong>Business Registration Number:</strong> {formData.business_registration_number || "N/A"}</li>
-                                                {formData.business_verification_document && (
-                                                    <p>
-                                                        <strong>Business Verification Document:</strong> Uploaded
-                                                    </p>
-                                                )}
-                                            </ul>
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                            <button onClick={handleSubmit} style={styles.button}>Submit</button>
-                                        </div>
-                                    </div> */}
                                 {currentStep === 4 && (
                                     <div style={{ paddingTop: '0% !important', width: "100%" }}>
                                         <h2>Confirm</h2>
@@ -876,18 +743,6 @@ const VendorCreateBusinessPagination = () => {
 
                                 )}
 
-                                {/* <div style={{ paddingTop: '0% !important', width: "100%" }}>
-                                        <h2>Status</h2>
-                                        <p>Business details and documents submitted. Pending approval.</p>
-                                        <div className="steps">
-                                            {steps.map((step) => (
-                                                <div key={step.number} className="step completed">
-                                                    <div className="circle">✓</div>
-                                                    <div className="label">{step.label}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div> */}
 
                                 {currentStep === 5 && (verified ? (
                                     <div

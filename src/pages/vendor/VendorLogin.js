@@ -7,95 +7,72 @@ import './../../assets/css/styles.css';
 import * as yup from 'yup'
 import { login } from '../../apis/auth/auth';
 import { useMutation } from '@tanstack/react-query';
+import { useFormik } from 'formik';
+
 
 const VendorLogin = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [isChecked, setIsChecked] = useState({ term1: false, term2: false });
-    const [error, setError] = useState("");
-    const [termerror, setTermError] = useState("");
+    const [termerror, setTermError] = useState({ term1: null, term2: null });
     const navigate = useNavigate();
-
 
     const mutation = useMutation({
         mutationFn: login,
         onSuccess: (response) => {
-            localStorage.setItem('vendorInfo', JSON.stringify(response))
+            localStorage.setItem('vendorInfo', JSON.stringify(response));
             navigate('/VendorCreateBusiness');
         },
         onError: (error) => {
-            console.log(error, "error")
-            setError('Invalid credentials. Please try again.');
+            console.log(error, "error");
+            formik.setFieldError('general', 'Invalid credentials. Please try again.');
         }
-    })
-
-    const schema = yup.object().shape({
-        password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
-        email: yup.string().email("Invalid email address").required("Email is required"),
     });
 
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-    };
+    const schema = yup.object().shape({
+        email: yup.string().email("Invalid email address").required("Email is required"),
+        password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
+    });
 
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-    };
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validationSchema: schema,
+        onSubmit: (values) => {
+            setTermError({ term1: null, term2: null });
+            const data = {
+                email: values.email,
+                password: values.password,
+            };
 
-
-
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setError("")
-        const data = {
-            email: email,
-            password: password,
-        };
-        schema.validate(data)
-            .then(valid => {
-                console.log(valid, error)
-                console.log(isChecked.term1, isChecked.term2)
-                if (!isChecked.term1 || !isChecked.term2) {
-                    setTermError(prevErrors => ({
-                        ...prevErrors,
-                        term1: !isChecked.term1 ? "You must agree to the Terms & Conditions" : null,
-                        term2: !isChecked.term2 ? "You must agree to the Privacy Policy" : null,
-                    }));
-                } else {
-                    // Clear checkbox-related errors if checkboxes are valid
-                    setTermError(prevErrors => ({
-                        ...prevErrors,
-                        term1: null,
-                        term2: null,
-                    }));
-                    mutation.mutate(data)
-                }
-            })
-            .catch(error => {
-                setError(error.errors);
-            });
-    };
+            if (!isChecked.term1 || !isChecked.term2) {
+                setTermError({
+                    term1: !isChecked.term1 ? "You must agree to the Terms & Conditions" : null,
+                    term2: !isChecked.term2 ? "You must agree to the Privacy Policy" : null,
+                });
+            } else {
+                mutation.mutate(data);
+            }
+        },
+    });
 
     const handleCheckboxChange = (e, term) => {
-        console.log('t', term, e.target.checked);
         setIsChecked(prevState => ({
             ...prevState,
             [term]: e.target.checked,
         }));
 
-        // Clear the error when the checkbox is checked
+        // Clear error for checked terms
         if (e.target.checked) {
             setTermError(prevErrors => ({
                 ...prevErrors,
-                [term]: false,
+                [term]: null,
             }));
         }
-    }
+    };
 
     return (
         <>
-
             <div id="background-wrap">
                 <div className="bubble1 x1"></div>
                 <div className="bubble2 x2"></div>
@@ -121,54 +98,86 @@ const VendorLogin = () => {
             <div className="container element">
                 <div className="row justify-content-center">
                     <div className="custom_form_box column col-md-6 form_border_radius">
-                        <form className="" onSubmit={handleSubmit}>
+                        <form onSubmit={formik.handleSubmit}>
                             <h1 className='heading'>Vendor Sign in</h1>
 
-                            {error && <div className="alert alert-danger">{error}</div>}
+                            {formik.errors.general && <div className="alert alert-danger">{formik.errors.general}</div>}
+
                             <div className="mb-3">
-                                <input type="email" placeholder='Email' autoComplete="email" onChange={handleEmailChange} value={email} id="exampleInputEmail1" aria-describedby="emailHelp" />
-                                <div id="emailHelp" className="form-text"></div>
+                                <input
+                                    type="email"
+                                    placeholder='Email'
+                                    autoComplete="email"
+                                    {...formik.getFieldProps('email')}
+                                    className={`form-control ${formik.touched.email && formik.errors.email ? 'is-invalid' : ''}`}
+                                />
+                                {formik.touched.email && formik.errors.email && (
+                                    <div className="invalid-feedback">{formik.errors.email}</div>
+                                )}
                             </div>
+
                             <div className="mb-3">
-                                <input autoComplete="current-password" placeholder="Password" onChange={handlePasswordChange} type="password" value={password} id="exampleInputPassword1" />
+                                <input
+                                    type="password"
+                                    placeholder="Password"
+                                    autoComplete="current-password"
+                                    {...formik.getFieldProps('password')}
+                                    className={`form-control ${formik.touched.password && formik.errors.password ? 'is-invalid' : ''}`}
+                                />
+                                {formik.touched.password && formik.errors.password && (
+                                    <div className="invalid-feedback">{formik.errors.password}</div>
+                                )}
                             </div>
-                            <div className=" form-check ">
-                                <input type="checkbox" className={`form-check-input ${termerror.term1 ? 'is-invalid' : ''}`} id="exampleCheck1" onChange={(e) => handleCheckboxChange(e, 'term1')} checked={isChecked.term1} />
-                                <label className="form-check-label form-text" htmlFor="exampleCheck1"> I agree to the <b>Terms & Condition</b> </label>
-                            </div>
-                            <div className="mb-3 form-check">
-                                <input type="checkbox" className={`form-check-input ${termerror.term2 ? 'is-invalid' : ''}`} id="exampleCheck2" onChange={(e) => handleCheckboxChange(e, 'term2')} checked={isChecked.term2} />
-                                <label className="form-check-label form-text" htmlFor="exampleCheck2"> I agree to the   <b> Privacy Policy</b></label>
+
+                            <div className="form-check">
+                                <input
+                                    type="checkbox"
+                                    className={`form-check-input ${termerror.term1 ? 'is-invalid' : ''}`}
+                                    onChange={(e) => handleCheckboxChange(e, 'term1')}
+                                    checked={isChecked.term1}
+                                />
+                                <label className="form-check-label form-text" htmlFor="exampleCheck1">
+                                    I agree to the <b>Terms & Conditions</b>
+                                </label>
 
                             </div>
-                            <div className="form-text2 mb-3"><Link to="/VendorForgotPassword">Forgot Password?</Link></div>
+
+                            <div className="mb-3 form-check">
+                                <input
+                                    type="checkbox"
+                                    className={`form-check-input ${termerror.term2 ? 'is-invalid' : ''}`}
+                                    onChange={(e) => handleCheckboxChange(e, 'term2')}
+                                    checked={isChecked.term2}
+                                />
+                                <label className="form-check-label form-text" htmlFor="exampleCheck2">
+                                    I agree to the <b>Privacy Policy</b>
+                                </label>
+
+                            </div>
+
+                            <div className="form-text2 mb-3">
+                                <Link to="/VendorForgotPassword">Forgot Password?</Link>
+                            </div>
+
                             <button type="submit" className="btn btn-dark mb-3">Submit</button>
 
-                            <div id="g_id_onload"
-                                data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                                data-login_uri="https://your.domain/your_login_endpoint"
-                                data-auto_prompt="false">
-                            </div>
-                            <div className="g_id_signin mb-3"
-                                data-type="standard"
-                                data-size="large"
-                                data-theme="outline"
-                                data-text="sign_in_with"
-                                data-shape="rectangular"
-                                data-logo_alignment="left">
-                            </div>
+                            <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-login_uri="https://your.domain/your_login_endpoint" data-auto_prompt="false"></div>
+                            <div className="g_id_signin mb-3" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"></div>
 
                             <div className="form-text1 mb-3">Don't have an account?</div>
-                            <div className="form-text3 mb-3"><Link to="/VendorRegistration">Create an account</Link></div>
+                            <div className="form-text3 mb-3">
+                                <Link to="/VendorRegistration">Create an account</Link>
+                            </div>
                         </form>
                     </div>
-                    <div className="col-md-6 custom_shadow_box image_border_radius" >
+
+                    <div className="col-md-6 custom_shadow_box image_border_radius">
                         <img className='image-login' src={loginImage} alt="DealzUp login" />
                     </div>
                 </div>
             </div>
         </>
     );
-}
+};
 
 export default VendorLogin;
